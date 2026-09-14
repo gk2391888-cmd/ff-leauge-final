@@ -58,8 +58,7 @@ input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d
 <div id="homeTab" class="tab active">
 <div style="padding:16px">
 <h1 style="font-family:Orbitron;font-size:28px">BATTLE <span style="color:#ff0033">ARENA</span></h1>
-<div id="adminNotice" style="display:none;background:#ffcc0022;border:1px solid #ffcc00;padding:8px;border-radius:6px;font-size:11px;margin-top:8px">👑 Admin Mode ON</div>
-<!-- YAHAN JOIN KE BAAD ROOM DIKHEGA -->
+<div id="adminNotice" style="display:none;background:#ffcc0022;border:1px solid #ffcc00;padding:8px;border-radius:6px;font-size:11px;margin-top:8px">👑 Admin Mode ON - gaurav.kumar.mail1109@gmail.com</div>
 <div id="myRoom" style="margin-top:10px;display:none;background:linear-gradient(90deg,#00ff88 0%, #00cc66 100%);color:#000;padding:14px;border-radius:10px;font-size:13px;font-weight:800;border:2px solid #00ff88"></div>
 </div>
 <div id="list"></div>
@@ -77,8 +76,8 @@ input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d
 <div id="payModal" class="modal" onclick="closePay()"><div class="box" onclick="event.stopPropagation()">
 <h3 id="pTitle" style="font-family:Orbitron"></h3>
 <div id="walletCheck" style="background:#0a0c14;padding:10px;border-radius:8px;margin:10px 0;font-size:12px"></div>
-<input id="ffuid" placeholder="Free Fire UID (Ex: 1234567890)">
-<input id="ffname" placeholder="In-Game Name (Ex: BUGU)">
+<input id="ffuid" placeholder="Free Fire UID">
+<input id="ffname" placeholder="In-Game Name">
 <button class="btn btn-join" style="width:100%;border-radius:10px;padding:13px" onclick="joinWithWallet()">JOIN USING WALLET</button>
 <p id="pStatus" style="text-align:center;font-size:12px;margin-top:10px;font-weight:800;line-height:1.6"></p>
 </div></div>
@@ -94,7 +93,7 @@ input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d
 </div>
 <input id="rechargeAmt" type="number" value="5" style="font-size:18px;font-weight:900;text-align:center" oninput="updateQR()">
 <div class="qr" style="background:#fff;padding:16px;border-radius:16px">
-<img id="myCustomQR" src="qrcode.jpg" style="width:220px;height:220px;object-fit:contain;display:block;margin:0 auto;border-radius:8px">
+<img src="qrcode.jpg" style="width:220px;height:220px;object-fit:contain;display:block;margin:0 auto;border-radius:8px">
 <div id="qrText" style="color:#000;font-weight:900;margin-top:10px;font-size:16px">Pay: ₹5</div>
 <div style="color:#000;font-size:12px;display:flex;justify-content:center;align-items:center;gap:8px;margin-top:4px">UPI: 9709461672@fam <button onclick="copyUPI()" style="background:#000;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:10px">COPY</button></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
@@ -138,8 +137,8 @@ input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d
 <div><label style="font-size:9px;opacity:.6">TIME</label><input id="aTime" placeholder="Starting soon"></div>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#00ff8822;padding:8px;border-radius:8px;border:1px solid #00ff88">
-<div><label style="font-size:9px;opacity:1;color:#00ff88">ROOM ID *</label><input id="aRoomId" placeholder="65445494" style="border-color:#00ff88"></div>
-<div><label style="font-size:9px;opacity:1;color:#00ff88">ROOM PASS *</label><input id="aRoomPass" placeholder="BUGUHUIJ" style="border-color:#00ff88"></div>
+<div><label style="font-size:9px;opacity:1;color:#00ff88">ROOM ID *</label><input id="aRoomId" placeholder="651544" style="border-color:#00ff88"></div>
+<div><label style="font-size:9px;opacity:1;color:#00ff88">ROOM PASS *</label><input id="aRoomPass" placeholder="54465" style="border-color:#00ff88"></div>
 </div>
 <button class="h-btn" style="width:100%;padding:14px;margin-top:10px;background:linear-gradient(90deg,#ff0033,#ff6600)" onclick="saveTournament()">💾 SAVE TOURNAMENT</button>
 <p id="adminSaveStatus" style="font-size:11px;text-align:center;margin-top:6px"></p>
@@ -169,10 +168,10 @@ const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomai
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.database();
 let currentUser=null, selected=null, isAdmin=false; const MY_UPI="9709461672@fam";
-let tours=[{key:'t1',title:'SOLO — RUSH CLASH #247',type:'SOLO',map:'Bermuda',time:'Starts in 12:34',entry:29,prize:50,slots:0,total:8,status:'LIVE',roomId:'65445494',roomPass:'BUGUHUIJ'}];
+let tours=[{key:'t1',title:'SOLO — RUSH CLASH #247',type:'SOLO',map:'Bermuda',time:'Starts in 12:34',entry:29,prize:50,slots:0,total:8,status:'LIVE',roomId:'651544',roomPass:'54465'}];
 
 function showTab(id,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.b-item').forEach(b=>b.classList.remove('active')); if(el) el.classList.add('active'); }
-function render(){ document.getElementById('list').innerHTML=tours.map(t=>`<div class="card"><div style="display:flex;justify-content:space-between"><span class="badge b-type">${t.type}</span><span class="badge b-live">${t.status}</span></div><div class="title">${t.title}</div><div style="font-size:10px;opacity:.6;margin-top:4px">Map: ${t.map} | ${t.time}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>WIN</small><b class="prize">₹${t.prize}</b></div><div><small>SLOTS</small><b>${t.slots}/${t.total}</b></div></div><div class="btns"><button class="btn btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button></div></div>`).join(''); if(isAdmin){ document.getElementById('aTList').innerHTML=tours.map(t=>`<div class="admin-card" style="display:flex;justify-content:space-between"><div><b>${t.title}</b><br>₹${t.entry} | ₹${t.prize} | Room:${t.roomId||'No'}</div><div style="display:flex;gap:6px"><button onclick="editTour('${t.key}')" style="background:#00aaff;color:#fff;border:none;padding:6px 10px;border-radius:6px">EDIT</button><button onclick="deleteTour('${t.key}')" style="background:#ff0033;color:#fff;border:none;padding:6px 10px;border-radius:6px">DEL</button></div></div>`).join(''); } }
+function render(){ document.getElementById('list').innerHTML=tours.map(t=>`<div class="card"><div style="display:flex;justify-content:space-between"><span class="badge b-type">${t.type}</span><span class="badge b-live">${t.status}</span></div><div class="title">${t.title}</div><div style="font-size:10px;opacity:.6;margin-top:4px">Map: ${t.map} | ${t.time} | Room: ${t.roomId||'TBD'}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>WIN</small><b class="prize">₹${t.prize}</b></div><div><small>SLOTS</small><b>${t.slots}/${t.total}</b></div></div><div class="btns"><button class="btn btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button></div></div>`).join(''); if(isAdmin){ document.getElementById('aTList').innerHTML=tours.map(t=>`<div class="admin-card" style="display:flex;justify-content:space-between"><div><b>${t.title}</b><br>₹${t.entry} | Room:${t.roomId||'No'} | Pass:${t.roomPass||'No'}</div><div style="display:flex;gap:6px"><button onclick="editTour('${t.key}')" style="background:#00aaff;color:#fff;border:none;padding:6px 10px;border-radius:6px">EDIT</button><button onclick="deleteTour('${t.key}')" style="background:#ff0033;color:#fff;border:none;padding:6px 10px;border-radius:6px">DEL</button></div></div>`).join(''); } }
 render();
 
 auth.onAuthStateChanged(u=>{
@@ -212,7 +211,6 @@ function submitRecharge(){ const amt=parseInt(document.getElementById('rechargeA
 function loadWallet(){ db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{ const bal=s.val()||0; document.getElementById('walletBal').innerText='₹'+bal+'.00'; document.getElementById('profileWallet').innerHTML='Wallet: <b>₹'+bal+'</b>'; const wc=document.getElementById('walletCheck'); if(wc && selected){ wc.innerHTML=`Wallet: <b>₹${bal}</b> | Entry: <b>₹${selected.entry}</b><br>${bal>=selected.entry?'<span style="color:#00ff88">✅ OK</span>':'<span style="color:#ff0033">❌ Low</span>'}`; } }); }
 function loadWalletCheck(){ if(currentUser) loadWallet(); }
 
-// ★★★ YAHAN FIX KIYA - AB ROOM ID DIKHEGA ★★★
 function joinWithWallet(){ 
  const uid=document.getElementById('ffuid').value.trim(), name=document.getElementById('ffname').value.trim(); 
  if(!uid||!name) return alert('Free Fire UID aur Name bharo!'); 
@@ -220,11 +218,9 @@ function joinWithWallet(){
   const bal=s.val()||0; 
   if(bal < selected.entry) return alert('Balance kam! ₹'+bal); 
   db.ref('users/'+currentUser.uid+'/wallet').set(bal-selected.entry).then(()=>{ 
-   db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffuid:uid,ffname:name,title:selected.title,entry:selected.entry,tournamentKey:selected.key,roomId:selected.roomId,roomPass:selected.roomPass,time:Date.now(),status:'approved'}); 
-   document.getElementById('pStatus').innerHTML=`<span style="color:#00ff88">✅ Joined! ₹${selected.entry} cut</span><br><br><div style="background:#00ff88;color:#000;padding:12px;border-radius:8px;font-size:14px"><div>🎮 ROOM ID: <b style="font-size:18px">${selected.roomId||'Admin dalega'}</b></div><div>PASSWORD: <b style="font-size:18px">${selected.roomPass||'Admin dalega'}</b></div><div style="font-size:10px;margin-top:6px">Home page pe bhi save ho gaya!</div></div>`; 
-   const d=document.getElementById('myRoom'); 
-   d.style.display='block'; 
-   d.innerHTML=`✅ JOINED: ${selected.title}<br>🎮 ROOM ID: <b style="font-size:18px">${selected.roomId}</b> | PASS: <b style="font-size:18px">${selected.roomPass}</b><br><small>UID: ${uid} | Name: ${name}</small>`; 
+   db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffuid:uid,ffname:name,title:selected.title,entry:selected.entry,tournamentKey:selected.key,time:Date.now(),status:'approved'}); 
+   document.getElementById('pStatus').innerHTML=`<span style="color:#00ff88">✅ Joined! ₹${selected.entry} cut</span><br><br><div style="background:#00ff88;color:#000;padding:12px;border-radius:8px;font-size:14px"><div>🎮 ROOM ID: <b style="font-size:18px">${selected.roomId||'Admin dalega'}</b></div><div>PASSWORD: <b style="font-size:18px">${selected.roomPass||'Admin dalega'}</b></div></div>`; 
+   loadMyRoom();
   }); 
  }); 
 }
@@ -281,24 +277,33 @@ function deleteTour(k){ if(!checkAdmin()) return; if(confirm('Delete?')) db.ref(
 function setGlobalRoom(){ if(!checkAdmin()) return; const id=document.getElementById('roomId').value.trim(), pass=document.getElementById('roomPass').value.trim(); if(!id) return alert('Room ID bharo'); db.ref('currentRoom').set({id:id,pass:pass,time:Date.now()}).then(()=>alert('Global Room Set!')); }
 function loadRoom(){ db.ref('currentRoom').on('value',s=>{ if(s.exists()){ const r=s.val(); document.getElementById('currentRoom').innerText='Current: '+r.id+' | Pass: '+r.pass; } }); }
 
-// ★★★ YAHAN FIX KIYA - HOME PE ROOM DIKHEGA ★★★
+// ★★★ FINAL FIX - WAITING HAT GAYA ★★★
 function loadMyRoom(){ 
  if(!currentUser) return; 
  db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ 
   const div=document.getElementById('myRoom');
   if(!snap.exists()){ div.style.display='none'; return; }
-  let lastRoom = null;
-  snap.forEach(c=>{ 
-   const j=c.val();
-   if(j.status==='approved') lastRoom = j; 
-  });
-  if(lastRoom){
+  let lastJoin = null;
+  snap.forEach(c=>{ lastJoin = c.val(); lastJoin._key = c.key; });
+  if(lastJoin){
+   // Tournament se LIVE room id lo
+   const tour = tours.find(t => t.key === lastJoin.tournamentKey) || tours.find(t => t.title === lastJoin.title);
+   const liveRoomId = tour ? tour.roomId : null;
+   const liveRoomPass = tour ? tour.roomPass : null;
+   const finalRoomId = liveRoomId || lastJoin.roomId || '';
+   const finalRoomPass = liveRoomPass || lastJoin.roomPass || '';
+
    div.style.display='block'; 
-   div.innerHTML=`✅ JOINED: ${lastRoom.title}<br>🎮 ROOM ID: <b style="font-size:20px;color:#000;background:#fff;padding:2px 8px;border-radius:4px">${lastRoom.roomId||'Waiting'}</b> | PASS: <b style="font-size:20px;color:#000;background:#fff;padding:2px 8px;border-radius:4px">${lastRoom.roomPass||'Waiting'}</b><br><small>UID: ${lastRoom.ffuid} | Name: ${lastRoom.ffname}</small>`; 
+   if(finalRoomId){
+    div.innerHTML=`✅ JOINED: ${lastJoin.title}<br>🎮 ROOM ID: <b style="font-size:20px;color:#000;background:#fff;padding:2px 8px;border-radius:4px">${finalRoomId}</b> | PASS: <b style="font-size:20px;color:#000;background:#fff;padding:2px 8px;border-radius:4px">${finalRoomPass}</b><br><small>UID: ${lastJoin.ffuid} | Name: ${lastJoin.ffname}</small>`; 
+   } else {
+    div.innerHTML=`✅ JOINED: ${lastJoin.title}<br>⏳ Admin Room ID upload kar raha hai... Thodi der me yahan dikhega<br><small>UID: ${lastJoin.ffuid}</small>`;
+   }
   }
  }); 
 }
-db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); if(list.length>0){ tours=list; render(); }});
+
+db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); if(list.length>0){ tours=list; render(); loadMyRoom(); }});
 </script>
 </body>
 </html>
