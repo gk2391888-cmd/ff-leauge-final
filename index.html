@@ -30,7 +30,7 @@
 .bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,12,26,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:12px 0 20px;z-index:100}
 .b-item{text-align:center;opacity:.4;font-size:10px;font-weight:700;cursor:pointer}.b-item.active{opacity:1;color:var(--red)}.b-item i{font-size:22px;display:block;margin-bottom:4px}.b-item.admin-only{display:none}.b-item.admin-only.show{display:flex;flex-direction:column;align-items:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;display:none;padding:16px;justify-content:center;align-items:center}.modal.open{display:flex}
-.box{background:#151a30;border:1px solid var(--border);width:100%;max-width:680px;border-radius:24px;padding:24px;max-height:92vh;overflow-y:auto}
+.box{background:#151a30;border:1px solid var(--border);width:100%;max-width:720px;border-radius:24px;padding:24px;max-height:92vh;overflow-y:auto}
 input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--border);border-radius:12px;color:#fff;margin:8px 0;font-size:14px;outline:none} input:focus{border-color:var(--red)}
 .admin-card{background:#0d1125;border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:8px;font-size:12px}
 .tab{display:none}.tab.active{display:block}
@@ -51,9 +51,8 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 <div class="login-box">
 <div style="width:70px;height:70px;background:linear-gradient(135deg,#ff0033,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px">🎮</div>
 <h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#ff0033">LEAGUE</span></h1>
-<p style="opacity:.5;font-size:12px;margin-top:6px">Professional Esports Platform • Secure & Trusted</p>
+<p style="opacity:.5;font-size:12px;margin-top:6px">Professional Esports Platform</p>
 <button class="g-btn" onclick="googleLogin()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button>
-<p style="font-size:10px;opacity:.4;margin-top:12px">By continuing, you agree to our Fair Play Policy</p>
 </div>
 </div>
 
@@ -87,21 +86,20 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 <div class="profile-card"><img id="profilePic" src="" style="width:84px;height:84px;border-radius:50%;border:3px solid var(--red)"><h3 id="profileName" style="font-family:Orbitron;margin-top:14px"></h3><p id="profileEmail" style="font-size:12px;opacity:.5;margin-top:4px"></p><div id="profileWallet" style="margin-top:16px;background:#070a14;padding:14px;border-radius:14px">Wallet: <b>₹0</b></div><div style="margin-top:12px;background:#070a14;padding:12px;border-radius:12px;font-size:12px">Referral Code: <b id="myRefCode" style="color:var(--green)"></b> • Earnings: <b id="myRefEarn">₹0</b></div><button class="h-btn" style="margin-top:20px;background:var(--red);width:100%;padding:14px;border-radius:12px" onclick="logout()">LOGOUT</button></div>
 </div>
 
-<div id="payModal" class="modal" onclick="closePay()"><div class="box" onclick="event.stopPropagation()"><h3 id="pTitle" style="font-family:Orbitron"></h3><p style="font-size:11px;opacity:.5;margin-bottom:10px">Enter your in-game details. Prize will be added to wallet.</p><input id="ffuid" placeholder="Free Fire UID (e.g. 2123456789)"><input id="ffname" placeholder="In-Game Name (e.g. Toxic_Boy)"><button class="btn-join" style="margin-top:10px" onclick="joinWithWallet()">CONFIRM JOIN</button><p id="pStatus" style="text-align:center;margin-top:12px;font-weight:700"></p></div></div>
+<div id="payModal" class="modal" onclick="closePay()"><div class="box" onclick="event.stopPropagation()"><h3 id="pTitle" style="font-family:Orbitron"></h3><p style="font-size:11px;opacity:.5;margin-bottom:10px">Enter your in-game details. Prize will be added to wallet.</p><input id="ffuid" placeholder="Free Fire UID"><input id="ffname" placeholder="In-Game Name"><button class="btn-join" style="margin-top:10px" onclick="joinWithWallet()">CONFIRM JOIN</button><p id="pStatus" style="text-align:center;margin-top:12px;font-weight:700"></p></div></div>
 
 <div id="playersModal" class="modal" onclick="closePlayers()"><div class="box" onclick="event.stopPropagation()"><h3 style="font-family:Orbitron">LIVE PLAYERS</h3><div id="livePlayersList" style="margin-top:12px"></div><button class="h-btn" style="width:100%;margin-top:12px;background:#1a2040" onclick="closePlayers()">Close</button></div></div>
 
 <div id="rechargeModal" class="modal" onclick="closeRecharge()"><div class="box" onclick="event.stopPropagation()">
 <h3 style="font-family:Orbitron"><span style="color:var(--red)">RECHARGE</span> WALLET</h3>
-<p style="font-size:11px;opacity:.5;margin-top:4px">UPI: 9709461672@fam • Secure Payment • Auto Verification</p>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0">
 <button class="h-btn" style="background:#1a2040" onclick="setAmt(10)">₹10</button><button class="h-btn" style="background:#1a2040" onclick="setAmt(50)">₹50</button><button class="h-btn" style="background:#1a2040" onclick="setAmt(100)">₹100</button><button class="h-btn" style="background:#1a2040" onclick="setAmt(500)">₹500</button>
 </div>
 <input id="rechargeAmt" type="number" value="10" style="text-align:center;font-weight:900;font-size:20px;border:2px solid var(--red)" oninput="updateQR()">
 <div style="background:#fff;padding:20px;border-radius:20px;text-align:center">
-<img src="qrcode.jpg?v=6" style="width:240px;height:240px;object-fit:contain;display:block;margin:0 auto;background:#fff;border-radius:12px;padding:8px" onerror="this.src='qrcode.jpg'">
+<img src="qrcode.jpg?v=6" style="width:240px;height:240px;object-fit:contain;display:block;margin:0 auto" onerror="this.src='qrcode.jpg'">
 <div id="qrText" style="color:#000;font-weight:900;margin-top:12px;font-size:18px">Pay ₹10</div>
-<div style="color:#000;font-size:12px;margin-top:6px;display:flex;justify-content:center;gap:8px;align-items:center;font-weight:700">9709461672@fam <button onclick="copyUPI()" style="background:#000;color:#fff;border:none;padding:5px 10px;border-radius:8px">COPY</button></div>
+<div style="color:#000;font-size:12px;margin-top:6px;font-weight:700">9709461672@fam <button onclick="copyUPI()" style="background:#000;color:#fff;border:none;padding:5px 10px;border-radius:8px">COPY</button></div>
 <a id="upiLink2" href="#" class="upi-btn" style="display:block;background:linear-gradient(90deg,#ff0033,#ff6600);color:#fff;padding:14px;margin-top:12px">PAY NOW</a>
 </div>
 <div style="background:#ffcc0015;border:1px solid #ffcc0040;border-radius:12px;padding:12px;margin-top:14px"><p style="font-size:11px;color:#ffcc00;font-weight:800">Enter UTR after payment. Duplicate UTR will be rejected.</p><input id="rechargeUtr" placeholder="12 Digit UTR Number"></div>
@@ -109,7 +107,7 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 <p id="rechargeStatus" style="text-align:center;margin-top:10px"></p>
 </div></div>
 
-<div id="withdrawModal" class="modal" onclick="closeWithdraw()"><div class="box" onclick="event.stopPropagation()"><h3 style="font-family:Orbitron;color:var(--green)">WITHDRAW FUNDS</h3><div id="withdrawBal" style="background:#070a14;padding:12px;border-radius:12px;margin:12px 0"></div><input id="withdrawAmt" type="number" placeholder="Amount (Min ₹100)"><input id="withdrawUpi" placeholder="Your UPI ID (e.g. name@upi)"><button class="btn-join" style="background:var(--green);color:#000" onclick="submitWithdraw()">REQUEST WITHDRAWAL</button><p id="withdrawStatus" style="text-align:center;margin-top:10px"></p></div></div>
+<div id="withdrawModal" class="modal" onclick="closeWithdraw()"><div class="box" onclick="event.stopPropagation()"><h3 style="font-family:Orbitron;color:var(--green)">WITHDRAW FUNDS</h3><div id="withdrawBal" style="background:#070a14;padding:12px;border-radius:12px;margin:12px 0"></div><input id="withdrawAmt" type="number" placeholder="Amount (Min ₹100)"><input id="withdrawUpi" placeholder="Your UPI ID"><button class="btn-join" style="background:var(--green);color:#000" onclick="submitWithdraw()">REQUEST WITHDRAWAL</button><p id="withdrawStatus" style="text-align:center;margin-top:10px"></p></div></div>
 
 <div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" style="max-width:720px" onclick="event.stopPropagation()">
 <h2 style="font-family:Orbitron;color:#ffcc00">ADMIN CONTROL PANEL</h2>
@@ -138,7 +136,12 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 </div>
 </div>
 <div style="margin-top:14px;background:#ff660015;border:1px solid #ff660050;padding:12px;border-radius:14px"><h4 style="color:#ff6600">WITHDRAWAL REQUESTS</h4><div id="withdrawReqList"></div></div>
-<div style="margin-top:14px"><h4>RECHARGE REQUESTS</h4><div id="walletReqList"></div></div>
+
+<div style="margin-top:14px;background:#151a30;border:1px solid var(--border);padding:12px;border-radius:14px">
+<h4 style="font-family:Orbitron">RECHARGE REQUESTS - APPROVE / REJECT</h4>
+<div id="walletReqList" style="margin-top:10px"></div>
+</div>
+
 <div style="margin-top:14px"><h4>TOURNAMENT MANAGEMENT</h4><input id="aKey" type="hidden"><input id="aTitle" placeholder="Tournament Title"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="aEntry" type="number" placeholder="Entry Fee"><input id="aTotal" type="number" placeholder="Total Slots"><input id="aRoomId" placeholder="Room ID"><input id="aRoomPass" placeholder="Room Password"></div><button class="h-btn" style="width:100%;margin-top:10px" onclick="saveTournament()">SAVE TOURNAMENT</button><div id="aTList"></div></div>
 <button class="h-btn" style="width:100%;margin-top:14px;background:#1a2040" onclick="closeAdmin()">Close Panel</button>
 </div></div>
@@ -178,21 +181,14 @@ function openAdmin(){ if(!isAdmin) return; document.getElementById('adminModal')
 function closeAdmin(){ document.getElementById('adminModal').classList.remove('open'); }
 function setAmt(v){ document.getElementById('rechargeAmt').value=v; updateQR(); }
 function copyUPI(){ navigator.clipboard.writeText(MY_UPI); alert("Copied: "+MY_UPI); }
-function shareRefer(){ let code=currentUser.uid.substring(0,6).toUpperCase(); let link=location.origin+location.pathname+'?ref='+currentUser.uid; navigator.clipboard.writeText(link); alert("Referral Link Copied:\n"+link+"\n\nEarn ₹10 on each recharge!"); }
+function shareRefer(){ let link=location.origin+location.pathname+'?ref='+currentUser.uid; navigator.clipboard.writeText(link); alert("Referral Link Copied:\n"+link+"\n\nEarn ₹10 on each recharge!"); }
 function updateQR(){ let amt=parseInt(document.getElementById('rechargeAmt').value)||10; if(amt<10) amt=10; const link=`upi://pay?pa=${MY_UPI}&pn=FF%20LEAGUE&am=${amt}&cu=INR`; document.getElementById('upiLink2').href=link; document.getElementById('upiLink2').innerText=`PAY ₹${amt} NOW`; document.getElementById('qrText').innerText=`Pay ₹${amt} - ${MY_UPI}`; }
+function handleReferral(){ let params=new URLSearchParams(location.search); let ref=params.get('ref'); if(ref && ref!==currentUser.uid){ localStorage.setItem('referredBy', ref); } }
 
-function handleReferral(){
- let params=new URLSearchParams(location.search);
- let ref=params.get('ref');
- if(ref && ref!==currentUser.uid){
-  localStorage.setItem('referredBy', ref);
- }
-}
-
+// RECHARGE WITH DUPLICATE CHECK
 function submitRecharge(){ 
  const amt=parseInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim(); 
  if(amt<10||!utr) return alert('Enter valid UTR'); 
- // Anti-duplicate UTR check
  db.ref('walletRecharges').orderByChild('utr').equalTo(utr).once('value').then(snap=>{
   if(snap.exists()) return alert('This UTR already used! Duplicate payment not allowed.');
   let refBy=localStorage.getItem('referredBy')||null;
@@ -210,7 +206,7 @@ function loadAllUsersWallet(){
  if(!isAdmin) return; 
  db.ref('users').once('value').then(snap=>{
   proAllUsersData=[]; let tot=0;
-  snap.forEach(c=>{ let v=c.val(); let bal=v.wallet||0; tot+=bal; proAllUsersData.push({uid:c.key,email:v.email||'',wallet:bal,ffid:v.ffid||'-',ffname:v.ffname||'-',refEarn:v.refEarn||0}); });
+  snap.forEach(c=>{ let v=c.val(); let bal=v.wallet||0; tot+=bal; proAllUsersData.push({uid:c.key,email:v.email||'',wallet:bal,ffid:v.ffid||'-',ffname:v.ffname||'-'}); });
   document.getElementById('proTotalUsers').innerText=proAllUsersData.length; document.getElementById('proTotalBal').innerText='₹'+tot;
   renderProUsers(proAllUsersData);
  });
@@ -245,8 +241,26 @@ function joinWithWallet(){
   }); 
  }); 
 }
-function loadWalletRequests(){ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('walletReqList'); if(!snap.exists()){div.innerHTML='No pending requests';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} UTR:${r.utr} ${r.email} ${r.referredBy?'<small style="color:var(--green)">(Referred)</small>':''} <button onclick="approveWallet('${c.key}','${r.uid}',${r.amount},'${r.referredBy||''}')" style="background:var(--green);color:#000;border:none;padding:6px;border-radius:6px">APPROVE</button></div>`; }); div.innerHTML=h; }); }
 
+// *** FIXED RECHARGE REQUESTS WITH APPROVE + REJECT ***
+function loadWalletRequests(){ 
+ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ 
+  const div=document.getElementById('walletReqList'); 
+  if(!snap.exists()){div.innerHTML='No pending requests';return;} 
+  let h=''; 
+  snap.forEach(c=>{ 
+    const r=c.val(); 
+    h+=`<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-left:3px solid var(--green)">
+      <div><b style="color:var(--green)">₹${r.amount}</b> UTR: <b style="background:#ffffff22;padding:2px 6px;border-radius:6px">${r.utr}</b><br><small style="opacity:.6">${r.email}</small> ${r.referredBy?'<small style="color:var(--green)">(Refer)</small>':''}</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="approveWallet('${c.key}','${r.uid}',${r.amount},'${r.referredBy||''}')" style="background:var(--green);color:#000;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">APPROVE</button>
+        <button onclick="rejectWallet('${c.key}')" style="background:#ff0033;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">REJECT</button>
+      </div>
+    </div>`; 
+  }); 
+  div.innerHTML=h; 
+ }); 
+}
 function approveWallet(id,uid,amt,refBy){
  db.ref('users/'+uid+'/wallet').once('value').then(s=>{
   const o=s.val()||0;
@@ -261,6 +275,11 @@ function approveWallet(id,uid,amt,refBy){
    }
   });
  });
+}
+function rejectWallet(id){
+ if(confirm('Reject this recharge? User will see REJECTED status.')){
+  db.ref('walletRecharges/'+id).update({status:'rejected'});
+ }
 }
 
 function loadLeaderboard(){
@@ -277,7 +296,7 @@ function loadLeaderboard(){
 function saveTournament(){ const t=document.getElementById('aTitle').value.trim(); if(!t) return alert('Enter title'); const data={title:t,entry:parseInt(document.getElementById('aEntry').value)||10,prize:parseInt(document.getElementById('aEntry').value)*8,slots:0,total:parseInt(document.getElementById('aTotal').value)||8,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,status:'REGISTRATION',type:'SOLO',map:'Bermuda',time:'Soon'}; const k=document.getElementById('aKey').value; if(k) db.ref('tournaments/'+k).set(data); else db.ref('tournaments').push(data); alert('Tournament Saved!'); }
 function deleteTour(k){ if(confirm('Delete this tournament?')) db.ref('tournaments/'+k).remove(); }
 function loadMyRoom(){ if(!currentUser) return; db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('myRoom'); if(!snap.exists()){div.style.display='none';return;} let lj=null; snap.forEach(c=>{lj=c.val();}); const tour=tours.find(t=>t.title===lj.title); if(!tour){div.style.display='none';return;} div.style.display='flex'; div.innerHTML=`<div>✅ ${lj.title} | ROOM: ${tour.roomId||'TBA'} PASS: ${tour.roomPass||'TBA'}</div><button onclick="this.parentElement.style.display='none'" style="background:#000;color:#fff;border:none;width:28px;height:28px;border-radius:50%">X</button>`; }); }
-function loadMyRecharges(){ db.ref('walletRecharges').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('rechargeHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">Recharge ₹${r.amount} - <b style="color:${r.status==='approved'?'var(--green)':'#ffaa00'}">${r.status}</b> • UTR: ${r.utr}</div>`; }); div.innerHTML=h; }); }
+function loadMyRecharges(){ db.ref('walletRecharges').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('rechargeHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">Recharge ₹${r.amount} - <b style="color:${r.status==='approved'?'var(--green)': r.status==='rejected'?'var(--red)':'#ffaa00'}">${r.status.toUpperCase()}</b> • UTR: ${r.utr}</div>`; }); div.innerHTML=h; }); }
 db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); tours=list; render(); loadMyRoom(); });
 </script>
 </body>
