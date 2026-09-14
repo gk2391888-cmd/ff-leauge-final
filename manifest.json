@@ -1,0 +1,13 @@
+{
+  "name": "FF LEAGUE",
+  "short_name": "FF LEAGUE",
+  "start_url": "https://gk2391888-cmd.github.io/ff-leauge-final/",
+  "display": "standalone",
+  "background_color": "#070a14",
+  "theme_color": "#ff0033",
+  "icons": [{
+    "src": "https://cdn-icons-png.flaticon.com/512/3069/3069028.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }]
+}
