@@ -117,22 +117,22 @@ input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d
 <div style="margin-top:20px;border-top:2px solid #ff0033;padding-top:12px">
 <h4>➕ Create / Edit Tournament</h4>
 <input id="aKey" type="hidden">
-<input id="aTitle" placeholder="Title: SOLO — RUSH CLASH #247">
+<input id="aTitle" placeholder="Title">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <select id="aType"><option>SOLO</option><option>DUO</option><option>SQUAD</option></select>
 <select id="aStatus"><option>REGISTRATION</option><option>LIVE</option><option>FINISHED</option></select>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<input id="aEntry" type="number" placeholder="Entry 29"><input id="aPrize" type="number" placeholder="Prize 50">
+<input id="aEntry" type="number" placeholder="Entry"><input id="aPrize" type="number" placeholder="Prize">
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <input id="aSlots" type="number" placeholder="Joined 0"><input id="aTotal" type="number" placeholder="Total 8">
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<input id="aMap" placeholder="Map Bermuda"><input id="aTime" placeholder="Time 12:34">
+<input id="aMap" placeholder="Map"><input id="aTime" placeholder="Time">
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#00ff8822;padding:8px;border-radius:8px;border:1px solid #00ff88">
-<input id="aRoomId" placeholder="Room ID 65516546" style="border-color:#00ff88"><input id="aRoomPass" placeholder="Pass 55" style="border-color:#00ff88">
+<input id="aRoomId" placeholder="Room ID"><input id="aRoomPass" placeholder="Pass">
 </div>
 <button class="h-btn" style="width:100%;padding:14px;margin-top:10px;background:linear-gradient(90deg,#ff0033,#ff6600)" onclick="saveTournament()">💾 SAVE TOURNAMENT</button>
 <p id="adminSaveStatus" style="font-size:11px;text-align:center;margin-top:6px"></p>
@@ -165,7 +165,9 @@ let currentUser=null, selected=null, isAdmin=false; const MY_UPI="9709461672@fam
 let tours=[];
 
 function showTab(id,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.b-item').forEach(b=>b.classList.remove('active')); if(el) el.classList.add('active'); }
-function render(){ document.getElementById('list').innerHTML=tours.map(t=>`<div class="card"><div style="display:flex;justify-content:space-between"><span class="badge b-type">${t.type}</span><span class="badge b-live">${t.status}</span></div><div class="title">${t.title}</div><div style="font-size:10px;opacity:.6;margin-top:4px">Map: ${t.map} | ${t.time}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>WIN</small><b class="prize">₹${t.prize}</b></div><div><small>SLOTS</small><b>${t.slots||0}/${t.total}</b></div></div><div class="btns"><button class="btn btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button></div></div>`).join(''); if(isAdmin){ document.getElementById('aTList').innerHTML=tours.map(t=>`<div class="admin-card" style="display:flex;justify-content:space-between"><div><b>${t.title}</b><br>${t.slots||0}/${t.total} | Room:${t.roomId||'No'}</div><div style="display:flex;gap:6px"><button onclick="editTour('${t.key}')" style="background:#00aaff;color:#fff;border:none;padding:6px 10px;border-radius:6px">EDIT</button><button onclick="deleteTour('${t.key}')" style="background:#ff0033;color:#fff;border:none;padding:6px 10px;border-radius:6px">DEL</button></div></div>`).join(''); } }
+function render(){ document.getElementById('list').innerHTML=tours.map(t=>`<div class="card"><div style="display:flex;justify-content:space-between"><span class="badge b-type">${t.type}</span><span class="badge b-live">${t.status}</span></div><div class="title">${t.title}</div><div style="font-size:10px;opacity:.6;margin-top:4px">Map: ${t.map} | ${t.time}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>WIN</small><b class="prize">₹${t.prize}</b></div><div><small>SLOTS</small><b>${t.slots||0}/${t.total}</b></div></div><div class="btns"><button class="btn btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button></div></div>`).join(''); 
+if(isAdmin){ document.getElementById('aTList').innerHTML=tours.map(t=>`<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center"><div><b>${t.title}</b><br>${t.slots||0}/${t.total} | Room:${t.roomId||'No'}</div><div style="display:flex;gap:6px"><button onclick="editTour('${t.key}')" style="background:#00aaff;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:800">EDIT</button><button onclick="deleteTour('${t.key}')" style="background:#ff0033;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:800">DEL</button></div></div>`).join(''); } 
+}
 
 auth.onAuthStateChanged(u=>{
  if(u){
@@ -200,8 +202,6 @@ function updateQR(){ let amt=parseInt(document.getElementById('rechargeAmt').val
 function submitRecharge(){ const amt=parseInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim(); if(!amt||amt<5) return alert('Min ₹5'); if(!utr||utr.length<4) return alert('UTR bharo!'); db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending'}).then(()=>{ document.getElementById('rechargeStatus').innerHTML='<span style="color:#00ff88">✅ Sent!</span>'; setTimeout(closeRecharge,1500); }); }
 function loadWallet(){ db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{ const bal=s.val()||0; document.getElementById('walletBal').innerText='₹'+bal+'.00'; document.getElementById('profileWallet').innerHTML='Wallet: <b>₹'+bal+'</b>'; const wc=document.getElementById('walletCheck'); if(wc && selected){ wc.innerHTML=`Wallet: <b>₹${bal}</b> | Entry: <b>₹${selected.entry}</b><br>${bal>=selected.entry?'<span style="color:#00ff88">✅ OK</span>':'<span style="color:#ff0033">❌ Low</span>'}`; } }); }
 function loadWalletCheck(){ if(currentUser) loadWallet(); }
-
-// ★★★ FIX: SLOT BADHEGA AB ★★★
 function joinWithWallet(){ 
  const uid=document.getElementById('ffuid').value.trim(), name=document.getElementById('ffname').value.trim(); 
  if(!uid||!name) return alert('UID Name bharo!'); 
@@ -210,9 +210,7 @@ function joinWithWallet(){
   if(bal < selected.entry) return alert('Balance kam!'); 
   if((selected.slots||0) >= selected.total) return alert('Slot Full!');
   db.ref('users/'+currentUser.uid+'/wallet').set(bal-selected.entry).then(()=>{ 
-   // 1. Join record save karo
    db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffuid:uid,ffname:name,title:selected.title,tournamentKey:selected.key,time:Date.now(),status:'approved'}); 
-   // 2. ★ SLOT COUNT BADHAO - YAHI FIX HAI ★
    const newSlots = (parseInt(selected.slots)||0) + 1;
    db.ref('tournaments/'+selected.key+'/slots').set(newSlots);
    document.getElementById('pStatus').innerHTML=`<span style="color:#00ff88">✅ Joined! Slot: ${newSlots}/${selected.total}</span><br><br><div style="background:#00ff88;color:#000;padding:12px;border-radius:8px">🎮 ROOM ID: <b style="font-size:18px">${selected.roomId}</b><br>PASS: <b style="font-size:18px">${selected.roomPass}</b></div>`; 
@@ -242,7 +240,21 @@ function saveTournament(){
  else { db.ref('tournaments').push(data).then(()=>{ document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Created!</span>'; }); }
 }
 function editTour(k){ if(!checkAdmin()) return; const t=tours.find(x=>x.key===k); if(!t) return; document.getElementById('aKey').value=k; document.getElementById('aTitle').value=t.title; document.getElementById('aType').value=t.type; document.getElementById('aStatus').value=t.status; document.getElementById('aEntry').value=t.entry; document.getElementById('aPrize').value=t.prize; document.getElementById('aSlots').value=t.slots; document.getElementById('aTotal').value=t.total; document.getElementById('aMap').value=t.map||''; document.getElementById('aTime').value=t.time||''; document.getElementById('aRoomId').value=t.roomId||''; document.getElementById('aRoomPass').value=t.roomPass||''; }
-function deleteTour(k){ if(!checkAdmin()) return; if(confirm('Delete?')) db.ref('tournaments/'+k).remove(); }
+
+function deleteTour(k){ 
+ if(!checkAdmin()) return; 
+ if(!confirm('⚠️ Pakka DELETE karna hai?')) return;
+ document.getElementById('adminSaveStatus').innerText='Deleting '+k+'...';
+ db.ref('tournaments/'+k).remove().then(()=>{
+  document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Deleted! '+k+'</span>';
+  tours = tours.filter(t=>t.key!==k);
+  render();
+ }).catch(e=>{
+  alert('Delete fail: '+e.message+'\nFirebase Rules me .write true karo');
+  document.getElementById('adminSaveStatus').innerText='Error: '+e.message;
+ });
+}
+
 function setGlobalRoom(){ if(!checkAdmin()) return; const id=document.getElementById('roomId').value.trim(), pass=document.getElementById('roomPass').value.trim(); if(!id) return alert('Room ID bharo'); db.ref('currentRoom').set({id:id,pass:pass,time:Date.now()}).then(()=>alert('Global Room Set!')); }
 function loadRoom(){ db.ref('currentRoom').on('value',s=>{ if(s.exists()){ const r=s.val(); document.getElementById('currentRoom').innerText='Current: '+r.id+' | Pass: '+r.pass; } }); }
 function loadMyRoom(){ 
@@ -265,7 +277,7 @@ function loadMyRoom(){
   }
  }); 
 }
-db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); if(list.length>0){ tours=list; } else { tours=[{key:'temp',title:'SOLO — RUSH CLASH #247',type:'SOLO',map:'Bermuda',time:'Starts in 12:34',entry:29,prize:50,slots:0,total:8,status:'LIVE',roomId:'65516546',roomPass:'55'}]; } render(); loadMyRoom(); });
+db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); if(list.length>0){ tours=list; } else { tours=[]; } render(); loadMyRoom(); });
 </script>
 </body>
 </html>
