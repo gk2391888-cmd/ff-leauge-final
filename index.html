@@ -1,9 +1,9 @@
-A<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FF LEAGUE - Official Final</title>
+<title>FF LEAGUE - Withdrawal Final</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -15,308 +15,260 @@ A<!DOCTYPE html>
 .logo{font-family:Orbitron;font-weight:900;font-size:20px}.logo span{color:#ff0033}
 .h-btn{background:linear-gradient(90deg,#ff0033,#ff6600);border:none;color:#fff;padding:8px 14px;border-radius:6px;font-weight:800;font-size:11px;cursor:pointer}
 .admin-btn{display:none!important;background:#ffcc00;color:#000;padding:7px 14px;border-radius:6px;font-weight:900;font-size:11px;border:none}.admin-btn.show{display:block!important}
-.login-screen{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%, #ff003322, #05070f);z-index:500;display:flex;justify-content:center;align-items:center;padding:20px}
-.login-box{background:#151821;border:2px solid #ff0033;border-radius:20px;padding:30px;width:100%;max-width:380px;text-align:center;box-shadow:0 0 30px #ff003355}
+.login-screen{position:fixed;inset:0;background:#05070f;z-index:500;display:flex;justify-content:center;align-items:center;padding:20px}
+.login-box{background:#151821;border:2px solid #ff0033;border-radius:20px;padding:30px;width:100%;max-width:380px;text-align:center}
 .g-btn{background:#fff;color:#000;border:none;width:100%;padding:14px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px}
-.card{margin:12px 16px;background:#15172a;border:1px solid #ffffff15;padding:14px;clip-path:polygon(0 0,100% 0,100% 90%,95% 100%,0 100%)}
-.title{font-family:Orbitron;font-size:13px}.badge{font-size:9px;font-weight:800;padding:4px 8px;transform:skewX(-10deg);display:inline-block}.b-type{background:#ff0033;color:#fff}.b-live{background:#00ff88;color:#000}
-.info{display:grid;grid-template-columns:1fr 1fr 1fr;margin:10px 0;background:#0005;padding:10px}.info small{font-size:8px;opacity:.4;display:block}.info b{font-family:Orbitron;font-size:14px}.prize{color:#ff0033}
-.btns{display:flex;gap:10px;margin-top:10px}.btn{flex:1;padding:11px;font-weight:800;border:none;cursor:pointer;transform:skewX(-5deg)}.btn-join{background:#ff0033;color:#fff}
+.card{margin:12px 16px;background:#15172a;border:1px solid #ffffff15;padding:14px}
+.badge{font-size:9px;font-weight:800;padding:4px 8px;display:inline-block}.b-type{background:#ff0033;color:#fff}.b-live{background:#00ff88;color:#000}
+.info{display:grid;grid-template-columns:1fr 1fr 1fr;margin:10px 0;background:#0005;padding:10px}.info small{font-size:8px;opacity:.4;display:block}.info b{font-family:Orbitron;font-size:14px}
+.btns{display:flex;gap:10px;margin-top:10px}.btn{flex:1;padding:11px;font-weight:800;border:none;cursor:pointer}.btn-join{background:#ff0033;color:#fff}
 .wallet-card{background:linear-gradient(135deg,#ff0033 0%,#880000 100%);border-radius:16px;padding:20px;margin:16px}
 .bottom{position:fixed;bottom:0;left:0;right:0;background:#0a0c1a;border-top:2px solid #ff0033;display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100}
 .b-item{text-align:center;opacity:.4;font-size:9px;font-weight:700;cursor:pointer}.b-item.active{opacity:1;color:#ff0033}.b-item i{font-size:20px;display:block}.b-item.admin-only{display:none}.b-item.admin-only.show{display:block}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:none;padding:16px;justify-content:center;align-items:flex-start;overflow-y:auto}.modal.open{display:flex}
 .box{background:#151821;width:100%;max-width:650px;border-radius:16px;padding:20px;border:1px solid #ff0033;margin-top:20px;max-height:95vh;overflow-y:auto}
 input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d;border-radius:10px;color:#fff;margin:6px 0}
-.qr{background:#fff;padding:12px;border-radius:14px;text-align:center;margin:10px 0}
 .admin-card{background:#0a0c14;border:1px solid #2a2d3d;border-radius:10px;padding:12px;margin-top:8px;font-size:12px}
 .tab{display:none}.tab.active{display:block}
-.profile-card{background:#15172a;border-radius:16px;padding:20px;margin:16px;border:1px solid #ffffff15;text-align:center}
+.qr{background:#fff;padding:12px;border-radius:14px;text-align:center;margin:10px 0}
 </style>
 </head>
 <body>
 
-<div id="loginScreen" class="login-screen">
-<div class="login-box">
-<div style="font-size:50px">🎮</div>
-<h1 style="font-family:Orbitron;font-size:22px;margin-top:10px">FF <span style="color:#ff0033">LEAGUE</span></h1>
-<button class="g-btn" onclick="googleLogin()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:18px"> Continue with Google</button>
-<p id="loginError" style="color:#ff0033;font-size:11px;margin-top:10px"></p>
-</div>
-</div>
+<div id="loginScreen" class="login-screen"><div class="login-box"><h1 style="font-family:Orbitron">FF <span style="color:#ff0033">LEAGUE</span></h1><button class="g-btn" onclick="googleLogin()">Continue with Google</button></div></div>
 
 <div class="header">
-<div class="logo"><i class="fa-solid fa-bolt" style="color:#ff0033"></i> FF <span>LEAGUE</span></div>
-<div style="display:flex;gap:8px;align-items:center">
-<div id="userInfo" style="display:none;font-size:10px;text-align:right"><div id="userName" style="font-weight:800"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div>
-<button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()"><i class="fa-solid fa-crown"></i> ADMIN</button>
-<button id="logoutBtn" class="h-btn" style="display:none;background:#22263d" onclick="logout()">LOGOUT</button>
-</div>
+<div class="logo">FF <span>LEAGUE</span></div>
+<div style="display:flex;gap:8px"><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none" onclick="logout()">LOGOUT</button></div>
 </div>
 
 <div id="homeTab" class="tab active">
 <div style="padding:16px">
-<h1 style="font-family:Orbitron;font-size:28px">BATTLE <span style="color:#ff0033">ARENA</span></h1>
-<div id="adminNotice" style="display:none;background:#ffcc0022;border:1px solid #ffcc00;padding:8px;border-radius:6px;font-size:11px;margin-top:8px">👑 Admin Mode ON</div>
-<div id="myRoom" style="margin-top:10px;display:none;background:linear-gradient(90deg,#00ff88 0%, #00cc66 100%);color:#000;padding:14px;border-radius:12px;font-size:13px;font-weight:800;border:2px solid #00ff88;position:relative"></div>
+<h1 style="font-family:Orbitron">BATTLE <span style="color:#ff0033">ARENA</span></h1>
+<div id="myRoom" style="margin-top:10px;display:none;background:#00ff88;color:#000;padding:14px;border-radius:12px;font-weight:800"></div>
 </div>
 <div id="list"></div>
 </div>
 
 <div id="walletTab" class="tab">
-<div class="wallet-card"><div style="font-size:11px;opacity:.8">WALLET BALANCE</div><div style="font-size:36px;font-weight:900;font-family:Orbitron;margin-top:6px" id="walletBal">₹0.00</div><button class="h-btn" style="background:#fff;color:#ff0033;width:100%;margin-top:14px;padding:12px;border-radius:10px" onclick="openRecharge()"><i class="fa-solid fa-plus"></i> RECHARGE (Min ₹5)</button></div>
-<div style="padding:0 16px"><h4 style="font-family:Orbitron;font-size:13px">Recharge History</h4><div id="rechargeHistory"></div></div>
+<div class="wallet-card">
+<div>WALLET BALANCE</div>
+<div style="font-size:36px;font-family:Orbitron" id="walletBal">₹0</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+<button class="h-btn" style="background:#fff;color:#ff0033;padding:12px;border-radius:10px" onclick="openRecharge()">RECHARGE</button>
+<button class="h-btn" style="background:#000;color:#00ff88;border:1px solid #00ff88;padding:12px;border-radius:10px" onclick="openWithdraw()">WITHDRAW</button>
 </div>
-
-<div id="profileTab" class="tab">
-<div class="profile-card"><img id="profilePic" src="" style="width:70px;height:70px;border-radius:50%;border:2px solid #ff0033"><h3 id="profileName" style="font-family:Orbitron;margin-top:10px"></h3><p id="profileEmail" style="font-size:11px;opacity:.5"></p><div id="profileWallet" style="margin-top:12px;font-size:14px">Wallet: <b>₹0</b></div><button class="h-btn" style="margin-top:16px;background:#ff0033;width:100%;padding:12px;border-radius:10px" onclick="logout()">LOGOUT</button></div>
 </div>
-
-<div id="payModal" class="modal" onclick="closePay()"><div class="box" onclick="event.stopPropagation()">
-<h3 id="pTitle" style="font-family:Orbitron"></h3>
-<div id="walletCheck" style="background:#0a0c14;padding:10px;border-radius:8px;margin:10px 0;font-size:12px"></div>
-<input id="ffuid" placeholder="Free Fire UID"><input id="ffname" placeholder="In-Game Name">
-<button class="btn btn-join" style="width:100%;border-radius:10px;padding:13px" onclick="joinWithWallet()">JOIN USING WALLET</button>
-<p id="pStatus" style="text-align:center;font-size:12px;margin-top:10px;font-weight:800;line-height:1.6"></p>
-</div></div>
-
-<div id="rechargeModal" class="modal" onclick="closeRecharge()"><div class="box" onclick="event.stopPropagation()">
-<h3 style="font-family:Orbitron;color:#ff0033">💰 SECURE RECHARGE</h3>
-<p style="font-size:10px;opacity:.5">UPI: 9709461672@fam | Min ₹5</p>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0">
-<button class="h-btn" style="background:#1a1d2f;border:1px solid #333" onclick="setAmt(5)">₹5</button>
-<button class="h-btn" style="background:#1a1d2f;border:1px solid #333" onclick="setAmt(10)">₹10</button>
-<button class="h-btn" style="background:#1a1d2f;border:1px solid #333" onclick="setAmt(50)">₹50</button>
-<button class="h-btn" style="background:#1a1d2f;border:1px solid #333" onclick="setAmt(100)">₹100</button>
+<div style="padding:0 16px"><div id="rechargeHistory"></div><div id="withdrawHistory"></div></div>
 </div>
-<input id="rechargeAmt" type="number" value="5" style="font-size:18px;font-weight:900;text-align:center" oninput="updateQR()">
-<div class="qr" style="background:#fff;padding:16px;border-radius:16px">
-<img src="qrcode.jpg" style="width:220px;height:220px;object-fit:contain;display:block;margin:0 auto;border-radius:8px">
-<div id="qrText" style="color:#000;font-weight:900;margin-top:10px;font-size:16px">Pay: ₹5</div>
-<div style="color:#000;font-size:12px;display:flex;justify-content:center;align-items:center;gap:8px;margin-top:4px">UPI: 9709461672@fam <button onclick="copyUPI()" style="background:#000;color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:10px">COPY</button></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-<a id="gpayLink" href="#" style="background:#4285F4;color:#fff;padding:12px;border-radius:10px;text-decoration:none;font-weight:800;text-align:center">GPay</a>
-<a id="phonepeLink" href="#" style="background:#5f259f;color:#fff;padding:12px;border-radius:10px;text-decoration:none;font-weight:800;text-align:center">PhonePe</a>
-</div>
-<a id="upiLink2" href="#" style="display:block;background:linear-gradient(90deg,#ff0033,#ff6600);color:#fff;padding:14px;border-radius:10px;text-decoration:none;font-weight:900;text-align:center;margin-top:8px;font-size:14px">💳 PAY ₹5 NOW</a>
-</div>
-<div style="background:#0a0c14;border:1px solid #ffcc00;border-radius:10px;padding:10px;margin-top:12px">
-<p style="font-size:11px;color:#ffcc00;font-weight:800">⚠️ Payment ke baad UTR bharo!</p>
-<input id="rechargeUtr" placeholder="12 Digit UTR / Transaction ID" style="margin-top:8px;font-weight:700">
-</div>
-<button class="h-btn" style="width:100%;padding:15px;margin-top:12px;font-size:14px;font-weight:900;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;border-radius:10px" onclick="submitRecharge()">✅ SUBMIT AFTER PAYMENT</button>
-<p id="rechargeStatus" style="text-align:center;font-size:12px;margin-top:10px;font-weight:800"></p>
-<button class="h-btn" style="width:100%;margin-top:10px;background:#22263d" onclick="closeRecharge()">Close</button>
-</div></div>
-
-<div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" onclick="event.stopPropagation()">
-<h2 style="font-family:Orbitron;color:#ffcc00">👑 ADMIN PANEL</h2>
-<div style="margin-top:16px;border-top:1px solid #2a2d3d;padding-top:12px">
-<h4>💳 Wallet Requests</h4><div id="walletReqList" style="max-height:300px;overflow-y:auto;margin-top:8px"></div>
-</div>
-<div style="margin-top:20px;border-top:2px solid #ff0033;padding-top:12px">
-<h4>➕ Create / Edit Tournament</h4>
-<input id="aKey" type="hidden">
-<input id="aTitle" placeholder="Title">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<select id="aType"><option>SOLO</option><option>DUO</option><option>SQUAD</option></select>
-<select id="aStatus"><option>REGISTRATION</option><option>LIVE</option><option>FINISHED</option></select>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<input id="aEntry" type="number" placeholder="Entry"><input id="aPrize" type="number" placeholder="Prize">
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<input id="aSlots" type="number" placeholder="Joined 0"><input id="aTotal" type="number" placeholder="Total 8">
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<input id="aMap" placeholder="Map"><input id="aTime" placeholder="Time">
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#00ff8822;padding:8px;border-radius:8px;border:1px solid #00ff88">
-<input id="aRoomId" placeholder="Room ID"><input id="aRoomPass" placeholder="Pass">
-</div>
-<button class="h-btn" style="width:100%;padding:14px;margin-top:10px;background:linear-gradient(90deg,#ff0033,#ff6600)" onclick="saveTournament()">💾 SAVE TOURNAMENT</button>
-<p id="adminSaveStatus" style="font-size:11px;text-align:center;margin-top:6px"></p>
-<div id="aTList" style="margin-top:14px"></div>
-</div>
-<div style="margin-top:20px;border-top:2px solid #00ff88;padding-top:12px">
-<h4>🌐 Global Room</h4>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-<input id="roomId" placeholder="Global Room ID"><input id="roomPass" placeholder="Global Pass">
-</div>
-<button class="h-btn" style="width:100%;padding:14px;background:#00ff88;color:#000;font-weight:900;margin-top:8px" onclick="setGlobalRoom()">SET GLOBAL ROOM</button>
-<div id="currentRoom" style="margin-top:8px;font-size:12px;background:#0a0c14;padding:8px;border-radius:8px">Current: Not Set</div>
-</div>
-<button class="h-btn" style="width:100%;margin-top:20px;background:#22263d" onclick="closeAdmin()">Close</button>
-</div></div>
 
 <div class="bottom">
 <div class="b-item active" onclick="showTab('homeTab',this)"><i class="fa-solid fa-house"></i>HOME</div>
 <div class="b-item" onclick="showTab('walletTab',this)"><i class="fa-solid fa-wallet"></i>WALLET</div>
-<div id="adminBottomBtn" class="b-item admin-only" onclick="openAdmin()"><i class="fa-solid fa-crown" style="color:#ffcc00"></i>ADMIN</div>
-<div class="b-item" onclick="showTab('profileTab',this)"><i class="fa-solid fa-user"></i>PROFILE</div>
+<div id="adminBottomBtn" class="b-item admin-only" onclick="openAdmin()"><i class="fa-solid fa-crown"></i>ADMIN</div>
 </div>
+
+<div id="payModal" class="modal" onclick="closePay()"><div class="box" onclick="event.stopPropagation()"><h3 id="pTitle"></h3><input id="ffuid" placeholder="Free Fire UID"><input id="ffname" placeholder="Name"><button class="btn btn-join" style="width:100%" onclick="joinWithWallet()">JOIN</button><p id="pStatus"></p></div></div>
+
+<div id="withdrawModal" class="modal" onclick="closeWithdraw()"><div class="box" onclick="event.stopPropagation()">
+<h3 style="color:#00ff88;font-family:Orbitron">💸 WITHDRAW</h3>
+<p style="font-size:11px;opacity:.6">User Amount + UPI daalega, Admin ko request jayega</p>
+<div id="withdrawBal" style="background:#0a0c14;padding:10px;border-radius:8px;margin:10px 0"></div>
+<input id="withdrawAmt" type="number" placeholder="Amount likho - Min ₹100">
+<input id="withdrawUpi" placeholder="Apna UPI ID - jaise 9709461672@fam">
+<button class="h-btn" style="width:100%;padding:14px;background:#00ff88;color:#000;font-weight:900" onclick="submitWithdraw()">REQUEST WITHDRAW</button>
+<p id="withdrawStatus" style="text-align:center;margin-top:10px"></p>
+<button class="h-btn" style="width:100%;margin-top:10px;background:#222" onclick="closeWithdraw()">Close</button>
+</div></div>
+
+<div id="rechargeModal" class="modal" onclick="closeRecharge()"><div class="box" onclick="event.stopPropagation()">
+<h3>RECHARGE</h3><input id="rechargeAmt" type="number" value="5"><div class="qr"><img src="qrcode.jpg" style="width:200px"><div id="qrText">Pay: ₹5</div></div><input id="rechargeUtr" placeholder="UTR"><button class="h-btn" style="width:100%;background:#00ff88;color:#000" onclick="submitRecharge()">SUBMIT</button><p id="rechargeStatus"></p><button class="h-btn" style="width:100%;background:#222" onclick="closeRecharge()">Close</button>
+</div></div>
+
+<div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" onclick="event.stopPropagation()">
+<h2 style="color:#ffcc00;font-family:Orbitron">👑 ADMIN PANEL</h2>
+
+<div style="margin-top:15px;background:#00ff8822;border:2px solid #00ff88;padding:10px;border-radius:10px">
+<h4 style="color:#00ff88">💰 SABKE WALLET ME KITNA HAI</h4>
+<div id="allUsersWallet"></div>
+</div>
+
+<div style="margin-top:15px;background:#ff660022;border:2px solid #ff6600;padding:10px;border-radius:10px">
+<h4 style="color:#ff6600">💸 WITHDRAWAL REQUESTS - YAHAN DHIKHEGA</h4>
+<p style="font-size:10px;opacity:.6">User Amount + UPI bhejega, tu yahan se dekh ke pay kar dena</p>
+<div id="withdrawReqList" style="margin-top:8px"></div>
+</div>
+
+<div style="margin-top:15px;border-top:1px solid #333;padding-top:10px">
+<h4>Recharge Requests</h4><div id="walletReqList"></div>
+</div>
+
+<div style="margin-top:15px;border-top:1px solid #ff0033;padding-top:10px">
+<h4>Tournament Create</h4>
+<input id="aKey" type="hidden"><input id="aTitle" placeholder="Title">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="aEntry" type="number" placeholder="Entry"><input id="aPrize" type="number" placeholder="Prize"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="aSlots" type="number" placeholder="Joined"><input id="aTotal" type="number" placeholder="Total"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="aRoomId" placeholder="Room ID"><input id="aRoomPass" placeholder="Pass"></div>
+<button class="h-btn" style="width:100%;padding:12px" onclick="saveTournament()">SAVE</button>
+<div id="aTList"></div>
+</div>
+
+<button class="h-btn" style="width:100%;margin-top:15px;background:#222" onclick="closeAdmin()">Close</button>
+</div></div>
 
 <script>
 const ADMIN_EMAIL="gaurav.kumar.mail1109@gmail.com";
 const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomain:"ff-leauge.firebaseapp.com",databaseURL:"https://ff-leauge-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"ff-leauge",storageBucket:"ff-leauge.firebasestorage.app",messagingSenderId:"26073423984",appId:"1:26073423984:web:f14329a6fa6a1506ec14b5"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.database();
-let currentUser=null, selected=null, isAdmin=false; const MY_UPI="9709461672@fam";
-let tours=[];
+let currentUser=null, selected=null, isAdmin=false; let tours=[];
 
 function showTab(id,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.b-item').forEach(b=>b.classList.remove('active')); if(el) el.classList.add('active'); }
-function render(){ document.getElementById('list').innerHTML=tours.map(t=>`<div class="card"><div style="display:flex;justify-content:space-between"><span class="badge b-type">${t.type}</span><span class="badge b-live">${t.status}</span></div><div class="title">${t.title}</div><div style="font-size:10px;opacity:.6;margin-top:4px">Map: ${t.map} | ${t.time}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>WIN</small><b class="prize">₹${t.prize}</b></div><div><small>SLOTS</small><b>${t.slots||0}/${t.total}</b></div></div><div class="btns"><button class="btn btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button></div></div>`).join(''); 
-if(isAdmin){ document.getElementById('aTList').innerHTML=tours.map(t=>`<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center"><div><b>${t.title}</b><br>${t.slots||0}/${t.total} | Room:${t.roomId||'No'}</div><div style="display:flex;gap:6px"><button onclick="editTour('${t.key}')" style="background:#00aaff;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:800">EDIT</button><button onclick="deleteTour('${t.key}')" style="background:#ff0033;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:800">DEL</button></div></div>`).join(''); } 
-}
+function render(){ document.getElementById('list').innerHTML=tours.map(t=>`<div class="card"><b>${t.title}</b><br>₹${t.entry} | ${t.slots||0}/${t.total} | Room:${t.roomId||'No'}<br><button class="btn btn-join" onclick="openPay('${t.key}')">JOIN ₹${t.entry}</button></div>`).join(''); if(isAdmin){ document.getElementById('aTList').innerHTML=tours.map(t=>`<div class="admin-card">${t.title} - ${t.slots||0}/${t.total} <button onclick="editTour('${t.key}')" style="background:#00aaff;color:#fff;border:none;padding:4px 8px">EDIT</button> <button onclick="deleteTour('${t.key}')" style="background:#ff0033;color:#fff;border:none;padding:4px 8px">DEL</button></div>`).join(''); } }
 
 auth.onAuthStateChanged(u=>{
- if(u){
-  currentUser=u; isAdmin=(u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('userInfo').style.display='block';
-  document.getElementById('logoutBtn').style.display='block';
-  document.getElementById('userName').innerText=u.displayName;
-  document.getElementById('userEmail').innerText=u.email;
-  document.getElementById('profileName').innerText=u.displayName;
-  document.getElementById('profileEmail').innerText=u.email;
-  document.getElementById('profilePic').src=u.photoURL;
-  if(isAdmin){ document.getElementById('adminHeaderBtn').classList.add('show'); document.getElementById('adminBottomBtn').classList.add('show'); document.getElementById('adminNotice').style.display='block'; }
-  loadWallet(); loadMyRoom(); loadMyRecharges();
- } else {
-  document.getElementById('loginScreen').style.display='flex';
- }
+ if(u){ currentUser=u; isAdmin=(u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase()); document.getElementById('loginScreen').style.display='none'; document.getElementById('logoutBtn').style.display='block'; if(isAdmin){ document.getElementById('adminHeaderBtn').classList.add('show'); document.getElementById('adminBottomBtn').classList.add('show'); } loadWallet(); loadMyRoom(); loadMyRecharges(); loadMyWithdraws(); } else { document.getElementById('loginScreen').style.display='flex'; }
 });
-
-function googleLogin(){ const p=new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(p).catch(e=>{ document.getElementById('loginError').innerText=e.message; }); }
+function googleLogin(){ auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 function logout(){ auth.signOut().then(()=>location.reload()); }
-function checkAdmin(){ if(!isAdmin){ alert('⛔ Only '+ADMIN_EMAIL); return false; } return true; }
-function openPay(k){ selected=tours.find(t=>t.key===k); document.getElementById('pTitle').innerText=selected.title; loadWalletCheck(); document.getElementById('payModal').classList.add('open'); document.getElementById('pStatus').innerHTML=''; }
+function checkAdmin(){ if(!isAdmin){ alert('Admin only'); return false; } return true; }
+function openPay(k){ selected=tours.find(t=>t.key===k); document.getElementById('pTitle').innerText=selected.title; document.getElementById('payModal').classList.add('open'); }
 function closePay(){ document.getElementById('payModal').classList.remove('open'); }
-function openRecharge(){ document.getElementById('rechargeModal').classList.add('open'); updateQR(); }
+function openWithdraw(){ 
+  document.getElementById('withdrawModal').classList.add('open');
+  db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ document.getElementById('withdrawBal').innerText='Wallet: ₹'+(s.val()||0); });
+}
+function closeWithdraw(){ document.getElementById('withdrawModal').classList.remove('open'); }
+function openRecharge(){ document.getElementById('rechargeModal').classList.add('open'); }
 function closeRecharge(){ document.getElementById('rechargeModal').classList.remove('open'); }
-function openAdmin(){ if(!checkAdmin()) return; document.getElementById('adminModal').classList.add('open'); loadWalletRequests(); loadRoom(); render(); }
+function openAdmin(){ if(!checkAdmin()) return; document.getElementById('adminModal').classList.add('open'); loadWalletRequests(); loadAllUsersWallet(); loadWithdrawRequests(); render(); }
 function closeAdmin(){ document.getElementById('adminModal').classList.remove('open'); }
-function setAmt(v){ document.getElementById('rechargeAmt').value=v; updateQR(); }
-function copyUPI(){ navigator.clipboard.writeText(MY_UPI); alert("Copied: "+MY_UPI); }
-function updateQR(){ let amt=parseInt(document.getElementById('rechargeAmt').value)||5; if(amt<5) amt=5; const upi=`upi://pay?pa=${MY_UPI}&pn=FF%20LEAGUE&am=${amt}&cu=INR&tn=Wallet%20Rs${amt}`; document.getElementById('upiLink2').href=upi; document.getElementById('gpayLink').href=upi; document.getElementById('phonepeLink').href=upi; document.getElementById('upiLink2').innerText=`💳 PAY ₹${amt} NOW`; document.getElementById('qrText').innerText=`Pay: ₹${amt}`; }
-function submitRecharge(){ const amt=parseInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim(); if(!amt||amt<5) return alert('Min ₹5'); if(!utr||utr.length<4) return alert('UTR bharo!'); db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending'}).then(()=>{ document.getElementById('rechargeStatus').innerHTML='<span style="color:#00ff88">✅ Sent!</span>'; setTimeout(closeRecharge,1500); }); }
-function loadWallet(){ db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{ const bal=s.val()||0; document.getElementById('walletBal').innerText='₹'+bal+'.00'; document.getElementById('profileWallet').innerHTML='Wallet: <b>₹'+bal+'</b>'; const wc=document.getElementById('walletCheck'); if(wc && selected){ wc.innerHTML=`Wallet: <b>₹${bal}</b> | Entry: <b>₹${selected.entry}</b><br>${bal>=selected.entry?'<span style="color:#00ff88">✅ OK</span>':'<span style="color:#ff0033">❌ Low</span>'}`; } }); }
-function loadWalletCheck(){ if(currentUser) loadWallet(); }
+function submitRecharge(){ const amt=parseInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim(); if(amt<5||!utr) return alert('Amount/UTR bharo'); db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending'}).then(()=>{ document.getElementById('rechargeStatus').innerText='Sent!'; setTimeout(closeRecharge,1000); }); }
+
+// ★★★ WITHDRAWAL - AMOUNT + UPI ID ★★★
+function submitWithdraw(){
+  const amt=parseInt(document.getElementById('withdrawAmt').value);
+  const upi=document.getElementById('withdrawUpi').value.trim();
+  if(!amt || amt < 100){ alert('Min ₹100 withdraw kar sakte ho'); return; }
+  if(!upi || !upi.includes('@')){ alert('Sahi UPI ID bharo - jaise 9709xxxx@fam'); return; }
+  
+  db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{
+    const bal=s.val()||0;
+    if(bal < amt){ alert('Wallet me balance kam hai: ₹'+bal); return; }
+    
+    // Wallet se kaato
+    db.ref('users/'+currentUser.uid+'/wallet').set(bal-amt).then(()=>{
+      // Request banao - Amount + UPI ID
+      db.ref('withdrawRequests').push({
+        uid: currentUser.uid,
+        email: currentUser.email,
+        amount: amt,
+        upi: upi,
+        time: Date.now(),
+        status: 'pending'
+      }).then(()=>{
+        document.getElementById('withdrawStatus').innerHTML='<span style="color:#00ff88">✅ Request bhej diya! Admin 24h me '+upi+' pe ₹'+amt+' bhej dega</span>';
+        document.getElementById('withdrawAmt').value='';
+        document.getElementById('withdrawUpi').value='';
+        setTimeout(closeWithdraw,2000);
+      });
+    });
+  });
+}
+
+function loadMyWithdraws(){
+  db.ref('withdrawRequests').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{
+    const div=document.getElementById('withdrawHistory');
+    if(!snap.exists()){div.innerHTML='';return;}
+    let h='<h4 style="margin-top:10px">Withdraw History</h4>';
+    snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} → ${r.upi} - <b style="color:${r.status==='approved'?'#00ff88':'#ffaa00'}">${r.status}</b></div>`; });
+    div.innerHTML=h;
+  });
+}
+
+function loadAllUsersWallet(){
+  if(!isAdmin) return;
+  db.ref('users').on('value',snap=>{
+    const div=document.getElementById('allUsersWallet');
+    if(!snap.exists()){div.innerHTML='No users';return;}
+    let h=''; let total=0;
+    snap.forEach(c=>{
+      const bal=c.val().wallet||0; const email=c.val().email||c.key; total+=bal;
+      h+=`<div class="admin-card">₹${bal} - ${email}</div>`;
+    });
+    div.innerHTML=`<div style="background:#00ff88;color:#000;padding:6px;border-radius:6px;margin-bottom:6px"><b>TOTAL: ₹${total}</b></div>`+h;
+  });
+}
+
+function loadWithdrawRequests(){
+  if(!isAdmin) return;
+  db.ref('withdrawRequests').orderByChild('status').equalTo('pending').on('value',snap=>{
+    const div=document.getElementById('withdrawReqList');
+    if(!snap.exists()){div.innerHTML='<p>No pending</p>';return;}
+    let h='';
+    snap.forEach(c=>{
+      const r=c.val();
+      h+=`<div class="admin-card" style="border:2px solid #ff6600;background:#1a1200">
+        <div style="font-size:18px;color:#00ff88;font-weight:900">₹${r.amount} WITHDRAW</div>
+        <div style="margin-top:6px">UPI ID: <b style="background:#fff;color:#000;padding:4px 8px;border-radius:6px;font-size:14px">${r.upi}</b></div>
+        <div style="margin-top:4px">Amount: <b>₹${r.amount}</b></div>
+        <div style="margin-top:4px;font-size:11px;opacity:.7">${r.email} | ${new Date(r.time).toLocaleString()}</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button onclick="approveWithdraw('${c.key}')" style="flex:1;background:#00ff88;color:#000;border:none;padding:10px;border-radius:6px;font-weight:900">✅ MAINE ₹${r.amount} BHEJ DIYA - APPROVE</button>
+          <button onclick="rejectWithdraw('${c.key}','${r.uid}',${r.amount})" style="flex:1;background:#ff0033;color:#fff;border:none;padding:10px;border-radius:6px">REJECT + REFUND</button>
+        </div>
+      </div>`;
+    });
+    div.innerHTML=h;
+  });
+}
+
+function approveWithdraw(reqId){
+  if(!checkAdmin()) return;
+  if(!confirm('Kya tune UPI pe paisa bhej diya hai? Pakka?')) return;
+  db.ref('withdrawRequests/'+reqId).update({status:'approved', paidAt: Date.now()}).then(()=>alert('Approved!'));
+}
+function rejectWithdraw(reqId, uid, amt){
+  if(!checkAdmin()) return;
+  if(!confirm('Refund karna hai ₹'+amt+' wallet me?')) return;
+  db.ref('users/'+uid+'/wallet').once('value').then(s=>{
+    const old=s.val()||0;
+    db.ref('users/'+uid+'/wallet').set(old+amt).then(()=>{
+      db.ref('withdrawRequests/'+reqId).update({status:'rejected'});
+    });
+  });
+}
+
+function loadWallet(){ db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{ document.getElementById('walletBal').innerText='₹'+(s.val()||0); }); }
 function joinWithWallet(){ 
  const uid=document.getElementById('ffuid').value.trim(), name=document.getElementById('ffname').value.trim(); 
- if(!uid||!name) return alert('UID Name bharo!'); 
+ if(!uid||!name) return alert('UID/Name bharo');
  db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ 
-  const bal=s.val()||0; 
-  if(bal < selected.entry) return alert('Balance kam!'); 
-  if((selected.slots||0) >= selected.total) return alert('Slot Full!');
+  const bal=s.val()||0; if(bal < selected.entry) return alert('Balance kam');
   db.ref('users/'+currentUser.uid+'/wallet').set(bal-selected.entry).then(()=>{ 
-   db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffuid:uid,ffname:name,title:selected.title,tournamentKey:selected.key,time:Date.now(),status:'approved'}); 
-   const newSlots = (parseInt(selected.slots)||0) + 1;
-   db.ref('tournaments/'+selected.key+'/slots').set(newSlots);
-   document.getElementById('pStatus').innerHTML=`<span style="color:#00ff88">✅ Joined! Slot: ${newSlots}/${selected.total}</span><br><br><div style="background:#00ff88;color:#000;padding:12px;border-radius:8px">🎮 ROOM ID: <b style="font-size:18px">${selected.roomId}</b><br>PASS: <b style="font-size:18px">${selected.roomPass}</b></div>`; 
-   loadMyRoom();
+   db.ref('users/'+currentUser.uid).update({email:currentUser.email, wallet: bal-selected.entry});
+   db.ref('joins').push({uid:currentUser.uid,title:selected.title,tournamentKey:selected.key,time:Date.now()}); 
+   const ns=(selected.slots||0)+1; db.ref('tournaments/'+selected.key+'/slots').set(ns);
+   document.getElementById('pStatus').innerText='Joined! Room: '+selected.roomId;
   }); 
  }); 
 }
-
-function loadWalletRequests(){ if(!isAdmin) return; db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('walletReqList'); if(!snap.exists()){div.innerHTML='<p style="opacity:.5">No pending</p>';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card"><b>₹${r.amount}</b> | UTR:<b>${r.utr}</b><br>${r.email}<br><div style="display:flex;gap:8px;margin-top:8px"><button onclick="approveWallet('${c.key}','${r.uid}',${r.amount})" style="flex:1;background:#00ff88;color:#000;border:none;padding:8px;border-radius:6px;font-weight:800">APPROVE</button><button onclick="rejectWallet('${c.key}')" style="flex:1;background:#ff0033;color:#fff;border:none;padding:8px;border-radius:6px">REJECT</button></div></div>`;}); div.innerHTML=h; }); }
-function approveWallet(reqId,userId,amount){ if(!checkAdmin()) return; db.ref('users/'+userId+'/wallet').once('value').then(s=>{ const old=s.val()||0; db.ref('users/'+userId+'/wallet').set(old+amount).then(()=>{ db.ref('walletRecharges/'+reqId).update({status:'approved'}); }); }); }
-function rejectWallet(id){ if(!checkAdmin()) return; db.ref('walletRecharges/'+id).update({status:'rejected'}); }
-function loadMyRecharges(){ db.ref('walletRecharges').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('rechargeHistory'); if(!snap.exists()){div.innerHTML='<p style="opacity:.5">No recharges</p>';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} | ${r.utr} | <b style="color:${r.status==='approved'?'#00ff88':'#ffaa00'}">${r.status.toUpperCase()}</b></div>`;}); div.innerHTML=h; }); }
-
-function saveTournament(){
- if(!checkAdmin()) return;
- const title=document.getElementById('aTitle').value.trim();
- if(!title) return alert('Title likho!');
- const data={
-  title:title, type:document.getElementById('aType').value, status:document.getElementById('aStatus').value,
-  map:document.getElementById('aMap').value||'Bermuda', time:document.getElementById('aTime').value||'Starting soon',
-  entry:parseInt(document.getElementById('aEntry').value)||5, prize:parseInt(document.getElementById('aPrize').value)||500,
-  slots:parseInt(document.getElementById('aSlots').value)||0, total:parseInt(document.getElementById('aTotal').value)||8,
-  roomId:document.getElementById('aRoomId').value.trim(), roomPass:document.getElementById('aRoomPass').value.trim()
- };
- const key=document.getElementById('aKey').value;
- if(key){ db.ref('tournaments/'+key).set(data).then(()=>{ document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Updated!</span>'; document.getElementById('aKey').value=''; }); } 
- else { db.ref('tournaments').push(data).then(()=>{ document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Created!</span>'; }); }
-}
-function editTour(k){ if(!checkAdmin()) return; const t=tours.find(x=>x.key===k); if(!t) return; document.getElementById('aKey').value=k; document.getElementById('aTitle').value=t.title; document.getElementById('aType').value=t.type; document.getElementById('aStatus').value=t.status; document.getElementById('aEntry').value=t.entry; document.getElementById('aPrize').value=t.prize; document.getElementById('aSlots').value=t.slots; document.getElementById('aTotal').value=t.total; document.getElementById('aMap').value=t.map||''; document.getElementById('aTime').value=t.time||''; document.getElementById('aRoomId').value=t.roomId||''; document.getElementById('aRoomPass').value=t.roomPass||''; }
-function deleteTour(k){ 
- if(!checkAdmin()) return; 
- if(!confirm('⚠️ Pakka DELETE karna hai?')) return;
- document.getElementById('adminSaveStatus').innerText='Deleting '+k+'...';
- db.ref('tournaments/'+k).remove().then(()=>{
-  document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Deleted!</span>';
-  tours = tours.filter(t=>t.key!==k);
-  render();
-  document.getElementById('myRoom').style.display='none';
- }).catch(e=>{
-  alert('Delete fail: '+e.message);
- });
-}
-function setGlobalRoom(){ if(!checkAdmin()) return; const id=document.getElementById('roomId').value.trim(), pass=document.getElementById('roomPass').value.trim(); if(!id) return alert('Room ID bharo'); db.ref('currentRoom').set({id:id,pass:pass,time:Date.now()}).then(()=>alert('Global Room Set!')); }
-function loadRoom(){ db.ref('currentRoom').on('value',s=>{ if(s.exists()){ const r=s.val(); document.getElementById('currentRoom').innerText='Current: '+r.id+' | Pass: '+r.pass; } }); }
-
-// ★★★ FIXED GREEN BAR - AB HAMESHA NAHI DIKHEGA ★★★
+function loadWalletRequests(){ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('walletReqList'); if(!snap.exists()){div.innerHTML='No pending';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} UTR:${r.utr} ${r.email} <button onclick="approveWallet('${c.key}','${r.uid}',${r.amount})" style="background:#00ff88;color:#000;border:none;padding:6px">APPROVE</button></div>`; }); div.innerHTML=h; }); }
+function approveWallet(id,uid,amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ const old=s.val()||0; db.ref('users/'+uid+'/wallet').set(old+amt).then(()=>{ db.ref('walletRecharges/'+id).update({status:'approved'}); }); }); }
+function saveTournament(){ const t=document.getElementById('aTitle').value; if(!t) return alert('Title'); const data={title:t,entry:parseInt(document.getElementById('aEntry').value)||10,prize:50,slots:parseInt(document.getElementById('aSlots').value)||0,total:parseInt(document.getElementById('aTotal').value)||8,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,status:'LIVE',map:'Bermuda',time:'Soon'}; const k=document.getElementById('aKey').value; if(k){ db.ref('tournaments/'+k).set(data); } else { db.ref('tournaments').push(data); } }
+function editTour(k){ const t=tours.find(x=>x.key===k); document.getElementById('aKey').value=k; document.getElementById('aTitle').value=t.title; document.getElementById('aEntry').value=t.entry; document.getElementById('aTotal').value=t.total; document.getElementById('aRoomId').value=t.roomId; document.getElementById('aRoomPass').value=t.roomPass; }
+function deleteTour(k){ if(confirm('Delete?')) db.ref('tournaments/'+k).remove(); }
 function loadMyRoom(){ 
  if(!currentUser) return; 
  db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ 
-  const div=document.getElementById('myRoom');
-  if(!snap.exists()){ div.style.display='none'; return; }
-  
-  let lastJoin = null;
-  let lastJoinId = null;
-  snap.forEach(c=>{ lastJoin = c.val(); lastJoinId = c.key; });
-
-  if(!lastJoin){ div.style.display='none'; return; }
-
-  // Tournament abhi exist karta hai?
-  const tour = tours.find(t => t.key === lastJoin.tournamentKey) || tours.find(t => t.title === lastJoin.title);
-
-  // 1. Agar tournament delete ho gaya hai to bar hide
-  if(!tour){
-    div.style.display='none';
-    return;
-  }
-  // 2. Agar FINISHED hai to hide
-  if(tour.status === 'FINISHED'){
-    div.style.display='none';
-    return;
-  }
-  // 3. Agar user ne X daba ke hide kiya tha aur Room ID abhi bhi nahi hai to hide rakho
-  if(localStorage.getItem('hideRoom_'+lastJoinId) === '1' && !tour.roomId){
-    div.style.display='none';
-    return;
-  }
-
-  const finalRoomId = tour.roomId || '';
-  const finalRoomPass = tour.roomPass || '';
-
-  div.style.display='block';
-  div.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:6px">✅ JOINED: ${lastJoin.title}</div>
-        <div style="margin-top:4px;font-size:12px;opacity:.9">
-          ${finalRoomId ? 
-            `🎮 ROOM ID: <b style="font-size:18px;background:#fff;color:#000;padding:2px 8px;border-radius:4px">${finalRoomId}</b> | PASS: <b style="font-size:18px;background:#fff;color:#000;padding:2px 8px;border-radius:4px">${finalRoomPass}</b><br><small>UID: ${lastJoin.ffuid} | ${lastJoin.ffname}</small>` 
-            : `⏳ Room ID jald ayega - Admin upload karega`
-          }
-        </div>
-      </div>
-      <button onclick="hideMyRoom('${lastJoinId}')" style="background:#000;color:#fff;border:none;width:32px;height:32px;border-radius:50%;font-weight:900;font-size:16px;margin-left:10px;cursor:pointer">✕</button>
-    </div>
-  `;
+  const div=document.getElementById('myRoom'); if(!snap.exists()){div.style.display='none';return;}
+  let lj=null; snap.forEach(c=>{lj=c.val();});
+  const tour=tours.find(t=>t.title===lj.title); if(!tour){div.style.display='none';return;}
+  div.style.display='block'; div.innerHTML=`JOINED: ${lj.title} - ROOM: ${tour.roomId} PASS: ${tour.roomPass} <button onclick="this.parentElement.style.display='none'" style="float:right;background:#000;color:#fff;border:none;width:24px;height:24px;border-radius:50%">X</button>`;
  }); 
 }
-
-function hideMyRoom(joinId){
-  document.getElementById('myRoom').style.display='none';
-  localStorage.setItem('hideRoom_'+joinId, '1');
-  // Optional: Agar hamesha ke liye hatana hai to joins se delete bhi kar sakta hai
-  // if(confirm('Kya is JOIN history ko hamesha ke liye hatana hai?')){ db.ref('joins/'+joinId).remove(); }
-}
-
-db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); if(list.length>0){ tours=list; } else { tours=[]; } render(); loadMyRoom(); });
+function loadMyRecharges(){ db.ref('walletRecharges').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('rechargeHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} ${r.status}</div>`; }); div.innerHTML=h; }); }
+db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); tours=list; render(); loadMyRoom(); });
 </script>
 </body>
 </html>
