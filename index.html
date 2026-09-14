@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+A<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -58,7 +58,7 @@ input,select{width:100%;padding:11px;background:#0a0c14;border:1px solid #2a2d3d
 <div style="padding:16px">
 <h1 style="font-family:Orbitron;font-size:28px">BATTLE <span style="color:#ff0033">ARENA</span></h1>
 <div id="adminNotice" style="display:none;background:#ffcc0022;border:1px solid #ffcc00;padding:8px;border-radius:6px;font-size:11px;margin-top:8px">👑 Admin Mode ON</div>
-<div id="myRoom" style="margin-top:10px;display:none;background:linear-gradient(90deg,#00ff88 0%, #00cc66 100%);color:#000;padding:14px;border-radius:10px;font-size:13px;font-weight:800;border:2px solid #00ff88"></div>
+<div id="myRoom" style="margin-top:10px;display:none;background:linear-gradient(90deg,#00ff88 0%, #00cc66 100%);color:#000;padding:14px;border-radius:12px;font-size:13px;font-weight:800;border:2px solid #00ff88;position:relative"></div>
 </div>
 <div id="list"></div>
 </div>
@@ -240,43 +240,82 @@ function saveTournament(){
  else { db.ref('tournaments').push(data).then(()=>{ document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Created!</span>'; }); }
 }
 function editTour(k){ if(!checkAdmin()) return; const t=tours.find(x=>x.key===k); if(!t) return; document.getElementById('aKey').value=k; document.getElementById('aTitle').value=t.title; document.getElementById('aType').value=t.type; document.getElementById('aStatus').value=t.status; document.getElementById('aEntry').value=t.entry; document.getElementById('aPrize').value=t.prize; document.getElementById('aSlots').value=t.slots; document.getElementById('aTotal').value=t.total; document.getElementById('aMap').value=t.map||''; document.getElementById('aTime').value=t.time||''; document.getElementById('aRoomId').value=t.roomId||''; document.getElementById('aRoomPass').value=t.roomPass||''; }
-
 function deleteTour(k){ 
  if(!checkAdmin()) return; 
  if(!confirm('⚠️ Pakka DELETE karna hai?')) return;
  document.getElementById('adminSaveStatus').innerText='Deleting '+k+'...';
  db.ref('tournaments/'+k).remove().then(()=>{
-  document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Deleted! '+k+'</span>';
+  document.getElementById('adminSaveStatus').innerHTML='<span style="color:#00ff88">✅ Deleted!</span>';
   tours = tours.filter(t=>t.key!==k);
   render();
+  document.getElementById('myRoom').style.display='none';
  }).catch(e=>{
-  alert('Delete fail: '+e.message+'\nFirebase Rules me .write true karo');
-  document.getElementById('adminSaveStatus').innerText='Error: '+e.message;
+  alert('Delete fail: '+e.message);
  });
 }
-
 function setGlobalRoom(){ if(!checkAdmin()) return; const id=document.getElementById('roomId').value.trim(), pass=document.getElementById('roomPass').value.trim(); if(!id) return alert('Room ID bharo'); db.ref('currentRoom').set({id:id,pass:pass,time:Date.now()}).then(()=>alert('Global Room Set!')); }
 function loadRoom(){ db.ref('currentRoom').on('value',s=>{ if(s.exists()){ const r=s.val(); document.getElementById('currentRoom').innerText='Current: '+r.id+' | Pass: '+r.pass; } }); }
+
+// ★★★ FIXED GREEN BAR - AB HAMESHA NAHI DIKHEGA ★★★
 function loadMyRoom(){ 
  if(!currentUser) return; 
  db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ 
   const div=document.getElementById('myRoom');
   if(!snap.exists()){ div.style.display='none'; return; }
+  
   let lastJoin = null;
-  snap.forEach(c=>{ lastJoin = c.val(); });
-  if(lastJoin){
-   const tour = tours.find(t => t.title === lastJoin.title);
-   const finalRoomId = tour ? tour.roomId : '';
-   const finalRoomPass = tour ? tour.roomPass : '';
-   div.style.display='block'; 
-   if(finalRoomId){
-    div.innerHTML=`✅ JOINED: ${lastJoin.title}<br>🎮 ROOM ID: <b style="font-size:20px;color:#000;background:#fff;padding:2px 8px;border-radius:4px">${finalRoomId}</b> | PASS: <b style="font-size:20px;color:#000;background:#fff;padding:2px 8px;border-radius:4px">${finalRoomPass}</b><br><small>UID: ${lastJoin.ffuid} | Name: ${lastJoin.ffname}</small>`; 
-   } else {
-    div.innerHTML=`✅ JOINED: ${lastJoin.title}<br>⏳ Room ID jald ayega`;
-   }
+  let lastJoinId = null;
+  snap.forEach(c=>{ lastJoin = c.val(); lastJoinId = c.key; });
+
+  if(!lastJoin){ div.style.display='none'; return; }
+
+  // Tournament abhi exist karta hai?
+  const tour = tours.find(t => t.key === lastJoin.tournamentKey) || tours.find(t => t.title === lastJoin.title);
+
+  // 1. Agar tournament delete ho gaya hai to bar hide
+  if(!tour){
+    div.style.display='none';
+    return;
   }
+  // 2. Agar FINISHED hai to hide
+  if(tour.status === 'FINISHED'){
+    div.style.display='none';
+    return;
+  }
+  // 3. Agar user ne X daba ke hide kiya tha aur Room ID abhi bhi nahi hai to hide rakho
+  if(localStorage.getItem('hideRoom_'+lastJoinId) === '1' && !tour.roomId){
+    div.style.display='none';
+    return;
+  }
+
+  const finalRoomId = tour.roomId || '';
+  const finalRoomPass = tour.roomPass || '';
+
+  div.style.display='block';
+  div.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">✅ JOINED: ${lastJoin.title}</div>
+        <div style="margin-top:4px;font-size:12px;opacity:.9">
+          ${finalRoomId ? 
+            `🎮 ROOM ID: <b style="font-size:18px;background:#fff;color:#000;padding:2px 8px;border-radius:4px">${finalRoomId}</b> | PASS: <b style="font-size:18px;background:#fff;color:#000;padding:2px 8px;border-radius:4px">${finalRoomPass}</b><br><small>UID: ${lastJoin.ffuid} | ${lastJoin.ffname}</small>` 
+            : `⏳ Room ID jald ayega - Admin upload karega`
+          }
+        </div>
+      </div>
+      <button onclick="hideMyRoom('${lastJoinId}')" style="background:#000;color:#fff;border:none;width:32px;height:32px;border-radius:50%;font-weight:900;font-size:16px;margin-left:10px;cursor:pointer">✕</button>
+    </div>
+  `;
  }); 
 }
+
+function hideMyRoom(joinId){
+  document.getElementById('myRoom').style.display='none';
+  localStorage.setItem('hideRoom_'+joinId, '1');
+  // Optional: Agar hamesha ke liye hatana hai to joins se delete bhi kar sakta hai
+  // if(confirm('Kya is JOIN history ko hamesha ke liye hatana hai?')){ db.ref('joins/'+joinId).remove(); }
+}
+
 db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); if(list.length>0){ tours=list; } else { tours=[]; } render(); loadMyRoom(); });
 </script>
 </body>
