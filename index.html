@@ -43,6 +43,9 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 .pro-table{width:100%;border-collapse:collapse;font-size:11px}.pro-table th{color:var(--red);text-align:left;padding:8px;border-bottom:1px solid var(--border)}.pro-table td{padding:8px;border-bottom:1px solid #ffffff0a;word-break:break-all}
 .leader-row{display:flex;justify-content:space-between;align-items:center;background:#0d1125;border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:8px}
 .rank{width:32px;height:32px;background:var(--red);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:Orbitron}
+/* FOOTER BY THE TECH HUB */
+.main-footer{margin:30px 16px 120px 16px; background:#11162a; border:1px solid var(--border); border-radius:16px; padding:18px; text-align:center; font-size:11px; line-height:1.6; color:#ffffff80}
+.main-footer b{color:#fff} .main-footer .red{color:var(--red)}
 </style>
 </head>
 <body>
@@ -117,6 +120,19 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 <button class="h-btn" style="width:100%;margin-top:14px;background:#1a2040" onclick="closeAdmin()">Close Panel</button>
 </div></div>
 
+<footer class="main-footer">
+  <div style="font-family:Orbitron; font-weight:900; font-size:13px; letter-spacing:1px; color:#fff;">FF <span class="red">LEAGUE</span></div>
+  <div style="margin-top:8px;">
+    A Product of <b>THE TECH HUB</b><br>
+    MSME Registered: <b>UDYAM-BR-19-0017611</b> | GST: 10EHXPK3593A1ZT<br>
+    Owned by GAURAV KUMAR
+  </div>
+  <div style="margin-top:10px; opacity:.6;">
+    © 2026 FF LEAGUE. All Rights Reserved.<br>
+    This platform is not affiliated with Garena Free Fire.
+  </div>
+</footer>
+
 <div class="bottom">
 <div class="b-item active" onclick="showTab('homeTab',this)"><i class="fa-solid fa-house"></i>HOME</div>
 <div class="b-item" onclick="showTab('walletTab',this)"><i class="fa-solid fa-wallet"></i>WALLET</div>
@@ -190,7 +206,6 @@ function loadWalletRequests(){ db.ref('walletRecharges').orderByChild('status').
 function approveWallet(id,uid,amt,refBy){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ const o=s.val()||0; db.ref('users/'+uid+'/wallet').set(o+amt).then(()=>{ db.ref('walletRecharges/'+id).update({status:'approved'}); if(refBy){ db.ref('users/'+refBy+'/wallet').once('value').then(rs=>{ let rb=rs.val()||0; db.ref('users/'+refBy+'/wallet').set(rb+10); db.ref('users/'+refBy+'/refEarn').once('value').then(re=>{ db.ref('users/'+refBy+'/refEarn').set((re.val()||0)+10); }); }); } }); }); }
 function rejectWallet(id){ if(confirm('Reject this recharge?')){ db.ref('walletRecharges/'+id).update({status:'rejected'}); } }
 
-// *** FIXED: PRIVACY - NO EMAIL IN LEADERBOARD & LIVE PLAYERS ***
 function loadLeaderboard(){
  db.ref('users').orderByChild('wallet').limitToLast(10).once('value').then(snap=>{
   let list=[]; snap.forEach(c=>{ list.push(c.val()); });
