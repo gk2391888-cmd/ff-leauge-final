@@ -43,7 +43,6 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 .pro-table{width:100%;border-collapse:collapse;font-size:11px}.pro-table th{color:var(--red);text-align:left;padding:8px;border-bottom:1px solid var(--border)}.pro-table td{padding:8px;border-bottom:1px solid #ffffff0a;word-break:break-all}
 .leader-row{display:flex;justify-content:space-between;align-items:center;background:#0d1125;border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:8px}
 .rank{width:32px;height:32px;background:var(--red);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-family:Orbitron}
-/* FOOTER BY THE TECH HUB */
 .main-footer{margin:30px 16px 120px 16px; background:#11162a; border:1px solid var(--border); border-radius:16px; padding:18px; text-align:center; font-size:11px; line-height:1.6; color:#ffffff80}
 .main-footer b{color:#fff} .main-footer .red{color:var(--red)}
 </style>
@@ -121,10 +120,10 @@ input{width:100%;padding:14px 16px;background:#070a14;border:1px solid var(--bor
 </div></div>
 
 <footer class="main-footer">
-  <div style="font-family:Orbitron; font-weight:900; font-size:13px; letter-spacing:1px; color:#fff;">FF <span class="red">LEAGUE</span></div>
+  <div style="font-family:Orbitron; font-weight:900; font-size:13px; letter-spacing:1px; color:#fff;">FF <span style="color:#ff0033">LEAGUE</span></div>
   <div style="margin-top:8px;">
     A Product of <b>THE TECH HUB</b><br>
-    MSME Registered: <b>UDYAM-BR-19-0017611</b> | GST: 10EHXPK3593A1ZT<br>
+    MSME Registered: <b>UDYAM-BR-19-0017611</b><br>
     Owned by GAURAV KUMAR
   </div>
   <div style="margin-top:10px; opacity:.6;">
@@ -205,7 +204,6 @@ function joinWithWallet(){ const uid=document.getElementById('ffuid').value.trim
 function loadWalletRequests(){ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('walletReqList'); if(!snap.exists()){div.innerHTML='No pending requests';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-left:3px solid var(--green)"><div><b style="color:var(--green)">₹${r.amount}</b> UTR: <b style="background:#ffffff22;padding:2px 6px;border-radius:6px">${r.utr}</b><br><small style="opacity:.6">${r.email}</small></div><div style="display:flex;gap:6px"><button onclick="approveWallet('${c.key}','${r.uid}',${r.amount},'${r.referredBy||''}')" style="background:var(--green);color:#000;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">APPROVE</button><button onclick="rejectWallet('${c.key}')" style="background:#ff0033;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">REJECT</button></div></div>`; }); div.innerHTML=h; }); }
 function approveWallet(id,uid,amt,refBy){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ const o=s.val()||0; db.ref('users/'+uid+'/wallet').set(o+amt).then(()=>{ db.ref('walletRecharges/'+id).update({status:'approved'}); if(refBy){ db.ref('users/'+refBy+'/wallet').once('value').then(rs=>{ let rb=rs.val()||0; db.ref('users/'+refBy+'/wallet').set(rb+10); db.ref('users/'+refBy+'/refEarn').once('value').then(re=>{ db.ref('users/'+refBy+'/refEarn').set((re.val()||0)+10); }); }); } }); }); }
 function rejectWallet(id){ if(confirm('Reject this recharge?')){ db.ref('walletRecharges/'+id).update({status:'rejected'}); } }
-
 function loadLeaderboard(){
  db.ref('users').orderByChild('wallet').limitToLast(10).once('value').then(snap=>{
   let list=[]; snap.forEach(c=>{ list.push(c.val()); });
@@ -228,7 +226,6 @@ function openLivePlayers(key){
   openPlayers(); 
  }); 
 }
-
 function saveTournament(){ const t=document.getElementById('aTitle').value.trim(); if(!t) return alert('Enter title'); const data={title:t,entry:parseInt(document.getElementById('aEntry').value)||10,prize:parseInt(document.getElementById('aEntry').value)*8,slots:0,total:parseInt(document.getElementById('aTotal').value)||8,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,status:'REGISTRATION',type:'SOLO',map:'Bermuda',time:'Soon'}; const k=document.getElementById('aKey').value; if(k) db.ref('tournaments/'+k).set(data); else db.ref('tournaments').push(data); alert('Tournament Saved!'); }
 function deleteTour(k){ if(confirm('Delete this tournament?')) db.ref('tournaments/'+k).remove(); }
 function loadMyRoom(){ if(!currentUser) return; db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('myRoom'); if(!snap.exists()){div.style.display='none';return;} let lj=null; snap.forEach(c=>{lj=c.val();}); const tour=tours.find(t=>t.title===lj.title); if(!tour){div.style.display='none';return;} div.style.display='flex'; div.innerHTML=`<div>✅ ${lj.title} | ROOM: ${tour.roomId||'TBA'} PASS: ${tour.roomPass||'TBA'}</div><button onclick="this.parentElement.style.display='none'" style="background:#000;color:#fff;border:none;width:28px;height:28px;border-radius:50%">X</button>`; }); }
