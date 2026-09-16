@@ -30,7 +30,7 @@
 .b-item{text-align:center;opacity:.4;font-size:10px;font-weight:700;cursor:pointer}.b-item.active{opacity:1;color:var(--red)}.b-item i{font-size:22px;display:block;margin-bottom:4px}.b-item.admin-only{display:none}.b-item.admin-only.show{display:flex;flex-direction:column;align-items:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(10px);z-index:500;display:none;padding:16px;justify-content:center;align-items:center}.modal.open{display:flex}
 .box{background:#111114;border:2px solid var(--red);width:100%;max-width:780px;border-radius:24px;padding:24px;max-height:92vh;overflow-y:auto}
-input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid var(--border);border-radius:12px;color:#fff;margin:8px 0;font-size:14px;outline:none} input:focus,select:focus{border-color:var(--red)}
+input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid var(--border);border-radius:12px;color:#fff;margin:8px 0;font-size:14px;outline:none}
 .admin-card{background:#0d0d0f;border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:8px;font-size:12px}
 .tab{display:none}.tab.active{display:block}
 .profile-card{background:var(--card);border:1px solid var(--border);border-top:2px solid var(--red);border-radius:24px;padding:24px;margin:20px;text-align:center}
@@ -53,6 +53,7 @@ input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid va
 <div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div>
 <h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1>
 <p style="font-size:11px;color:#888;margin-top:4px">THE TECH HUB • Professional</p>
+<p style="font-size:11px;color:#00ff88;margin-top:8px;font-weight:800">PLAYER LOGIN - All Players Welcome</p>
 <button class="g-btn" onclick="googleLogin()"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button>
 <p id="loginErr" style="font-size:11px;color:#ff0033;margin-top:10px"></p>
 </div>
@@ -82,18 +83,14 @@ input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid va
 <div id="playersModal" class="modal" onclick="closePlayers()"><div class="box" onclick="event.stopPropagation()"><h3 style="font-family:Orbitron">LIVE PLAYERS</h3><div id="livePlayersList" style="margin-top:12px"></div><button class="h-btn" style="width:100%;margin-top:12px;background:#1a1a1e" onclick="closePlayers()">Close</button></div></div>
 <div id="rechargeModal" class="modal" onclick="closeRecharge()"><div class="box" onclick="event.stopPropagation()"><h3 style="font-family:Orbitron"><span style="color:var(--red)">RECHARGE</span> WALLET</h3><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0"><button class="h-btn" style="background:#1a1a1e" onclick="setAmt(10)">₹10</button><button class="h-btn" style="background:#1a1a1e" onclick="setAmt(50)">₹50</button><button class="h-btn" style="background:#1a1a1e" onclick="setAmt(100)">₹100</button><button class="h-btn" style="background:#1a1a1e" onclick="setAmt(500)">₹500</button></div><input id="rechargeAmt" type="number" value="10" style="text-align:center;font-weight:900;font-size:20px;border:2px solid var(--red)" oninput="updateQR()"><div style="background:#fff;padding:20px;border-radius:20px;text-align:center"><img src="qrcode.jpg?v=6" style="width:240px;height:240px;object-fit:contain;display:block;margin:0 auto"><div id="qrText" style="color:#000;font-weight:900;margin-top:12px;font-size:18px">Pay ₹10</div><div style="color:#000;font-size:12px;margin-top:6px;font-weight:700">9709461672@fam <button onclick="copyUPI()" style="background:#000;color:#fff;border:none;padding:5px 10px;border-radius:8px">COPY</button></div><a id="upiLink2" href="#" class="upi-btn" style="display:block;background:linear-gradient(90deg,var(--red),#ff6600);color:#fff;padding:14px;margin-top:12px">PAY NOW</a></div><div style="background:#ffcc0015;border:1px solid #ffcc0040;border-radius:12px;padding:12px;margin-top:14px"><input id="rechargeUtr" placeholder="12 Digit UTR Number"></div><button class="btn-join" style="margin-top:14px;background:var(--green);color:#000" onclick="submitRecharge()">SUBMIT PAYMENT</button><p id="rechargeStatus" style="text-align:center;margin-top:10px"></p></div></div>
 <div id="withdrawModal" class="modal" onclick="closeWithdraw()"><div class="box" onclick="event.stopPropagation()"><h3 style="font-family:Orbitron;color:var(--green)">WITHDRAW FUNDS</h3><div id="withdrawBal" style="background:#050507;padding:12px;border-radius:12px;margin:12px 0"></div><input id="withdrawAmt" type="number" placeholder="Amount (Min ₹100)"><input id="withdrawUpi" placeholder="Your UPI ID"><button class="btn-join" style="background:var(--green);color:#000" onclick="submitWithdraw()">REQUEST WITHDRAWAL</button><p id="withdrawStatus" style="text-align:center;margin-top:10px"></p></div></div>
-
 <div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" style="max-width:820px" onclick="event.stopPropagation()">
 <h2 style="font-family:Orbitron;color:#ffcc00">ADMIN CONTROL PANEL <span id="adminRoleBadge" class="th-pill" style="margin-left:8px">SUPER</span></h2>
-<p style="font-size:11px;color:#888;margin-top:4px">TH Pro System • Black/Red/White Theme • 20% Commission Auto</p>
-
 <div class="pro-stats" style="margin-top:14px">
 <div class="pro-stat"><h2 id="proTotalUsers">0</h2><p style="font-size:10px;opacity:.6">TOTAL USERS</p></div>
 <div class="pro-stat" style="border-color:var(--green)"><h2 id="proTotalBal">₹0</h2><p style="font-size:10px;opacity:.6">WALLET BALANCE</p></div>
 <div class="pro-stat" style="border-color:#ff6600"><h2 id="proPending">0</h2><p style="font-size:10px;opacity:.6">PENDING</p></div>
 <div class="pro-stat" style="border-color:#fff"><h2 id="proProfit">₹0</h2><p style="font-size:10px;opacity:.6">TOTAL PROFIT</p></div>
 </div>
-
 <div style="background:#050507;padding:14px;border-radius:14px;border:1px solid var(--border)">
 <h4 style="color:var(--green)">WALLET MANAGEMENT</h4>
 <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-top:8px">
@@ -106,13 +103,11 @@ input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid va
 </div>
 <p id="proBalMsg" style="font-size:11px;margin-top:6px"></p>
 </div>
-
 <div id="modSection" style="margin-top:14px;background:#050507;border:2px solid var(--green);padding:14px;border-radius:14px">
-<h4 style="font-family:Orbitron;color:var(--green)">🛡️ MODERATOR MANAGEMENT - TH ID CARD + 20% COMMISSION</h4>
-<p style="font-size:10px;opacity:.6">Super Admin hi moderator add kar sakta hai. ID Card TH001 jaise. Commission auto 20% niklega.</p>
+<h4 style="font-family:Orbitron;color:var(--green)">MODERATOR MANAGEMENT</h4>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
 <input id="modId" placeholder="ID Card No. e.g. TH001">
-<input id="modName" placeholder="Name e.g. Rohit">
+<input id="modName" placeholder="Name">
 <input id="modEmail" placeholder="Email (Google Login wala)">
 <input id="modPerc" type="number" value="20" placeholder="Commission %">
 </div>
@@ -120,7 +115,6 @@ input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid va
 <div id="modList" style="margin-top:12px"></div>
 <div id="commReport" style="margin-top:10px;background:#111114;padding:10px;border-radius:10px;border:1px dashed var(--green);font-size:11px"></div>
 </div>
-
 <div style="margin-top:14px;background:#00ff8815;border:1px solid #00ff8850;padding:12px;border-radius:14px">
 <h4 style="color:var(--green)">ALL USERS</h4>
 <div style="display:flex;gap:6px;margin:8px 0"><input id="userSearch" placeholder="Search FF ID / Name / Email" style="margin:0" oninput="filterProUsers()"><button class="h-btn" style="background:#1a1a1e" onclick="loadAllUsersWallet()">REFRESH</button></div>
@@ -130,221 +124,136 @@ input,select{width:100%;padding:14px 16px;background:#050507;border:1px solid va
 </div>
 <div style="margin-top:14px;background:#ff660015;border:1px solid #ff660050;padding:12px;border-radius:14px"><h4 style="color:#ff6600">WITHDRAWAL REQUESTS</h4><div id="withdrawReqList"></div></div>
 <div style="margin-top:14px;background:#111114;border:1px solid var(--border);padding:12px;border-radius:14px"><h4 style="font-family:Orbitron">RECHARGE REQUESTS</h4><div id="walletReqList" style="margin-top:10px"></div></div>
-
 <div style="margin-top:14px;border:2px solid var(--red);padding:12px;border-radius:14px;background:#0f0f12">
-<h4 style="font-family:Orbitron;color:#fff">🏆 TOURNAMENT WITH PROFIT + TIME + MODERATOR</h4>
+<h4 style="font-family:Orbitron;color:#fff">TOURNAMENT</h4>
 <input id="aKey" type="hidden">
 <input id="aTitle" placeholder="Tournament Title">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<input id="aEntry" type="number" placeholder="Entry Fee ₹" oninput="autoPrize()">
+<input id="aEntry" type="number" placeholder="Entry Fee" oninput="autoPrize()">
 <input id="aTotal" type="number" placeholder="Total Slots" oninput="autoPrize()">
-<input id="aPrizePool" type="number" placeholder="Total Prize Pool ₹">
-<input id="aFirst" type="number" placeholder="🥇 1st Prize ₹">
-<input id="aSecond" type="number" placeholder="🥈 2nd Prize ₹">
-<input id="aThird" type="number" placeholder="🥉 3rd Prize ₹">
-<input id="aKill" type="number" placeholder="💀 Per Kill ₹">
+<input id="aPrizePool" type="number" placeholder="Total Prize Pool">
+<input id="aFirst" type="number" placeholder="1st Prize">
+<input id="aSecond" type="number" placeholder="2nd Prize">
+<input id="aThird" type="number" placeholder="3rd Prize">
+<input id="aKill" type="number" placeholder="Per Kill">
 <input id="aRoomId" placeholder="Room ID">
 <input id="aRoomPass" placeholder="Room Password">
 <select id="aModAssign"><option value="">Assign to Moderator (Optional)</option></select>
 </div>
-<div id="profitPreview" style="margin-top:10px;background:#050507;padding:10px;border-radius:10px;border:1px dashed var(--red);font-size:12px">Profit Preview: ₹0 | Mod 20%: ₹0 | Your 80%: ₹0</div>
-<div style="margin-top:8px"><label style="font-size:10px;opacity:.6">⏰ MATCH TIME</label><input id="aTime" type="datetime-local" style="border:2px solid #ffcc00"></div>
+<div id="profitPreview" style="margin-top:10px;background:#050507;padding:10px;border-radius:10px;border:1px dashed var(--red);font-size:12px">Profit Preview</div>
+<div style="margin-top:8px"><input id="aTime" type="datetime-local"></div>
 <button class="h-btn" style="width:100%;margin-top:10px" onclick="saveTournament()">SAVE TOURNAMENT</button>
 <div id="aTList"></div>
 </div>
-
 <div style="margin-top:14px;border:2px solid #00ff88;padding:12px;border-radius:14px;background:#0a1a12">
-<h4 style="font-family:Orbitron;color:#00ff88">🏆 DECLARE WINNERS & SEND PRIZE</h4>
-<select id="resultTourSelect" onchange="loadResultPlayers()" style="width:100%;padding:12px;background:#050507;color:#fff;border:1px solid #00ff8850;border-radius:10px;margin-top:8px"><option value="">Select Tournament</option></select>
+<h4 style="font-family:Orbitron;color:#00ff88">DECLARE WINNERS</h4>
+<select id="resultTourSelect" onchange="loadResultPlayers()"><option value="">Select Tournament</option></select>
 <div id="resultPlayers" style="margin-top:10px"></div>
 <div id="resultStatus" style="margin-top:8px;font-size:12px;font-weight:800"></div>
 </div>
 <button class="h-btn" style="width:100%;margin-top:14px;background:#1a1a1e" onclick="closeAdmin()">Close Panel</button>
 </div></div>
-
-<footer class="main-footer"><div style="font-family:Orbitron; font-weight:900; font-size:13px; letter-spacing:1px; color:#fff;">FF <span style="color:var(--red)">LEAGUE</span></div><div style="margin-top:8px;">A Product of <b>THE TECH HUB</b><br>MSME Registered: <b>UDYAM-BR-19-0017611</b><br>Owned by GAURAV KUMAR</div><div style="margin-top:10px; opacity:.6;">© 2026 FF LEAGUE. All Rights Reserved. | TH Pro v3.0 • Black/Red/White</div></footer>
-<div class="bottom"><div class="b-item active" onclick="showTab('homeTab',this)"><i class="fa-solid fa-house"></i>HOME</div><div class="b-item" onclick="showTab('walletTab',this)"><i class="fa-solid fa-wallet"></i>WALLET</div><div class="b-item" onclick="showTab('leaderTab',this)"><i class="fa-solid fa-trophy"></i>LEADERS</div><div id="adminBottomBtn" class="b-item admin-only" onclick="openAdmin()" style="position:relative"><i class="fa-solid fa-crown"></i>ADMIN <span id="notifDot2" class="notif-dot" style="display:none">!</span></div><div class="b-item" onclick="showTab('profileTab',this)"><i class="fa-solid fa-user"></i>PROFILE</div></div>
-
+<footer class="main-footer"><div style="font-family:Orbitron; font-weight:900; font-size:13px; letter-spacing:1px; color:#fff;">FF <span style="color:var(--red)">LEAGUE</span></div><div style="margin-top:8px;">A Product of <b>THE TECH HUB</b><br>MSME: <b>UDYAM-BR-19-0017611</b><br>Owned by GAURAV KUMAR</div></footer>
+<div class="bottom"><div class="b-item active" onclick="showTab('homeTab',this)"><i class="fa-solid fa-house"></i>HOME</div><div class="b-item" onclick="showTab('walletTab',this)"><i class="fa-solid fa-wallet"></i>WALLET</div><div class="b-item" onclick="showTab('leaderTab',this)"><i class="fa-solid fa-trophy"></i>LEADERS</div><div id="adminBottomBtn" class="b-item admin-only" onclick="openAdmin()"><i class="fa-solid fa-crown"></i>ADMIN</div><div class="b-item" onclick="showTab('profileTab',this)"><i class="fa-solid fa-user"></i>PROFILE</div></div>
 <script>
 const ADMIN_EMAIL="gaurav.kumar.mail1109@gmail.com";
 const MY_UPI="9709461672@fam";
 const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomain:"ff-leauge.firebaseapp.com",databaseURL:"https://ff-leauge-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"ff-leauge",storageBucket:"ff-leauge.firebasestorage.app",messagingSenderId:"26073423984",appId:"1:26073423984:web:f14329a6fa1506ec14b5"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.database();
-let currentUser=null, selected=null, isAdmin=false, isSuperAdmin=false, currentModId=''; let tours=[]; let proAllUsersData=[]; let mods=[]; let allJoins=[];
+let currentUser=null, selected=null, isAdmin=false, isSuperAdmin=false, currentModId=''; let tours=[]; let proAllUsersData=[]; let mods=[];
 
 function showTab(id,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.b-item').forEach(b=>b.classList.remove('active')); if(el) el.classList.add('active'); }
-function autoPrize(){ let e=parseInt(document.getElementById('aEntry').value)||0; let t=parseInt(document.getElementById('aTotal').value)||0; let pool=parseInt(document.getElementById('aPrizePool').value)||0; if(!pool && e && t) pool=Math.floor(e*t*0.85); let coll=e*t; let profit=coll-pool; let mod=Math.floor(profit*0.2); let own=profit-mod; document.getElementById('profitPreview').innerHTML=`Collection: <b>₹${coll}</b> | Prize: ₹${pool} | <span style="color:#00ff88">Profit: ₹${profit}</span> | Mod 20%: <b style="color:#ffcc00">₹${mod}</b> | Your 80%: <b>₹${own}</b>`; if(e && t){ document.getElementById('aPrizePool').placeholder=`Total Pool (suggested ₹${Math.floor(e*t*0.85)})`; } }
+function autoPrize(){ let e=parseInt(document.getElementById('aEntry').value)||0; let t=parseInt(document.getElementById('aTotal').value)||0; let pool=parseInt(document.getElementById('aPrizePool').value)||0; if(!pool && e && t) pool=Math.floor(e*t*0.85); let coll=e*t; let profit=coll-pool; document.getElementById('profitPreview').innerHTML=`Collection: ₹${coll} | Prize: ₹${pool} | Profit: ₹${profit}`; }
 function render(){
  document.getElementById('list').innerHTML=tours.map(t=>{
-   let timeDisplay = t.matchTime ? new Date(t.matchTime).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : (t.time||'Soon');
-   let modBadge = t.moderatorId ? `<span class="th-pill">🛡️ ${t.moderatorId}</span>` : '';
-   return `<div class="card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><span class="badge b-type">${t.type||'SOLO'}</span><span class="badge b-live">${t.status||'LIVE'}</span>${modBadge}<span style="font-size:10px;background:#ffcc0015;color:#ffcc00;padding:4px 8px;border-radius:6px;border:1px solid #ffcc0030">⏰ ${timeDisplay}</span></div><div style="font-family:Orbitron;font-weight:700;margin-top:10px">${t.title}</div><div style="margin-top:10px;background:#E11D2D15;border:1px dashed #E11D2D40;border-radius:12px;padding:10px"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:800"><span>🥇 1st: <b style="color:#ffcc00">₹${t.firstPrize||0}</b></span><span>🥈 2nd: <b style="color:#fff">₹${t.secondPrize||0}</b></span><span>🥉 3rd: <b style="color:#fff">₹${t.thirdPrize||0}</b></span></div><div style="margin-top:6px;display:flex;justify-content:space-between;font-size:11px"><span>💀 Kill: <b style="color:var(--green)">₹${t.killPrize||0}</b></span><span>Pool: <b style="color:var(--red)">₹${t.prizePool||0}</b></span></div></div><div style="opacity:.5;font-size:11px;margin-top:8px">Room: ${t.roomId||'TBA'} • Slots ${t.slots||0}/${t.total||48} • Time: ${timeDisplay}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>PRIZE POOL</small><b style="color:var(--red)">₹${t.prizePool||0}</b></div><div><small>SLOTS</small><b>${t.slots||0}/${t.total||48}</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button><button class="h-btn" style="background:#1e1e22" onclick="openLivePlayers('${t.key}')">PLAYERS</button></div></div>`;
+   let timeDisplay = t.matchTime? new Date(t.matchTime).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : (t.time||'Soon');
+   return `<div class="card"><div style="font-family:Orbitron;font-weight:700">${t.title}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>PRIZE</small><b>₹${t.prizePool||0}</b></div><div><small>SLOTS</small><b>${t.slots||0}/${t.total||48}</b></div></div><button class="btn-join" onclick="openPay('${t.key}')">JOIN - ₹${t.entry}</button></div>`;
  }).join('');
- if(isAdmin){
-   document.getElementById('aTList').innerHTML=tours.map(t=>{
-     let td = t.matchTime ? new Date(t.matchTime).toLocaleString() : (t.time||'Soon');
-     let profit = (t.entry*t.total) - (t.prizePool||0); let comm = Math.floor(profit*0.2);
-     return `<div class="admin-card">${t.title} - Pool ₹${t.prizePool||0} | Profit ₹${profit} | Mod ${t.moderatorId||'None'} (20% ₹${comm}) | ${t.slots||0}/${t.total} | ⏰ ${td} <div style="float:right;display:flex;gap:4px"><button onclick="editTour('${t.key}')" style="background:#ffcc00;color:#000;border:none;padding:5px 8px;border-radius:6px;font-weight:800">EDIT</button><button onclick="deleteTour('${t.key}')" style="background:var(--red);color:#fff;border:none;padding:5px 8px;border-radius:6px">DEL</button></div></div>`;
-   }).join('');
-   let sel=document.getElementById('resultTourSelect'); if(sel){ let cur=sel.value; sel.innerHTML='<option value="">Select Tournament</option>'+tours.map(t=>`<option value="${t.key}" ${cur===t.key?'selected':''}>${t.title} - ₹${t.prizePool||0} [${t.moderatorId||'No Mod'}]</option>`).join(''); }
- }
 }
-function startAdminNotification(){ if(!isAdmin) return; db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value', snap=>{ let count=snap.numChildren(); document.getElementById('notifDot').style.display=count>0?'flex':'none'; document.getElementById('notifDot2').style.display=count>0?'flex':'none'; document.getElementById('proPending').innerText=count; }); }
-auth.onAuthStateChanged(async u=>{ if(u){ currentUser=u; 
+function startAdminNotification(){ if(!isAdmin) return; db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value', snap=>{ let count=snap.numChildren(); document.getElementById('notifDot').style.display=count>0?'flex':'none'; document.getElementById('proPending').innerText=count; }); }
+
+// === FIXED: NORMAL USERS ALLOWED, ADMIN ONLY FOR MODS ===
+auth.onAuthStateChanged(async u=>{
+ if(u){
+  currentUser=u;
   let isSuper = u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase();
   let modSnap = await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');
   let isMod = modSnap.exists();
-  let modData = isMod ? Object.values(modSnap.val())[0] : null;
-  isSuperAdmin = isSuper; isAdmin = isSuper || isMod; currentModId = modData ? modData.idCard : '';
-  if(!isAdmin){ document.getElementById('loginErr').innerText='Access Denied: '+u.email+' not authorized. Contact Super Admin to add as TH001.'; return; }
-  db.ref('users/'+u.uid).once('value').then(snap=>{ let existing = snap.val() || {}; db.ref('users/'+u.uid).update({ email: u.email, displayName: u.displayName || existing.displayName || 'Unknown', photoURL: u.photoURL || existing.photoURL || '', wallet: existing.wallet || 0, ffid: existing.ffid || existing.lastFFID || '', ffname: existing.ffname || existing.lastFFName || '', lastLogin: Date.now() }); });
-  document.getElementById('loginScreen').style.display='none'; document.getElementById('userInfo').style.display='block'; document.getElementById('logoutBtn').style.display='block'; document.getElementById('userName').innerText=u.displayName; document.getElementById('userEmail').innerText=u.email + (currentModId ? ' | '+currentModId : ''); document.getElementById('profileName').innerText=u.displayName; document.getElementById('profileEmail').innerText=u.email; document.getElementById('profilePic').src=u.photoURL; document.getElementById('myRefCode').innerText=u.uid.substring(0,6).toUpperCase(); 
-  document.getElementById('adminRoleBadge').innerText = isSuper ? 'SUPER ADMIN' : 'MODERATOR '+currentModId;
-  if(isAdmin){ document.getElementById('adminHeaderBtn').style.display='block'; document.getElementById('adminBottomBtn').classList.add('show'); document.getElementById('adminHeaderBtn').classList.add('show'); startAdminNotification(); }
+  let modData = isMod? Object.values(modSnap.val())[0] : null;
+  isSuperAdmin = isSuper;
+  isAdmin = isSuper || isMod;
+  currentModId = modData? modData.idCard : '';
+  db.ref('users/'+u.uid).once('value').then(snap=>{
+    let existing = snap.val() || {};
+    db.ref('users/'+u.uid).update({ email: u.email, displayName: u.displayName || 'Unknown', photoURL: u.photoURL || '', wallet: existing.wallet || 0, lastLogin: Date.now() });
+  });
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userInfo').style.display='block';
+  document.getElementById('logoutBtn').style.display='block';
+  document.getElementById('userName').innerText=u.displayName;
+  document.getElementById('userEmail').innerText=u.email + (currentModId? ' | '+currentModId : '');
+  document.getElementById('profileName').innerText=u.displayName;
+  document.getElementById('profileEmail').innerText=u.email;
+  document.getElementById('profilePic').src=u.photoURL;
+  document.getElementById('myRefCode').innerText=u.uid.substring(0,6).toUpperCase();
+  document.getElementById('adminRoleBadge').innerText = isSuper? 'SUPER ADMIN' : (isMod? 'MODERATOR '+currentModId : 'PLAYER');
+  if(isAdmin){
+    document.getElementById('adminHeaderBtn').style.display='block';
+    document.getElementById('adminBottomBtn').classList.add('show');
+    document.getElementById('adminHeaderBtn').classList.add('show');
+    startAdminNotification();
+  } else {
+    document.getElementById('adminHeaderBtn').style.display='none';
+    document.getElementById('adminBottomBtn').classList.remove('show');
+  }
   if(!isSuper){ document.getElementById('modSection').style.display='none'; }
-  handleReferral(); loadWallet(); loadMyRoom(); loadMyRecharges(); loadMyWithdraws(); loadLeaderboard(); loadMods();
- } else { document.getElementById('loginScreen').style.display='flex'; } });
-function googleLogin(){ auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+  handleReferral(); loadWallet(); loadMyRoom(); loadMyRecharges(); loadMyWithdraws(); loadLeaderboard();
+  if(isAdmin) loadMods();
+ } else { document.getElementById('loginScreen').style.display='flex'; }
+});
+function googleLogin(){ auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{ document.getElementById('loginErr').innerText=e.message; }); }
 function logout(){ auth.signOut().then(()=>location.reload()); }
 function openPay(k){ selected=tours.find(t=>t.key===k); document.getElementById('pTitle').innerText=selected.title; document.getElementById('payModal').classList.add('open'); }
 function closePay(){ document.getElementById('payModal').classList.remove('open'); }
 function openPlayers(){ document.getElementById('playersModal').classList.add('open'); }
 function closePlayers(){ document.getElementById('playersModal').classList.remove('open'); }
-function openWithdraw(){ document.getElementById('withdrawModal').classList.add('open'); db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ document.getElementById('withdrawBal').innerText='Available Balance: ₹'+(s.val()||0)+' | Minimum ₹100'; }); }
+function openWithdraw(){ document.getElementById('withdrawModal').classList.add('open'); db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ document.getElementById('withdrawBal').innerText='Available: ₹'+(s.val()||0); }); }
 function closeWithdraw(){ document.getElementById('withdrawModal').classList.remove('open'); }
 function openRecharge(){ document.getElementById('rechargeModal').classList.add('open'); updateQR(); }
 function closeRecharge(){ document.getElementById('rechargeModal').classList.remove('open'); }
-function openAdmin(){ if(!isAdmin) return; document.getElementById('adminModal').classList.add('open'); loadWalletRequests(); loadAllUsersWallet(); loadWithdrawRequests(); render(); loadMods(); }
+function openAdmin(){ if(!isAdmin){ alert('Access Denied: Only Admin/Moderator'); return; } document.getElementById('adminModal').classList.add('open'); loadWalletRequests(); loadAllUsersWallet(); loadWithdrawRequests(); render(); loadMods(); }
 function closeAdmin(){ document.getElementById('adminModal').classList.remove('open'); }
 function setAmt(v){ document.getElementById('rechargeAmt').value=v; updateQR(); }
 function copyUPI(){ navigator.clipboard.writeText(MY_UPI); alert("Copied: "+MY_UPI); }
-function shareRefer(){ let link=location.origin+location.pathname+'?ref='+currentUser.uid; navigator.clipboard.writeText(link); alert("Referral Link Copied:\n"+link); }
-function updateQR(){ let amt=parseInt(document.getElementById('rechargeAmt').value)||10; if(amt<10) amt=10; const link=`upi://pay?pa=${MY_UPI}&pn=FF%20LEAGUE&am=${amt}&cu=INR`; document.getElementById('upiLink2').href=link; document.getElementById('upiLink2').innerText=`PAY ₹${amt} NOW`; document.getElementById('qrText').innerText=`Pay ₹${amt} - ${MY_UPI}`; }
+function shareRefer(){ let link=location.origin+location.pathname+'?ref='+currentUser.uid; navigator.clipboard.writeText(link); alert("Referral Link Copied"); }
+function updateQR(){ let amt=parseInt(document.getElementById('rechargeAmt').value)||10; const link=`upi://pay?pa=${MY_UPI}&pn=FF%20LEAGUE&am=${amt}&cu=INR`; document.getElementById('upiLink2').href=link; document.getElementById('qrText').innerText=`Pay ₹${amt}`; }
 function handleReferral(){ let params=new URLSearchParams(location.search); let ref=params.get('ref'); if(ref && ref!==currentUser.uid){ localStorage.setItem('referredBy', ref); } }
-function submitRecharge(){ const amt=parseInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim(); if(amt<10||!utr) return alert('Enter valid UTR'); db.ref('walletRecharges').orderByChild('utr').equalTo(utr).once('value').then(snap=>{ if(snap.exists()) return alert('This UTR already used!'); let refBy=localStorage.getItem('referredBy')||null; db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending',referredBy:refBy}).then(()=>{ document.getElementById('rechargeStatus').innerHTML='<span style="color:var(--green)">Request Sent!</span>'; setTimeout(closeRecharge,1200); }); }); }
-function submitWithdraw(){ const amt=parseInt(document.getElementById('withdrawAmt').value), upi=document.getElementById('withdrawUpi').value.trim(); if(amt<100||!upi.includes('@')) return alert('Minimum ₹100 & valid UPI'); db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ const bal=s.val()||0; if(bal<amt) return alert('Insufficient balance'); db.ref('users/'+currentUser.uid+'/wallet').set(bal-amt).then(()=>{ db.ref('withdrawRequests').push({uid:currentUser.uid,email:currentUser.email,amount:amt,upi:upi,time:Date.now(),status:'pending'}).then(()=>{ document.getElementById('withdrawStatus').innerHTML='<span style="color:var(--green)">Withdrawal Requested!</span>'; setTimeout(closeWithdraw,1200); }); }); }); }
-function loadMyWithdraws(){ db.ref('withdrawRequests').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('withdrawHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} → ${r.upi} <b style="float:right;color:${r.status==='approved'?'var(--green)':'#ffaa00'}">${r.status}</b></div>`; }); div.innerHTML=h; }); }
-function loadAllUsersWallet(){ if(!isAdmin) return; db.ref('users').once('value').then(snap=>{ proAllUsersData=[]; let tot=0; snap.forEach(c=>{ let v=c.val(); let bal=v.wallet||0; tot+=bal; proAllUsersData.push({uid:c.key,email:v.email||'No Email',wallet:bal,ffid:v.ffid||v.lastFFID||'-',ffname:v.ffname||v.lastFFName||v.displayName||'-',displayName:v.displayName||'-'}); }); document.getElementById('proTotalUsers').innerText=proAllUsersData.length; document.getElementById('proTotalBal').innerText='₹'+tot; renderProUsers(proAllUsersData); calcAllProfit(); }); }
-function renderProUsers(list){ let tbody=document.getElementById('allUsersWallet'); if(list.length==0){tbody.innerHTML='<tr><td colspan="5">No users</td></tr>';return;} let h=''; list.slice().reverse().forEach(u=>{ h+=`<tr><td><b style="color:#fff">${u.ffid}</b></td><td>${u.ffname}</td><td style="color:var(--green);font-weight:900">₹${u.wallet}</td><td style="font-size:11px;color:#fff">${u.email}</td><td><button onclick="quickProAdd('${u.uid}',10)" style="background:var(--green);color:#000;border:none;padding:5px 8px;border-radius:6px;font-size:10px;font-weight:800">+10</button> <button onclick="quickProAdd('${u.uid}',-10)" style="background:var(--red);color:#fff;border:none;padding:5px 8px;border-radius:6px;font-size:10px">-10</button></td></tr>`; }); tbody.innerHTML=h; }
-function filterProUsers(){ let q=document.getElementById('userSearch').value.toLowerCase(); let f=proAllUsersData.filter(u=> (u.ffid+'').toLowerCase().includes(q) || (u.ffname+'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.displayName+'').toLowerCase().includes(q)); renderProUsers(f); }
-function proUpdateBal(type){ let search=document.getElementById('proFFSearch').value.trim().toLowerCase(); let amt=parseInt(document.getElementById('proAmount').value); if(!search || !amt) return alert('Enter search and amount'); let found=proAllUsersData.find(u=>u.email.toLowerCase().includes(search) || (u.ffid+'').toLowerCase().includes(search) || u.displayName.toLowerCase().includes(search)); if(!found) return alert('User not found'); let finalAmt=amt*type; db.ref('users/'+found.uid+'/wallet').once('value').then(s=>{ let old=s.val()||0; db.ref('users/'+found.uid+'/wallet').set(old+finalAmt).then(()=>{ document.getElementById('proBalMsg').innerHTML=`<span style="color:var(--green)">Updated ${found.email}: ₹${old} → ₹${old+finalAmt}</span>`; loadAllUsersWallet(); }); }); }
-function quickProAdd(uid, amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ let old=s.val()||0; db.ref('users/'+uid+'/wallet').set(old+amt).then(()=>loadAllUsersWallet()); }); }
-function loadWithdrawRequests(){ if(!isAdmin) return; db.ref('withdrawRequests').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('withdrawReqList'); if(!snap.exists()){div.innerHTML='No pending requests';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card" style="border:2px solid #ff6600"><b style="color:var(--green);font-size:16px">₹${r.amount}</b><br>UPI: <b style="background:#fff;color:#000;padding:4px 8px;border-radius:8px">${r.upi}</b><br><small>${r.email}</small><br><button onclick="approveWithdraw('${c.key}')" style="width:100%;margin-top:8px;background:var(--green);color:#000;border:none;padding:10px;border-radius:10px;font-weight:900">MARK AS PAID</button><button onclick="rejectWithdraw('${c.key}','${r.uid}',${r.amount})" style="width:100%;margin-top:6px;background:#ff0033;color:#fff;border:none;padding:8px;border-radius:10px">REJECT & REFUND</button></div>`; }); div.innerHTML=h; }); }
-function approveWithdraw(id){ db.ref('withdrawRequests/'+id).update({status:'approved'}); }
-function rejectWithdraw(id,uid,amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ const o=s.val()||0; db.ref('users/'+uid+'/wallet').set(o+amt).then(()=>{ db.ref('withdrawRequests/'+id).update({status:'rejected'}); }); }); }
-function loadWallet(){ db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{ const b=s.val()||0; document.getElementById('walletBal').innerText='₹'+b+'.00'; document.getElementById('profileWallet').innerHTML='Wallet: <b>₹'+b+'</b>'; }); db.ref('users/'+currentUser.uid+'/refEarn').on('value',s=>{ document.getElementById('myRefEarn').innerText='₹'+(s.val()||0); }); }
-function joinWithWallet(){ const uid=document.getElementById('ffuid').value.trim(), name=document.getElementById('ffname').value.trim(); if(!uid||!name) return alert('Enter FF UID and Name'); db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ const b=s.val()||0; if(b<selected.entry) return alert('Insufficient balance. Please recharge.'); db.ref('users/'+currentUser.uid+'/wallet').set(b-selected.entry).then(()=>{ db.ref('users/'+currentUser.uid).update({email:currentUser.email,ffid:uid,ffname:name,lastFFID:uid,lastFFName:name}); db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffid:uid,ffname:name,title:selected.title,tournamentKey:selected.key,time:Date.now(),moderatorId:selected.moderatorId||''}); db.ref('tournaments/'+selected.key+'/slots').set((selected.slots||0)+1); document.getElementById('pStatus').innerHTML='<span style="color:var(--green)">Joined Successfully! Room: '+selected.roomId+'</span>'; setTimeout(()=>{closePay();loadMyRoom();},1500); }); }); }
-function loadWalletRequests(){ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('walletReqList'); if(!snap.exists()){div.innerHTML='No pending requests';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-left:3px solid var(--green)"><div><b style="color:var(--green)">₹${r.amount}</b> UTR: <b style="background:#ffffff22;padding:2px 6px;border-radius:6px">${r.utr}</b><br><small style="opacity:.6">${r.email}</small></div><div style="display:flex;gap:6px"><button onclick="approveWallet('${c.key}','${r.uid}',${r.amount},'${r.referredBy||''}')" style="background:var(--green);color:#000;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">APPROVE</button><button onclick="rejectWallet('${c.key}')" style="background:#ff0033;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:900;cursor:pointer">REJECT</button></div></div>`; }); div.innerHTML=h; }); }
-function approveWallet(id,uid,amt,refBy){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ const o=s.val()||0; db.ref('users/'+uid+'/wallet').set(o+amt).then(()=>{ db.ref('walletRecharges/'+id).update({status:'approved'}); if(refBy){ db.ref('users/'+refBy+'/wallet').once('value').then(rs=>{ let rb=rs.val()||0; db.ref('users/'+refBy+'/wallet').set(rb+10); db.ref('users/'+refBy+'/refEarn').once('value').then(re=>{ db.ref('users/'+refBy+'/refEarn').set((re.val()||0)+10); }); }); } }); }); }
-function rejectWallet(id){ if(confirm('Reject this recharge?')){ db.ref('walletRecharges/'+id).update({status:'rejected'}); } }
-function loadLeaderboard(){ db.ref('users').orderByChild('wallet').limitToLast(10).once('value').then(snap=>{ let list=[]; snap.forEach(c=>{ list.push(c.val()); }); list.reverse(); let h=''; list.forEach((u,i)=>{ h+=`<div class="leader-row"><div style="display:flex;align-items:center;gap:10px"><div class="rank">${i+1}</div><div><b>${u.ffname||u.displayName||'Player'}</b><br><small style="opacity:.5">FF ID: ${u.ffid||u.lastFFID||'----'}</small></div></div><div style="color:var(--green);font-weight:900">₹${u.wallet||0}</div></div>`; }); document.getElementById('leaderboard').innerHTML=h||'<p style="opacity:.5">No data yet</p>'; }); }
-function openLivePlayers(key){ db.ref('joins').orderByChild('tournamentKey').equalTo(key).once('value').then(snap=>{ let h=''; if(!snap.exists()) h='<p style="opacity:.5">No players yet</p>'; else snap.forEach(c=>{ let j=c.val(); h+=`<div class="admin-card"><b>${j.ffid}</b> - ${j.ffname} ${j.moderatorId?'<span class="th-pill">'+j.moderatorId+'</span>':''}</div>`; }); document.getElementById('livePlayersList').innerHTML=h; openPlayers(); }); }
-function saveTournament(){
- const t=document.getElementById('aTitle').value.trim(); if(!t) return alert('Enter title');
- const entryVal=parseInt(document.getElementById('aEntry').value)||10;
- const totalVal=parseInt(document.getElementById('aTotal').value)||48;
- const poolVal=parseInt(document.getElementById('aPrizePool').value)||Math.floor(entryVal*totalVal*0.85);
- const firstVal=parseInt(document.getElementById('aFirst').value)||0;
- const secondVal=parseInt(document.getElementById('aSecond').value)||0;
- const thirdVal=parseInt(document.getElementById('aThird').value)||0;
- const killVal=parseInt(document.getElementById('aKill').value)||0;
- const matchTime=document.getElementById('aTime').value||'';
- const modAssign=document.getElementById('aModAssign').value||'';
- const data={ title:t, entry:entryVal, total:totalVal, prizePool:poolVal, prize:poolVal, firstPrize:firstVal, secondPrize:secondVal, thirdPrize:thirdVal, killPrize:killVal, slots:0, roomId:document.getElementById('aRoomId').value, roomPass:document.getElementById('aRoomPass').value, status:'REGISTRATION',type:'SOLO',map:'Bermuda', time: matchTime ? matchTime : 'Soon', matchTime: matchTime, moderatorId: modAssign };
- const k=document.getElementById('aKey').value;
- if(k){ let old=tours.find(x=>x.key===k); if(old) data.slots=old.slots||0; db.ref('tournaments/'+k).update(data); } else { db.ref('tournaments').push(data); }
- alert('Tournament Saved! Mod: '+ (modAssign||'None') +' | Profit Auto 20% calc'); document.getElementById('aKey').value='';
-}
-function editTour(k){
- let t=tours.find(x=>x.key===k); if(!t) return;
- document.getElementById('aKey').value=k;
- document.getElementById('aTitle').value=t.title||'';
- document.getElementById('aEntry').value=t.entry||'';
- document.getElementById('aTotal').value=t.total||'';
- document.getElementById('aPrizePool').value=t.prizePool||t.prize||'';
- document.getElementById('aFirst').value=t.firstPrize||'';
- document.getElementById('aSecond').value=t.secondPrize||'';
- document.getElementById('aThird').value=t.thirdPrize||'';
- document.getElementById('aKill').value=t.killPrize||'';
- document.getElementById('aRoomId').value=t.roomId||'';
- document.getElementById('aRoomPass').value=t.roomPass||'';
- document.getElementById('aTime').value=t.matchTime||'';
- document.getElementById('aModAssign').value=t.moderatorId||'';
- autoPrize(); alert('Editing: '+t.title+' | Current Mod: '+(t.moderatorId||'None'));
-}
-function deleteTour(k){ if(confirm('Delete this tournament?')) db.ref('tournaments/'+k).remove(); }
-function loadMyRoom(){ if(!currentUser) return; db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('myRoom'); if(!snap.exists()){div.style.display='none';return;} let lj=null; snap.forEach(c=>{lj=c.val();}); const tour=tours.find(t=>t.title===lj.title); if(!tour){div.style.display='none';return;} div.style.display='flex'; div.innerHTML=`<div>✅ ${lj.title} | ROOM: ${tour.roomId||'TBA'} PASS: ${tour.roomPass||'TBA'} | Prize: ₹${tour.firstPrize||tour.prizePool||'TBA'}</div><button onclick="this.parentElement.style.display='none'" style="background:#000;color:#fff;border:none;width:28px;height:28px;border-radius:50%">X</button>`; }); }
-function loadMyRecharges(){ db.ref('walletRecharges').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('rechargeHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">Recharge ₹${r.amount} - <b style="color:${r.status==='approved'?'var(--green)': r.status==='rejected'?'var(--red)':'#ffaa00'}">${r.status.toUpperCase()}</b> • UTR: ${r.utr}</div>`; }); div.innerHTML=h; }); }
-db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); tours=list; render(); loadMyRoom(); calcAllProfit(); });
-db.ref('joins').on('value',s=>{ allJoins=[]; s.forEach(c=>allJoins.push(c.val())); });
-function loadResultPlayers(){
- const key=document.getElementById('resultTourSelect').value; if(!key) return;
- const tour=tours.find(t=>t.key===key);
- document.getElementById('resultPlayers').innerHTML='Loading players...';
- db.ref('joins').orderByChild('tournamentKey').equalTo(key).once('value').then(snap=>{
-   if(!snap.exists()){ document.getElementById('resultPlayers').innerHTML='<p style="opacity:.5">No players joined yet</p>'; return; }
-   let h=''; snap.forEach(c=>{
-     let j=c.val(); let joinId=c.key;
-     h+=`<div class="admin-card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;border-left:3px solid #00ff88"><div><b>${j.ffname}</b> - ${j.ffid}<br><small style="opacity:.6">${j.email}</small>${j.rank?`<br><b style="color:var(--green)">Rank ${j.rank} Awarded</b>`:''}</div><div style="display:flex;gap:4px;flex-wrap:wrap"><button onclick="awardPrize('${j.uid}','${joinId}',${tour.firstPrize||0},1,'${tour.title}')" style="background:#ffcc00;color:#000;border:none;padding:6px 10px;border-radius:8px;font-weight:900;font-size:11px">🥇 1ST ₹${tour.firstPrize||0}</button><button onclick="awardPrize('${j.uid}','${joinId}',${tour.secondPrize||0},2,'${tour.title}')" style="background:#c0c0c0;color:#000;border:none;padding:6px 10px;border-radius:8px;font-weight:900;font-size:11px">🥈 2ND ₹${tour.secondPrize||0}</button><button onclick="awardPrize('${j.uid}','${joinId}',${tour.thirdPrize||0},3,'${tour.title}')" style="background:#cd7f32;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-weight:900;font-size:11px">🥉 3RD ₹${tour.thirdPrize||0}</button><button onclick="awardKillPrize('${j.uid}','${joinId}',${tour.killPrize||0},'${tour.title}')" style="background:var(--green);color:#000;border:none;padding:6px 10px;border-radius:8px;font-weight:800;font-size:11px">💀 KILL ₹${tour.killPrize||0}</button></div></div>`;
-   }); document.getElementById('resultPlayers').innerHTML=h;
- });
-}
-function awardPrize(uid, joinId, amount, rank, title){
- if(!amount||amount<=0) return alert('Prize amount is 0! Set prize first');
- if(!confirm('Give Rank '+rank+' - ₹'+amount+' ?')) return;
- db.ref('users/'+uid+'/wallet').once('value').then(s=>{
-   let bal=s.val()||0;
-   db.ref('users/'+uid+'/wallet').set(bal+amount).then(()=>{
-     db.ref('joins/'+joinId).update({rank:rank, prizeAwarded:amount, resultDeclared:true});
-     db.ref('results').push({uid:uid, tournamentTitle:title, rank:rank, amount:amount, time:Date.now()});
-     document.getElementById('resultStatus').innerHTML='<span style="color:var(--green)">✅ Rank '+rank+' Prize ₹'+amount+' sent!</span>';
-   });
- });
-}
-function awardKillPrize(uid, joinId, amount, title){
- if(!amount||amount<=0) return alert('Per Kill prize is 0!');
- let kills=prompt('How many kills?'); if(!kills) return;
- let total=parseInt(kills)*amount;
- if(!confirm('Give Kill Prize: '+kills+' x ₹'+amount+' = ₹'+total+' ?')) return;
- db.ref('users/'+uid+'/wallet').once('value').then(s=>{
-   let bal=s.val()||0;
-   db.ref('users/'+uid+'/wallet').set(bal+total).then(()=>{
-     db.ref('joins/'+joinId).update({kills:parseInt(kills), killPrizeAwarded:total});
-     db.ref('results').push({uid:uid, tournamentTitle:title, rank:'KILL', kills:parseInt(kills), amount:total, time:Date.now()});
-     document.getElementById('resultStatus').innerHTML='<span style="color:var(--green)">✅ Kill Prize ₹'+total+' sent!</span>';
-   });
- });
-}
-function loadMods(){
- db.ref('moderators').on('value',s=>{
-   mods=[]; s.forEach(c=>{let v=c.val();v.key=c.key;mods.push(v);});
-   document.getElementById('modList').innerHTML=mods.map(m=>`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between"><div><b style="color:#00ff88">${m.idCard}</b> - ${m.name}<br><small>${m.email}</small> | ${m.commission}% | Earn ₹${m.totalEarn||0}</div><div><button onclick="if(confirm('Remove?')) db.ref('moderators/${m.key}').remove()" style="background:var(--red);border:0;padding:6px 10px;border-radius:6px;color:#fff">DEL</button></div></div>`).join('') || 'No moderators yet';
-   document.getElementById('aModAssign').innerHTML='<option value="">Assign to Moderator (Optional)</option>'+mods.map(m=>`<option value="${m.idCard}">${m.idCard} - ${m.name} (${m.commission}%)</option>`).join('');
-   let report=''; mods.forEach(m=>{
-     let myT=tours.filter(t=>t.moderatorId===m.idCard);
-     let profit=0; myT.forEach(t=>{ profit+= (t.entry*t.total) - (t.prizePool||0); });
-     let comm=Math.floor(profit*(m.commission||20)/100);
-     report+=`<div style="margin-top:6px">🛡️ ${m.idCard} | Tours ${myT.length} | Profit ₹${profit} | <b style="color:#ffcc00">20% = ₹${comm}</b> | Payout after 20 days</div>`;
-   });
-   document.getElementById('commReport').innerHTML=report || 'No commission yet';
- });
-}
-function addModerator(){
- let id=document.getElementById('modId').value.trim().toUpperCase();
- let name=document.getElementById('modName').value.trim();
- let email=document.getElementById('modEmail').value.trim().toLowerCase();
- let perc=parseInt(document.getElementById('modPerc').value)||20;
- if(!id||!email) return alert('Enter ID and Email');
- if(!isSuperAdmin) return alert('Only Super Admin can add moderators');
- db.ref('moderators').push({idCard:id,name:name,email:email,commission:perc,totalEarn:0,created:Date.now()});
- alert('Moderator '+id+' added!');
- document.getElementById('modId').value=''; document.getElementById('modName').value=''; document.getElementById('modEmail').value='';
-}
-function calcAllProfit(){
- let totalProfit=0; tours.forEach(t=>{ totalProfit+= (t.entry*t.total) - (t.prizePool||0); });
- document.getElementById('proProfit').innerText='₹'+totalProfit;
-}
+function submitRecharge(){ const amt=parseInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim(); if(amt<10||!utr) return alert('Enter valid UTR'); db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending',referredBy:localStorage.getItem('referredBy')||null}).then(()=>{ document.getElementById('rechargeStatus').innerHTML='Sent!'; setTimeout(closeRecharge,1200); }); }
+function submitWithdraw(){ const amt=parseInt(document.getElementById('withdrawAmt').value), upi=document.getElementById('withdrawUpi').value.trim(); if(amt<100||!upi.includes('@')) return alert('Min ₹100 & valid UPI'); db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ const bal=s.val()||0; if(bal<amt) return alert('Insufficient'); db.ref('users/'+currentUser.uid+'/wallet').set(bal-amt).then(()=>{ db.ref('withdrawRequests').push({uid:currentUser.uid,email:currentUser.email,amount:amt,upi:upi,time:Date.now(),status:'pending'}); }); }); }
+function loadMyWithdraws(){ db.ref('withdrawRequests').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('withdrawHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} → ${r.upi} <b>${r.status}</b></div>`; }); div.innerHTML=h; }); }
+function loadAllUsersWallet(){ if(!isAdmin) return; db.ref('users').once('value').then(snap=>{ proAllUsersData=[]; let tot=0; snap.forEach(c=>{ let v=c.val(); tot+=v.wallet||0; proAllUsersData.push({uid:c.key,email:v.email||'No Email',wallet:v.wallet||0,ffid:v.ffid||'-',ffname:v.ffname||'-',displayName:v.displayName||'-'}); }); document.getElementById('proTotalUsers').innerText=proAllUsersData.length; document.getElementById('proTotalBal').innerText='₹'+tot; renderProUsers(proAllUsersData); }); }
+function renderProUsers(list){ let tbody=document.getElementById('allUsersWallet'); let h=''; list.slice().reverse().forEach(u=>{ h+=`<tr><td>${u.ffid}</td><td>${u.ffname}</td><td>₹${u.wallet}</td><td>${u.email}</td><td><button onclick="quickProAdd('${u.uid}',10)">+10</button></td></tr>`; }); tbody.innerHTML=h; }
+function filterProUsers(){ let q=document.getElementById('userSearch').value.toLowerCase(); let f=proAllUsersData.filter(u=> u.email.toLowerCase().includes(q)); renderProUsers(f); }
+function proUpdateBal(type){ let search=document.getElementById('proFFSearch').value.trim().toLowerCase(); let amt=parseInt(document.getElementById('proAmount').value); let found=proAllUsersData.find(u=>u.email.toLowerCase().includes(search)); if(!found) return alert('User not found'); let finalAmt=amt*type; db.ref('users/'+found.uid+'/wallet').once('value').then(s=>{ let old=s.val()||0; db.ref('users/'+found.uid+'/wallet').set(old+finalAmt); }); }
+function quickProAdd(uid, amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ let old=s.val()||0; db.ref('users/'+uid+'/wallet').set(old+amt); }); }
+function loadWithdrawRequests(){ db.ref('withdrawRequests').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('withdrawReqList'); if(!snap.exists()){div.innerHTML='No pending';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} UPI: ${r.upi} ${r.email}</div>`; }); div.innerHTML=h; }); }
+function loadWallet(){ db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{ const b=s.val()||0; document.getElementById('walletBal').innerText='₹'+b+'.00'; document.getElementById('profileWallet').innerHTML='Wallet: <b>₹'+b+'</b>'; }); }
+function joinWithWallet(){ const uid=document.getElementById('ffuid').value.trim(), name=document.getElementById('ffname').value.trim(); if(!uid||!name) return alert('Enter FF UID and Name'); db.ref('users/'+currentUser.uid+'/wallet').once('value').then(s=>{ const b=s.val()||0; if(b<selected.entry) return alert('Insufficient'); db.ref('users/'+currentUser.uid+'/wallet').set(b-selected.entry).then(()=>{ db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffid:uid,ffname:name,title:selected.title,tournamentKey:selected.key,time:Date.now()}); db.ref('tournaments/'+selected.key+'/slots').set((selected.slots||0)+1); }); }); }
+function loadWalletRequests(){ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',snap=>{ const div=document.getElementById('walletReqList'); if(!snap.exists()){div.innerHTML='No pending';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} UTR: ${r.utr} ${r.email} <button onclick="approveWallet('${c.key}','${r.uid}',${r.amount})">APPROVE</button></div>`; }); div.innerHTML=h; }); }
+function approveWallet(id,uid,amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{ const o=s.val()||0; db.ref('users/'+uid+'/wallet').set(o+amt).then(()=>{ db.ref('walletRecharges/'+id).update({status:'approved'}); }); }); }
+function loadLeaderboard(){ db.ref('users').orderByChild('wallet').limitToLast(10).once('value').then(snap=>{ let list=[]; snap.forEach(c=>{ list.push(c.val()); }); list.reverse(); let h=''; list.forEach((u,i)=>{ h+=`<div class="leader-row"><b>${u.ffname||u.displayName}</b> ₹${u.wallet||0}</div>`; }); document.getElementById('leaderboard').innerHTML=h; }); }
+function openLivePlayers(key){ db.ref('joins').orderByChild('tournamentKey').equalTo(key).once('value').then(snap=>{ let h=''; snap.forEach(c=>{ let j=c.val(); h+=`<div class="admin-card">${j.ffid} - ${j.ffname}</div>`; }); document.getElementById('livePlayersList').innerHTML=h; openPlayers(); }); }
+function saveTournament(){ const t=document.getElementById('aTitle').value.trim(); if(!t) return alert('Enter title'); const data={ title:t, entry:parseInt(document.getElementById('aEntry').value)||10, total:parseInt(document.getElementById('aTotal').value)||48, prizePool:parseInt(document.getElementById('aPrizePool').value)||0, firstPrize:parseInt(document.getElementById('aFirst').value)||0, secondPrize:parseInt(document.getElementById('aSecond').value)||0, thirdPrize:parseInt(document.getElementById('aThird').value)||0, killPrize:parseInt(document.getElementById('aKill').value)||0, slots:0, roomId:document.getElementById('aRoomId').value, roomPass:document.getElementById('aRoomPass').value, matchTime:document.getElementById('aTime').value||'', moderatorId:document.getElementById('aModAssign').value||'' }; db.ref('tournaments').push(data); alert('Saved!'); }
+function editTour(k){ let t=tours.find(x=>x.key===k); document.getElementById('aTitle').value=t.title||''; }
+function deleteTour(k){ if(confirm('Delete?')) db.ref('tournaments/'+k).remove(); }
+function loadMyRoom(){ if(!currentUser) return; db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('myRoom'); if(!snap.exists()){div.style.display='none';return;} let lj=null; snap.forEach(c=>{lj=c.val();}); div.style.display='flex'; div.innerHTML=`<div>✅ ${lj.title}</div>`; }); }
+function loadMyRecharges(){ db.ref('walletRecharges').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ const div=document.getElementById('rechargeHistory'); if(!snap.exists()){div.innerHTML='';return;} let h=''; snap.forEach(c=>{ const r=c.val(); h+=`<div class="admin-card">₹${r.amount} - ${r.status}</div>`; }); div.innerHTML=h; }); }
+db.ref('tournaments').on('value',s=>{ let list=[]; s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);}); tours=list; render(); });
+function loadResultPlayers(){}
+function loadMods(){ db.ref('moderators').on('value',s=>{ mods=[]; s.forEach(c=>{let v=c.val();v.key=c.key;mods.push(v);}); document.getElementById('modList').innerHTML=mods.map(m=>`<div><b>${m.idCard}</b> - ${m.name} ${m.email} <button onclick="db.ref('moderators/${m.key}').remove()">DEL</button></div>`).join(''); document.getElementById('aModAssign').innerHTML='<option value="">Assign Mod</option>'+mods.map(m=>`<option value="${m.idCard}">${m.idCard} - ${m.name}</option>`).join(''); }); }
+function addModerator(){ let id=document.getElementById('modId').value.trim().toUpperCase(); let name=document.getElementById('modName').value.trim(); let email=document.getElementById('modEmail').value.trim().toLowerCase(); if(!id||!email) return alert('Enter ID and Email'); if(!isSuperAdmin) return alert('Only Super Admin'); db.ref('moderators').push({idCard:id,name:name,email:email,commission:20,totalEarn:0,created:Date.now()}); alert('Moderator added!'); }
+function calcAllProfit(){}
 </script>
 </body>
 </html>
