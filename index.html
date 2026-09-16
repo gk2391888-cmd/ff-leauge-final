@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FF LEAGUE V17 WALLET FIX</title>
+<title>FF LEAGUE V18 - MATCH TIME FIX + WALLET FIX</title>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--red:#E11D2D;--green:#00ff88;--bg:#08080a;--border:#242428}
+:root{--red:#E11D2D;--green:#00ff88;--bg:#08080a;--border:#242428;--yellow:#ffcc00}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
 .header{position:sticky;top:0;z-index:100;background:rgba(12,12,14,0.95);backdrop-filter:blur(20px);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--red);height:56px}
@@ -47,6 +47,9 @@ input,select,textarea{width:100%;padding:12px 14px;background:#050507;border:1px
 .g-btn{background:#fff;color:#000;border:none;width:100%;padding:14px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px}
 .mod-badge{background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:3px 8px;border-radius:20px;font-size:8px;font-weight:900}
 .mod-badge.unassigned{background:#1e1e22;color:#666;border:1px solid var(--border)}
+#aTime{color-scheme:dark!important;background:#0a0a0a!important;color:#fff!important;border:2px solid var(--yellow)!important}
+#aTime::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.5) sepia(1) hue-rotate(10deg) saturate(5);background:var(--yellow);padding:6px;border-radius:6px;cursor:pointer;opacity:1;width:20px;height:20px}
+#aTime::-webkit-datetime-edit{color:#fff}
 </style>
 </head>
 <body>
@@ -62,7 +65,6 @@ input,select,textarea{width:100%;padding:12px 14px;background:#050507;border:1px
 <div id="rechargeModal" class="modal" onclick="closeRecharge()"><div class="box" onclick="event.stopPropagation()"><h3>RECHARGE</h3><input id="rechargeAmt" type="number" value="10" oninput="updateQR()"><div style="background:#fff;padding:16px;border-radius:20px;text-align:center"><img src="qrcode.jpg?v=6" style="width:200px;height:200px;object-fit:contain;display:block;margin:0 auto"><div id="qrText" style="color:#000;font-weight:900;margin-top:10px">Pay ₹10</div><a id="upiLink2" href="#" style="display:block;background:linear-gradient(90deg,var(--red),#ff6600);color:#fff;padding:12px;margin-top:10px;border-radius:12px;text-decoration:none;font-weight:900">PAY NOW</a></div><input id="rechargeUtr" placeholder="12 Digit UTR"><button class="btn-join" style="background:var(--green);color:#000" onclick="submitRecharge()">SUBMIT</button></div></div>
 <div id="withdrawModal" class="modal" onclick="closeWithdraw()"><div class="box" onclick="event.stopPropagation()"><h3>WITHDRAW</h3><div id="withdrawBal"></div><input id="withdrawAmt" type="number" placeholder="Min ₹100"><input id="withdrawUpi" placeholder="UPI ID"><button class="btn-join" style="background:var(--green);color:#000" onclick="submitWithdraw()">REQUEST</button></div></div>
 <div id="playersModal" class="modal" onclick="closePlayers()"><div class="box" onclick="event.stopPropagation()"><h3>LIVE PLAYERS</h3><div id="livePlayersList"></div><button class="h-btn" onclick="closePlayers()">Close</button></div></div>
-
 <div id="completeModal" class="modal" onclick="closeComplete()"><div class="box" onclick="event.stopPropagation()" style="border:2px solid var(--green)"><h2 style="font-family:Orbitron;color:var(--green);font-size:14px">🏆 COMPLETE TOURNAMENT</h2><p style="font-size:10px;opacity:.6;margin-top:4px;color:#ffcc00">💡 Tip: Email se search karo toh 100% wallet me add hoga.</p><p id="completeTourName" style="font-size:11px;opacity:.6;margin-top:6px"></p><input id="completeKey" type="hidden"><div style="margin-top:12px;background:rgba(0,255,136,0.06);border:1.5px dashed var(--green);padding:12px;border-radius:12px"><label style="font-size:11px;color:var(--green);font-weight:800">🥇 1ST WINNER - Email recommended</label><div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:4px"><input id="win1_ffid" placeholder="Winner Email (best) ya FF ID"><input id="win1_prize" type="number" placeholder="Prize ₹"></div><label style="font-size:11px;color:#C0C0C0;font-weight:800;margin-top:10px;display:block">🥈 2ND WINNER - Email recommended</label><div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:4px"><input id="win2_ffid" placeholder="2nd Email ya FF ID"><input id="win2_prize" type="number" placeholder="Prize ₹"></div></div><div id="completeProfitPreview" style="margin-top:10px;background:#050507;padding:10px;border-radius:10px;border:1px solid var(--border);font-size:11px">Prize Total: ₹0</div><div id="completeModInfo" style="margin-top:6px;background:rgba(255,204,0,0.08);border:1px dashed #ffcc00;padding:8px;border-radius:10px;font-size:11px;display:none"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button onclick="closeComplete()" style="background:#1e1e22;color:#fff;border:1px solid var(--border);padding:12px;border-radius:12px">CANCEL</button><button onclick="submitComplete()" style="background:linear-gradient(90deg,var(--green),#00cc66);color:#000;border:none;padding:12px;border-radius:12px;font-weight:900">DECLARE & PAY</button></div><p id="completeStatus" style="text-align:center;margin-top:8px;font-size:11px;white-space:pre-wrap"></p></div></div>
 
 <div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" style="max-width:860px" onclick="event.stopPropagation()">
@@ -74,7 +76,25 @@ input,select,textarea{width:100%;padding:12px 14px;background:#050507;border:1px
 <div style="margin-top:12px;background:#00ff8815;border:1px solid #00ff8850;padding:10px;border-radius:14px"><div style="display:flex;justify-content:space-between"><h4 style="color:var(--green);font-size:12px">ALL USERS</h4><button onclick="loadAllUsersWallet()" style="background:#1a1a1e;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:10px">REFRESH</button></div><input id="userSearch" placeholder="Search" style="margin:8px 0" oninput="filterProUsers()"><div style="overflow:auto;max-height:350px"><table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr><th style="color:var(--red);text-align:left;padding:6px">FF ID</th><th style="color:var(--red);text-align:left;padding:6px">NAME</th><th style="color:var(--red);text-align:left;padding:6px">BAL</th><th style="color:var(--red);text-align:left;padding:6px">EMAIL</th><th style="color:var(--red);text-align:left;padding:6px">ACTION</th></tr></thead><tbody id="allUsersWallet"></tbody></table></div></div>
 <div style="margin-top:12px;background:#ff660015;border:1px solid #ff660050;padding:10px;border-radius:14px"><h4 style="color:#ff6600;font-size:12px">WITHDRAWAL REQUESTS</h4><div id="withdrawReqList"></div></div>
 <div style="margin-top:12px;background:#111114;border:1px solid var(--border);padding:10px;border-radius:14px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE REQUESTS</h4><div id="walletReqList"></div></div>
-<div style="margin-top:12px;border:2px solid var(--red);padding:12px;border-radius:14px;background:#0f0f12"><h4 style="font-family:Orbitron;color:#fff;font-size:12px">TOURNAMENT - V17 WALLET FIX</h4><input id="aKey" type="hidden"><input id="aTitle" placeholder="Tournament Title"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="aEntry" type="number" placeholder="Entry ₹" oninput="autoPrize()"><input id="aTotal" type="number" placeholder="Total Slots (e.g. 8)" oninput="autoPrize()"><input id="aPrizePool" type="number" placeholder="Prize Pool ₹" oninput="autoPrize()"><input id="aFirst" type="number" placeholder="1st Prize ₹" oninput="autoPrize()"><input id="aSecond" type="number" placeholder="2nd Prize ₹" oninput="autoPrize()"><input id="aRoomId" placeholder="Room ID"><input id="aRoomPass" placeholder="Room Pass"><select id="aType"><option value="SOLO">SOLO</option><option value="DUO">DUO</option><option value="4v4" selected>4v4</option><option value="SQUAD">SQUAD</option></select><select id="aModAssign" style="border:2px solid var(--green)"><option value="">👑 Assign Moderator</option></select></div><div id="profitPreview" style="margin-top:8px;background:#050507;padding:8px;border-radius:10px;border:2px dashed var(--red);font-size:11px">Profit Preview</div><div id="modPreview" style="margin-top:6px;background:rgba(0,255,136,0.08);border:1px dashed var(--green);padding:8px;border-radius:10px;font-size:11px;display:none"></div><div style="margin-top:6px"><label style="font-size:9px;opacity:.6;color:#ffcc00">⏰ MATCH TIME</label><input id="aTime" type="datetime-local" style="border:2px solid #ffcc00"></div><button class="h-btn" style="width:100%;margin-top:8px" onclick="saveTournament()">SAVE TOURNAMENT</button><div id="aTList" style="margin-top:12px"></div></div>
+
+<div style="margin-top:12px;border:2px solid var(--red);padding:12px;border-radius:14px;background:#0f0f12">
+<h4 style="font-family:Orbitron;color:#fff;font-size:12px">TOURNAMENT - V18 MATCH TIME FIXED</h4>
+<input id="aKey" type="hidden"><input id="aTitle" placeholder="Tournament Title"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="aEntry" type="number" placeholder="Entry ₹" oninput="autoPrize()"><input id="aTotal" type="number" placeholder="Total Slots (e.g. 8)" oninput="autoPrize()"><input id="aPrizePool" type="number" placeholder="Prize Pool ₹" oninput="autoPrize()"><input id="aFirst" type="number" placeholder="1st Prize ₹" oninput="autoPrize()"><input id="aSecond" type="number" placeholder="2nd Prize ₹" oninput="autoPrize()"><input id="aRoomId" placeholder="Room ID"><input id="aRoomPass" placeholder="Room Pass"><select id="aType"><option value="SOLO">SOLO</option><option value="DUO">DUO</option><option value="4v4" selected>4v4</option><option value="SQUAD">SQUAD</option></select><select id="aModAssign" style="border:2px solid var(--green)"><option value="">👑 Assign Moderator</option></select></div><div id="profitPreview" style="margin-top:8px;background:#050507;padding:8px;border-radius:10px;border:2px dashed var(--red);font-size:11px">Profit Preview</div><div id="modPreview" style="margin-top:6px;background:rgba(0,255,136,0.08);border:1px dashed var(--green);padding:8px;border-radius:10px;font-size:11px;display:none"></div>
+
+<div style="margin-top:10px; background: rgba(255,204,0,0.08); border: 2px solid #ffcc00; border-radius: 14px; padding: 12px;">
+  <label style="font-size:10px; color:#ffcc00; font-weight:900; letter-spacing:1px; display:flex; align-items:center; gap:6px; margin-bottom:6px">
+    <span style="background:#ffcc00; color:#000; padding:2px 6px; border-radius:4px; font-size:10px">⏰</span> MATCH TIME - Click karo calendar khulega
+  </label>
+  <input id="aTime" type="datetime-local" onclick="try{this.showPicker()}catch(e){}" onfocus="try{this.showPicker()}catch(e){}" style="width:100%; padding:14px; background:#0a0a0a; border:2px solid #ffcc00; border-radius:12px; color:#fff; font-size:14px; color-scheme:dark; cursor:pointer">
+  <div style="display:flex; gap:6px; margin-top:8px">
+    <button type="button" onclick="document.getElementById('aTime').value=new Date(new Date().getTime()+60*60*1000).toISOString().slice(0,16); if(typeof autoPrize==='function') autoPrize(); document.getElementById('timePreview').innerHTML='✅ Set: +1 Hour';" style="flex:1; background:#1a1a1e; color:#ffcc00; border:1px solid #ffcc00; padding:8px; border-radius:8px; font-size:10px; font-weight:800">+1 HOUR</button>
+    <button type="button" onclick="document.getElementById('aTime').value=new Date(new Date().getTime()+2*60*60*1000).toISOString().slice(0,16); if(typeof autoPrize==='function') autoPrize(); document.getElementById('timePreview').innerHTML='✅ Set: +2 Hour';" style="flex:1; background:#1a1a1e; color:#ffcc00; border:1px solid #ffcc00; padding:8px; border-radius:8px; font-size:10px; font-weight:800">+2 HOUR</button>
+    <button type="button" onclick="try{document.getElementById('aTime').showPicker()}catch(e){document.getElementById('aTime').focus()}" style="flex:1; background:#ffcc00; color:#000; border:none; padding:8px; border-radius:8px; font-size:10px; font-weight:900">📅 OPEN CALENDAR</button>
+  </div>
+  <div id="timePreview" style="margin-top:6px; font-size:10px; color:#aaa"></div>
+</div>
+
+<button class="h-btn" style="width:100%;margin-top:12px" onclick="saveTournament()">SAVE TOURNAMENT</button><div id="aTList" style="margin-top:12px"></div></div>
 <button class="h-btn" style="width:100%;margin-top:12px;background:#1a1a1e" onclick="closeAdmin()">Close Panel</button>
 </div></div>
 
@@ -107,7 +127,6 @@ function render(){
    let slotColor=isOver?'#ff0033':(isFull?'#ffcc00':'#aaa');
    return `<div class="card" style="${isOver?'border:2px solid #ff0033':''}"><div style="display:flex;justify-content:space-between;align-items:center"><span style="background:${(t.type||'SOLO').toUpperCase()==='4v4'?'#00ff88':'#E11D2D'};color:${(t.type||'SOLO').toUpperCase()==='4v4'?'#000':'#fff'};font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px">${t.type||'SOLO'}</span><div style="display:flex;gap:4px"><span style="font-size:9px;background:#ffcc0015;color:#ffcc00;padding:4px 8px;border-radius:6px">⏰ ${timeDisplay}</span>${modBadge}</div></div><div style="font-family:Orbitron;font-weight:700;margin-top:8px;font-size:14px">${t.title}</div><div class="info"><div><small>ENTRY</small><b>₹${t.entry}</b></div><div><small>POOL</small><b>₹${t.prizePool||0}</b></div><div><small>SLOTS</small><b style="color:${slotColor}">${slots}/${total}${isOver?' OVERFLOW!':''}${isFull&&!isOver?' FULL':''}</b></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn-join" ${joinDisabled} onclick="openPay('${t.key}')">${isFull?'FULL - '+slots+'/'+total:'JOIN - ₹'+t.entry}</button><button class="h-btn" style="background:#1e1e22" onclick="openLivePlayers('${t.key}')">PLAYERS</button></div></div>`;
  }).join('') || `<div style="text-align:center;opacity:.5;padding:30px"><p>No tournaments for ${currentMode}</p></div>`;
-
  if(isAdmin){
    let displayTours=tours;
    if(!isSuperAdmin && currentModId) displayTours=tours.filter(t=> t.moderatorId===currentModId);
@@ -142,6 +161,21 @@ auth.onAuthStateChanged(async u=>{
   if(isAdmin){ document.getElementById('adminHeaderBtn').classList.add('show'); document.getElementById('adminBottomBtn').classList.add('show'); }
   loadWallet(); loadMyRoom(); loadMyRecharges(); loadMyWithdraws(); loadLeaderboard(); loadMyTickets();
   if(isAdmin){ loadMods(); loadAllUsersWallet(); loadWalletRequests(); loadWithdrawRequests(); loadAllSupportTickets(); }
+  setTimeout(function(){
+    const el=document.getElementById('aTime');
+    if(el){
+      el.addEventListener('click', function(){ try{this.showPicker();}catch(e){} });
+      el.addEventListener('change', function(){
+        const preview=document.getElementById('timePreview');
+        if(this.value && preview){
+          const dt=new Date(this.value);
+          const fmt=dt.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});
+          preview.innerHTML='✅ Selected: <b style="color:#00ff88">'+fmt+'</b>';
+        }
+        if(typeof autoPrize==='function') autoPrize();
+      });
+    }
+  }, 1500);
  } else document.getElementById('loginScreen').style.display='flex';
 });
 function googleLogin(){ auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{ document.getElementById('loginErr').innerText=e.message; }); }
@@ -198,9 +232,11 @@ function saveTournament(){
  let totalVal=parseInt(document.getElementById('aTotal').value)||48;
  let poolVal=parseInt(document.getElementById('aPrizePool').value)||Math.floor(entryVal*totalVal*0.8);
  let modId=document.getElementById('aModAssign').value||'';
- let data={ title:t, entry:entryVal, total:totalVal, prizePool:poolVal, firstPrize:parseInt(document.getElementById('aFirst').value)||0, secondPrize:parseInt(document.getElementById('aSecond').value)||0, thirdPrize:0, killPrize:0, slots:0, roomId:document.getElementById('aRoomId').value, roomPass:document.getElementById('aRoomPass').value, type:document.getElementById('aType').value||'4v4', status:'active', time:document.getElementById('aTime').value||'Soon', matchTime:document.getElementById('aTime').value||'', moderatorId:modId };
+ let timeVal=document.getElementById('aTime').value||'';
+ if(!timeVal){ alert('⚠️ Match Time select karo! Calendar pe click karo ya +1 Hour dabao'); return; }
+ let data={ title:t, entry:entryVal, total:totalVal, prizePool:poolVal, firstPrize:parseInt(document.getElementById('aFirst').value)||0, secondPrize:parseInt(document.getElementById('aSecond').value)||0, thirdPrize:0, killPrize:0, slots:0, roomId:document.getElementById('aRoomId').value, roomPass:document.getElementById('aRoomPass').value, type:document.getElementById('aType').value||'4v4', status:'active', time:timeVal, matchTime:timeVal, moderatorId:modId };
  let k=document.getElementById('aKey').value;
- if(k){ let old=tours.find(x=>x.key===k); if(old) data.slots=old.slots||0; db.ref('tournaments/'+k).update(data).then(()=>{ alert('✅ Updated '+data.title); document.getElementById('aKey').value=''; document.getElementById('aTitle').value=''; }); } else { db.ref('tournaments').push(data).then(()=>{ alert('✅ Created '+data.type); document.getElementById('aKey').value=''; document.getElementById('aTitle').value=''; }); }
+ if(k){ let old=tours.find(x=>x.key===k); if(old) data.slots=old.slots||0; db.ref('tournaments/'+k).update(data).then(()=>{ alert('✅ Updated '+data.title+' | Time: '+new Date(timeVal).toLocaleString('en-IN')); document.getElementById('aKey').value=''; document.getElementById('aTitle').value=''; }); } else { db.ref('tournaments').push(data).then(()=>{ alert('✅ Created '+data.type+' | Time: '+new Date(timeVal).toLocaleString('en-IN')); document.getElementById('aKey').value=''; document.getElementById('aTitle').value=''; }); }
 }
 function editTour(k){
  let t=tours.find(x=>x.key===k);
@@ -214,10 +250,16 @@ function editTour(k){
  document.getElementById('aSecond').value=t.secondPrize||'';
  document.getElementById('aRoomId').value=t.roomId||'';
  document.getElementById('aRoomPass').value=t.roomPass||'';
- document.getElementById('aTime').value=t.matchTime||'';
+ document.getElementById('aTime').value=t.matchTime||t.time||'';
  document.getElementById('aType').value=t.type||'4v4';
  document.getElementById('aModAssign').value=t.moderatorId||'';
  autoPrize();
+ if(t.matchTime || t.time){
+   const preview=document.getElementById('timePreview');
+   if(preview && (t.matchTime||t.time)){
+     try{ const dt=new Date(t.matchTime||t.time); const fmt=dt.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true}); preview.innerHTML='✅ Current: <b style="color:#00ff88">'+fmt+'</b>'; }catch(e){}
+   }
+ }
  setTimeout(()=>{ let el=document.getElementById('aTitle'); el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.border='2px solid #ffcc00'; el.focus(); setTimeout(()=>{ el.style.border='1px solid var(--border)'; },2000); },100);
 }
 function deleteTour(k){ if(confirm('Delete tournament?')) db.ref('tournaments/'+k).remove(); }
@@ -251,7 +293,6 @@ function submitSupportTicket(){ let cat=document.getElementById('ticketCat').val
 function loadMyTickets(){ if(!currentUser) return; db.ref('supportTickets').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{ let h=''; snap.forEach(c=>{ let t=c.val(); h+=`<div class="admin-card"><b>${t.subject}</b> - ${t.status}<p>${t.message}</p>${t.reply?`<div style="background:#00ff8815;padding:8px;border-radius:10px;margin-top:6px"><b>Reply:</b> ${t.reply}</div>`:''}</div>`; }); document.getElementById('myTickets').innerHTML=h||'No tickets'; }); }
 function loadAllSupportTickets(){ if(!isAdmin) return; db.ref('supportTickets').orderByChild('time').limitToLast(20).on('value',snap=>{ let h=''; snap.forEach(c=>{ let t=c.val(); h+=`<div class="admin-card"><b>${t.subject}</b> - ${t.email}<p>${t.message}</p><input id="reply-${c.key}" placeholder="Reply..." style="margin-top:6px"><button onclick="replySupport('${c.key}')" style="background:var(--green);color:#000;border:none;padding:6px 10px;border-radius:6px;font-weight:800;margin-top:4px">REPLY</button></div>`; }); document.getElementById('supportTicketsList').innerHTML=h||'No tickets'; }); }
 function replySupport(id){ let msg=document.getElementById('reply-'+id).value.trim(); if(!msg) return alert('Reply likho'); db.ref('supportTickets/'+id).update({reply:msg,status:'replied'}).then(()=>{ alert('Replied'); }); }
-
 function openCompleteModal(key){
  let t=tours.find(x=>x.key===key);
  if(!t){ alert('Tournament not found: '+key); return; }
@@ -280,7 +321,6 @@ function updateCompletePreview(){
  } else { modInfo.style.display='none'; }
 }
 document.addEventListener('input', e=>{ if(['win1_prize','win2_prize'].includes(e.target.id)) updateCompletePreview(); });
-
 function findUserByFFID(search){
  if(!search) return null;
  search=search.toLowerCase().trim();
@@ -312,7 +352,6 @@ async function findAndCredit(search, amount, tourKey, reason){
  return {success:true, uid:uid, email:foundEmail, newBal:newBal};
 }
 async function distributePrizeToUser(search, amount){ return await findAndCredit(search, amount, document.getElementById('completeKey').value, 'Tournament Winning'); }
-
 async function submitComplete(){
  let key=document.getElementById('completeKey').value; if(!key) return alert('No tournament');
  let t=tours.find(x=>x.key===key);
