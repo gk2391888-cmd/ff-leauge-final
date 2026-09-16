@@ -1,141 +1,295 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FF LEAGUE PRO ADMIN</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE TECH HUB - FF ADMIN PRO v3</title>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800;900&family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#080808;color:white;padding:10px}
-.header{background:#111;padding:15px;border-radius:12px;text-align:center;border:1px solid #ff004022}
-.stats{display:flex;gap:10px;margin:15px 0;overflow-x:auto}
-.stat{background:#1a1a1a;flex:1;min-width:110px;padding:15px;border-radius:12px;text-align:center;border-bottom:3px solid #ff0040}
-.stat h2{font-size:24px;color:#ff0040}
-.stat p{font-size:12px;color:#aaa}
-.card{background:#1a1a1a;padding:15px;border-radius:12px;margin:10px 0}
-input{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:none;background:#222;color:white}
-.btn{padding:10px 14px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin:2px}
-.btn-red{background:#ff0040;color:white}
-.btn-green{background:#00ff88;color:black}
-.btn-blue{background:#0088ff;color:white}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:10px;border-bottom:1px solid #222;text-align:left}
-th{color:#ff0040;position:sticky;top:0;background:#1a1a1a}
-.action-btn{padding:5px 8px;font-size:11px;border-radius:5px;border:none;cursor:pointer;margin:1px}
+:root{--red:#E11D2D;--black:#050507;--card:#111114;--border:#232326;--green:#00FF88}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:var(--black);color:#fff;display:flex;min-height:100vh}
+#login{position:fixed;inset:0;background:radial-gradient(800px at 50% -10%,#E11D2D22,#050507 80%);z-index:999;display:grid;place-items:center;padding:16px}
+.lbox{width:100%;max-width:420px;background:linear-gradient(180deg,#151519,#0E0E11);border:2px solid var(--red);border-radius:20px;padding:30px;box-shadow:0 20px 60px #000}
+.th{width:60px;height:60px;background:var(--red);border-radius:16px;display:grid;place-items:center;font-family:Orbitron;font-weight:900;font-size:28px;margin:0 auto}
+.inp{width:100%;padding:13px;background:#050507;border:1px solid var(--border);border-radius:10px;color:#fff;margin-top:10px;outline:none}
+.inp:focus{border-color:var(--red)}
+.btn{width:100%;background:var(--red);border:0;color:#fff;padding:13px;border-radius:10px;font-weight:900;margin-top:14px;cursor:pointer}
+.sidebar{width:260px;background:#08080A;border-right:3px solid var(--red);position:fixed;height:100vh;display:flex;flex-direction:column;z-index:10}
+.logo{padding:22px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--border)}
+.logo b{width:42px;height:42px;background:var(--red);display:grid;place-items:center;border-radius:8px;font-family:Orbitron}
+.menu{padding:12px;flex:1;overflow:auto}
+.menu a{display:flex;gap:12px;padding:12px 14px;border-radius:10px;color:#888;text-decoration:none;font-size:13px;font-weight:700;margin-bottom:4px;cursor:pointer}
+.menu a.active{background:var(--red);color:#fff}
+.main{margin-left:260px;flex:1}
+.top{padding:18px 28px;background:#0A0A0C;border-bottom:2px solid var(--red);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.badge{background:var(--red);padding:6px 14px;border-radius:20px;font-size:11px;font-weight:900}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:20px 28px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;border-bottom:3px solid var(--red)}
+.card h4{font-size:10px;color:#888;letter-spacing:1px;margin:8px 0 4px}.card h2{font-size:26px;font-family:Orbitron}
+.sec{margin:0 28px 18px 28px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+table{width:100%;border-collapse:collapse;font-size:12px} th{color:var(--red);text-align:left;padding:10px;border-bottom:1px solid var(--border)} td{padding:10px;border-bottom:1px solid #1A1A1E}
+.pill{background:#E11D2D22;color:var(--red);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;border:1px solid #E11D2D44}
+@media(max-width:900px){.sidebar{width:100%;height:auto;position:relative;border-right:0;border-bottom:3px solid var(--red)}.main{margin-left:0}.cards{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<div id="login" style="text-align:center;margin-top:80px">
-<h1>🔒 FF LEAGUE</h1><h3>PRO ADMIN PANEL</h3><br>
-<input type="password" id="pass" placeholder="Password" style="max-width:300px"><br><br>
-<button class="btn btn-red" onclick="login()">LOGIN</button>
-<p style="color:gray;font-size:12px;margin-top:10px">Pass: FFADMIN123</p>
+<div id="login"><div class="lbox">
+<div class="th">TH</div>
+<h1 style="font-family:Orbitron;text-align:center;margin-top:14px;font-size:20px">THE TECH HUB<br><span style="color:var(--red)">FF ADMIN PRO</span></h1>
+<p style="text-align:center;font-size:11px;color:#666;margin-top:6px">Super Admin + Moderator ID Card System<br>20% Commission Auto • Black/Red/White Theme</p>
+<button class="btn" onclick="googleLogin()"><i class="fa-brands fa-google"></i> Login with Google</button>
+<div style="margin-top:12px;background:#050507;padding:10px;border-radius:10px;border:1px dashed #222;font-size:11px;color:#555">
+Super Admin: gaurav.kumar.mail1109@gmail.com<br>Moderator: Firebase > moderators me add hoga TH001 se<br>TH001 Email se login kare toh auto moderator access
+</div>
+<p id="loginMsg" style="font-size:12px;margin-top:10px;color:#ff0033;text-align:center"></p>
+</div></div>
+
+<div class="sidebar">
+<div class="logo"><b>TH</b><div><div style="font-family:Orbitron;font-size:13px;font-weight:900">THE TECH HUB</div><div style="color:var(--red);font-size:11px;font-weight:900">FF LEAGUE • PRO ADMIN</div></div></div>
+<div class="menu">
+<a class="active" id="m-dashboard" onclick="showTab('dashboard')"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
+<a id="m-tour" onclick="showTab('tour')"><i class="fa-solid fa-trophy"></i> Tournaments + Profit</a>
+<a id="m-mods" onclick="showTab('mods')"><i class="fa-solid fa-id-badge"></i> Moderators (TH ID)</a>
+<a id="m-recharge" onclick="showTab('recharge')"><i class="fa-solid fa-wallet"></i> Recharge Requests</a>
+<a id="m-withdraw" onclick="showTab('withdraw')"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw Requests</a>
+<a id="m-users" onclick="showTab('users')"><i class="fa-solid fa-users"></i> All Users + Wallet</a>
+<a id="m-joins" onclick="showTab('joins')"><i class="fa-solid fa-gamepad"></i> Live Joins</a>
+<a onclick="logout()" style="margin-top:20px;color:#ff4444"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</div>
+<div style="padding:14px;font-size:10px;color:#444">v3.0 TH Pro<br>Firebase: ff-leauge<br>Theme: Black/Red/White</div>
 </div>
 
-<div id="main" style="display:none">
-<div class="header"><h2>🔥 FF LEAGUE - PRO CONTROL</h2><p id="liveTime"></p></div>
+<div class="main">
+<div class="top"><h2 id="title" style="font-family:Orbitron">DASHBOARD</h2><div style="display:flex;gap:10px;align-items:center"><span id="uEmail" style="font-size:12px;color:#888"></span><span class="badge" id="roleBadge">LOADING</span></div></div>
 
-<div class="stats">
-<div class="stat"><h2 id="totalUsers">0</h2><p>TOTAL USERS</p></div>
-<div class="stat" style="border-color:#00ff88"><h2 id="totalBal">₹0</h2><p>WALLET BALANCE</p></div>
-<div class="stat" style="border-color:#0088ff"><h2 id="totalActive">0</h2><p>ACTIVE</p></div>
+<div id="tab-dashboard">
+<div class="cards">
+<div class="card"><i class="fa-solid fa-users" style="color:var(--red)"></i><h4>TOTAL USERS</h4><h2 id="stUsers">0</h2></div>
+<div class="card" style="border-color:var(--green)"><i class="fa-solid fa-sack-dollar" style="color:var(--green)"></i><h4>TOTAL WALLET</h4><h2 id="stBal">₹0</h2></div>
+<div class="card" style="border-color:#ffcc00"><i class="fa-solid fa-trophy" style="color:#ffcc00"></i><h4>TOURNAMENTS</h4><h2 id="stTours">0</h2><small id="stActive" style="color:var(--green)"></small></div>
+<div class="card" style="border-color:#fff"><i class="fa-solid fa-chart-line" style="color:#fff"></i><h4>TOTAL PROFIT</h4><h2 id="stProfit">₹0</h2><small style="color:#888">Mod 20% = <b id="stComm" style="color:#ffcc00">₹0</b></small></div>
 </div>
-
-<div class="card">
-<h3>💰 WALLET CONTROL</h3>
-<input type="text" id="searchFFID" placeholder="FF ID Daalo (e.g. 2123456789)">
-<div style="display:flex;gap:5px">
-<input type="number" id="amount" placeholder="Amount ₹">
-<button class="btn btn-green" onclick="updateBal(1)">+ ADD</button>
-<button class="btn btn-red" onclick="updateBal(-1)">- CUT</button>
-</div>
-<p id="balMsg" style="font-size:12px;margin-top:5px"></p>
+<div class="sec"><h3 style="font-family:Orbitron">PROFIT BREAKDOWN • COLLECTION - PRIZE = PROFIT • 20% MOD</h3><div style="overflow:auto;margin-top:12px"><table><thead><tr><th>Title</th><th>Mod ID</th><th>Entry x Slots</th><th>Collection</th><th>Prize Pool</th><th>Profit</th><th>Mod 20%</th><th>Your 80%</th></tr></thead><tbody id="dashTable"></tbody></table></div></div>
 </div>
 
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<h3>👥 ALL PLAYERS LIVE</h3>
-<button class="btn btn-blue" onclick="loadData()">🔄 REFRESH</button>
+<div id="tab-tour" style="display:none">
+<div class="sec" style="border:2px solid var(--red)"><h3 style="font-family:Orbitron">CREATE / EDIT TOURNAMENT • AUTO 20% CALC</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+<input id="tKey" type="hidden">
+<input class="inp" id="tTitle" placeholder="Title e.g. SOLO OP #101" style="grid-column:1/3">
+<input class="inp" id="tEntry" type="number" placeholder="Entry Fee ₹" oninput="calc()">
+<input class="inp" id="tTotal" type="number" placeholder="Total Slots" oninput="calc()">
+<input class="inp" id="tPrize" type="number" placeholder="Prize Pool ₹ (Auto 85% if empty)" oninput="calc()">
+<input class="inp" id="tFirst" type="number" placeholder="🥇 1st Prize">
+<input class="inp" id="tSecond" type="number" placeholder="🥈 2nd Prize">
+<input class="inp" id="tThird" type="number" placeholder="🥉 3rd Prize">
+<input class="inp" id="tKill" type="number" placeholder="💀 Per Kill ₹">
+<input class="inp" id="tRoomId" placeholder="Room ID">
+<input class="inp" id="tRoomPass" placeholder="Room Password">
+<select class="inp" id="tMod" style="grid-column:1/3"><option value="">Assign to Moderator TH ID (Optional)</option></select>
+<input class="inp" id="tTime" type="datetime-local" style="border:1px solid #ffcc00;grid-column:1/3">
 </div>
-<input type="text" id="search" placeholder="🔍 Search ID Name / FF ID..." onkeyup="filterTable()">
-<div style="overflow:auto;max-height:60vh;margin-top:10px">
-<table>
-<thead><tr><th>FF ID</th><th>ID NAME</th><th>MATCH</th><th>BAL</th><th>UTR</th><th>ACTION</th></tr></thead>
-<tbody id="userTable"><tr><td colspan="6" style="text-align:center;color:gray">Loading...</td></tr></tbody>
-</table>
+<div id="profitBox" style="margin-top:12px;background:#050507;border:1px dashed var(--red);padding:12px;border-radius:10px;font-size:12px">Collection: ₹0 | Prize: ₹0 | Profit: ₹0 | Mod 20%: ₹0 | Your 80%: ₹0</div>
+<button class="btn" onclick="saveTour()">SAVE TO FIREBASE</button>
 </div>
+<div class="sec"><div id="tourList"></div></div>
 </div>
+
+<div id="tab-mods" style="display:none">
+<div class="sec" style="border:2px solid var(--green)"><h3 style="color:var(--green);font-family:Orbitron">MODERATOR MANAGEMENT • ID CARD + 20% COMMISSION</h3>
+<p style="font-size:11px;color:#888">Super Admin only. ID Card jaise TH001, TH002. Moderator isi email se Google login karega.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+<input class="inp" id="modId" placeholder="ID Card No. TH001">
+<input class="inp" id="modName" placeholder="Name">
+<input class="inp" id="modEmail" placeholder="Email (Google login wala)">
+<input class="inp" id="modPerc" type="number" value="20">
+</div>
+<button class="btn" style="background:var(--green);color:#000" onclick="addMod()">ADD MODERATOR</button>
+<div id="modList" style="margin-top:14px"></div>
+</div>
+<div class="sec"><h3>COMMISSION REPORT • Payout After 20 Days</h3><div id="commReport" style="margin-top:10px;font-size:12px"></div></div>
+</div>
+
+<div id="tab-recharge" style="display:none"><div class="sec"><h3>RECHARGE REQUESTS</h3><div id="rechargeList" style="margin-top:12px"></div></div></div>
+<div id="tab-withdraw" style="display:none"><div class="sec"><h3>WITHDRAW REQUESTS</h3><div id="withdrawList" style="margin-top:12px"></div></div></div>
+<div id="tab-users" style="display:none"><div class="sec"><h3>ALL USERS • WALLET CONTROL</h3><input class="inp" id="userSearch" placeholder="Search Email / FF ID" oninput="filterUsers()"><div style="overflow:auto;max-height:600px;margin-top:12px"><table><thead><tr><th>FF ID</th><th>Name / Email</th><th>Wallet</th><th>Joins</th><th>Action</th></tr></thead><tbody id="usersTable"></tbody></table></div></div></div>
+<div id="tab-joins" style="display:none"><div class="sec"><h3>LIVE JOINS • MODERATOR WISE</h3><div id="joinsList" style="margin-top:12px"></div></div></div>
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNy1vDbj9OLX3xitrV-z8SFJZLtCRnvY-LaldPuKrBeW2TtBavdhki8oIgHBYR9MpaQ/exec';
-let allUsers = [];
+const SUPER="gaurav.kumar.mail1109@gmail.com";
+const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomain:"ff-leauge.firebaseapp.com",databaseURL:"https://ff-leauge-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"ff-leauge",storageBucket:"ff-leauge.firebasestorage.app",messagingSenderId:"26073423984",appId:"1:26073423984:web:f14329a6fa1506ec14b5"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(), db=firebase.database();
+let cur=null, isSuper=false, curModId='', tours=[], users=[], joins=[], mods=[];
 
-function login(){
- if(document.getElementById('pass').value=='FFADMIN123'){
-  document.getElementById('login').style.display='none';
-  document.getElementById('main').style.display='block';
-  loadData();
-  setInterval(loadData, 10000);
- } else alert('Wrong Password');
- setInterval(()=>{document.getElementById('liveTime').innerText=new Date().toLocaleString()},1000);
+function showTab(id){
+ document.querySelectorAll('[id^="tab-"]').forEach(d=>d.style.display='none');
+ document.getElementById('tab-'+id).style.display='block';
+ document.querySelectorAll('.menu a').forEach(a=>a.classList.remove('active'));
+ document.getElementById('m-'+id).classList.add('active');
+ document.getElementById('title').innerText=id.toUpperCase();
 }
 
-async function loadData(){
- try{
-  let res = await fetch(SCRIPT_URL);
-  allUsers = await res.json();
-  renderTable(allUsers);
-  document.getElementById('totalUsers').innerText = allUsers.length;
-  document.getElementById('totalActive').innerText = allUsers.filter(u=>u.status=='ACTIVE').length;
-  let total = allUsers.reduce((s,u)=>s+ (parseFloat(u.balance)||0),0);
-  document.getElementById('totalBal').innerText = '₹'+total;
- }catch(e){console.log(e)}
+auth.onAuthStateChanged(async u=>{
+ if(!u){ document.getElementById('login').style.display='grid'; return; }
+ let superCheck = u.email.toLowerCase()===SUPER.toLowerCase();
+ let modSnap = await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');
+ let modExists = modSnap.exists();
+ if(!superCheck &&!modExists){
+   document.getElementById('loginMsg').innerText='Access Denied: '+u.email+' not added as moderator. Ask Super Admin to add TH001.';
+   return;
+ }
+ cur=u; isSuper=superCheck;
+ let modData = modExists? Object.values(modSnap.val())[0] : null;
+ curModId = modData? modData.idCard : 'SUPER ADMIN';
+ document.getElementById('login').style.display='none';
+ document.getElementById('uEmail').innerText=u.email;
+ document.getElementById('roleBadge').innerText= isSuper? 'SUPER ADMIN' : 'MODERATOR '+curModId;
+ loadAll();
+});
+
+function googleLogin(){ auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+function logout(){ auth.signOut().then(()=>location.reload()); }
+
+function calc(){
+ let e=parseInt(document.getElementById('tEntry').value)||0;
+ let s=parseInt(document.getElementById('tTotal').value)||0;
+ let p=parseInt(document.getElementById('tPrize').value)||0;
+ if(!p && e && s) p=Math.floor(e*s*0.85);
+ let coll=e*s; let profit=coll-p; let mod=Math.floor(profit*0.2); let own=profit-mod;
+ document.getElementById('profitBox').innerHTML=`Collection: <b>₹${coll}</b> | Prize: ₹${p} | <span style="color:var(--green)">Profit: ₹${profit}</span> | Mod 20%: <b style="color:#ffcc00">₹${mod}</b> | Your 80%: <b>₹${own}</b>`;
 }
 
-function renderTable(users){
- let html = '';
- users.slice().reverse().forEach(u=>{
-  html+=`<tr>
-   <td><b>${u.ffid}</b><br><small style="color:gray">${new Date(u.time).toLocaleDateString()}</small></td>
-   <td>${u.idname}</td>
-   <td><span style="background:#ff004022;color:#ff0040;padding:3px 6px;border-radius:10px;font-size:10px">${u.match}</span></td>
-   <td style="color:#00ff88;font-weight:bold">₹${u.balance||0}</td>
-   <td><small>${(u.utr||'').substring(0,8)}..</small></td>
-   <td>
-    <button class="action-btn" style="background:#00ff88" onclick="quickAdd('${u.ffid}',10)">+10</button>
-    <button class="action-btn" style="background:#ffaa00" onclick="quickAdd('${u.ffid}',-10)">-10</button>
-    <button class="action-btn" style="background:#0088ff;color:white" onclick="copyID('${u.ffid}')">COPY</button>
-   </td>
-  </tr>`;
+function loadAll(){
+ db.ref('tournaments').on('value',s=>{
+   tours=[]; s.forEach(c=>{let v=c.val();v.key=c.key;tours.push(v);});
+   document.getElementById('stTours').innerText=tours.length;
+   renderDash(); renderTours();
  });
- document.getElementById('userTable').innerHTML = html || '<tr><td colspan="6">No users</td></tr>';
+ db.ref('users').on('value',s=>{
+   users=[]; let tot=0; s.forEach(c=>{let v=c.val();v.uid=c.key;users.push(v);tot+=(v.wallet||0);});
+   document.getElementById('stUsers').innerText=users.length;
+   document.getElementById('stBal').innerText='₹'+tot;
+   renderUsers();
+ });
+ db.ref('joins').on('value',s=>{ joins=[]; s.forEach(c=>joins.push({...c.val(),key:c.key})); renderJoins(); renderDash(); });
+ db.ref('moderators').on('value',s=>{
+   mods=[]; s.forEach(c=>{let v=c.val();v.key=c.key;mods.push(v);});
+   renderMods();
+ });
+ db.ref('walletRecharges').orderByChild('status').equalTo('pending').on('value',s=>{
+   let h=''; if(!s.exists()) h='No pending'; else s.forEach(c=>{let r=c.val(); h+=`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between"><div><b style="color:var(--green)">₹${r.amount}</b> UTR ${r.utr}<br><small>${r.email}</small></div><div><button onclick="approveRecharge('${c.key}','${r.uid}',${r.amount})" style="background:var(--green);border:0;padding:8px 12px;border-radius:8px;font-weight:900">APPROVE</button> <button onclick="db.ref('walletRecharges/${c.key}').update({status:'rejected'})" style="background:var(--red);border:0;padding:8px 12px;border-radius:8px;color:#fff">REJECT</button></div></div>`;});
+   document.getElementById('rechargeList').innerHTML=h;
+ });
+ db.ref('withdrawRequests').orderByChild('status').equalTo('pending').on('value',s=>{
+   let h=''; if(!s.exists()) h='No pending'; else s.forEach(c=>{let r=c.val(); h+=`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:10px;margin-top:8px"><b>₹${r.amount}</b> → ${r.upi}<br><small>${r.email}</small><br><button onclick="db.ref('withdrawRequests/${c.key}').update({status:'approved'})" style="background:var(--green);border:0;padding:8px 12px;border-radius:8px;margin-top:6px;font-weight:900">MARK PAID</button> <button onclick="rejectWithdraw('${c.key}','${r.uid}',${r.amount})" style="background:var(--red);border:0;padding:8px 12px;border-radius:8px;color:#fff;margin-top:6px">REJECT & REFUND</button></div>`;});
+   document.getElementById('withdrawList').innerHTML=h;
+ });
 }
 
-function filterTable(){
- let q = document.getElementById('search').value.toLowerCase();
- let filtered = allUsers.filter(u=> (u.ffid+'').toLowerCase().includes(q) || (u.idname+'').toLowerCase().includes(q));
- renderTable(filtered);
+function renderDash(){
+ let totalProfit=0, totalComm=0;
+ document.getElementById('dashTable').innerHTML=tours.slice().reverse().map(t=>{
+   let coll=(t.entry||0)*(t.total||0);
+   let prize=t.prizePool||t.prize||Math.floor(coll*0.85);
+   let profit=coll-prize; let mod=Math.floor(profit*0.2); let own=profit-mod;
+   totalProfit+=profit; totalComm+=mod;
+   return `<tr><td>${t.title}</td><td><span class="pill">${t.moderatorId||'NONE'}</span></td><td>${t.entry} x ${t.total}</td><td>₹${coll}</td><td>₹${prize}</td><td style="color:var(--green)">₹${profit}</td><td style="color:#ffcc00">₹${mod}</td><td>₹${own}</td></tr>`;
+ }).join('');
+ document.getElementById('stProfit').innerText='₹'+totalProfit;
+ document.getElementById('stComm').innerText='₹'+totalComm;
+ document.getElementById('stActive').innerText=tours.filter(t=>t.status!=='COMPLETED').length+' Active';
 }
 
-async function updateBal(type){
- let ffid = document.getElementById('searchFFID').value;
- let amt = parseFloat(document.getElementById('amount').value);
- if(!ffid ||!amt) return alert('FF ID aur Amount daalo');
- amt = amt * type;
- document.getElementById('balMsg').innerText = 'Updating...';
- let form = new FormData();
- form.append('action','updateBalance'); form.append('ffid',ffid); form.append('amount',amt);
- await fetch(SCRIPT_URL,{method:'POST',body:form});
- document.getElementById('balMsg').innerText = `✅ ${ffid} ka balance ${amt>0?'+':''}${amt} kar diya!`;
- loadData();
+function renderTours(){
+ document.getElementById('tourList').innerHTML=tours.map(t=>{
+   let profit=(t.entry*t.total)-(t.prizePool||0); let comm=Math.floor(profit*0.2);
+   return `<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between;align-items:center"><div><b>${t.title}</b> | ₹${t.entry} | ${t.slots||0}/${t.total} | Mod: <span class="pill">${t.moderatorId||'None'}</span> | Profit ₹${profit} | 20% ₹${comm}<br><small style="color:#888">${t.matchTime||t.time||''}</small></div><div><button onclick="editTour('${t.key}')" style="background:#ffcc00;border:0;padding:6px 10px;border-radius:6px;font-weight:800">EDIT</button> <button onclick="if(confirm('Delete?')) db.ref('tournaments/${t.key}').remove()" style="background:var(--red);border:0;padding:6px 10px;border-radius:6px;color:#fff">DEL</button></div></div>`;
+ }).join('');
 }
 
-function quickAdd(ffid, amt){
- document.getElementById('searchFFID').value = ffid;
- document.getElementById('amount').value = Math.abs(amt);
- updateBal(amt>0?1:-1);
+function saveTour(){
+ let key=document.getElementById('tKey').value;
+ let entry=parseInt(document.getElementById('tEntry').value)||0;
+ let total=parseInt(document.getElementById('tTotal').value)||0;
+ let prize=parseInt(document.getElementById('tPrize').value)||Math.floor(entry*total*0.85);
+ let data={
+   title:document.getElementById('tTitle').value,
+   entry:entry,total:total,prizePool:prize,prize:prize,
+   firstPrize:parseInt(document.getElementById('tFirst').value)||0,
+   secondPrize:parseInt(document.getElementById('tSecond').value)||0,
+   thirdPrize:parseInt(document.getElementById('tThird').value)||0,
+   killPrize:parseInt(document.getElementById('tKill').value)||0,
+   roomId:document.getElementById('tRoomId').value,
+   roomPass:document.getElementById('tRoomPass').value,
+   moderatorId:document.getElementById('tMod').value||'',
+   matchTime:document.getElementById('tTime').value,
+   time:document.getElementById('tTime').value||'Soon',
+   status:'REGISTRATION',slots:0,map:'Bermuda',type:'SOLO'
+ };
+ if(key) db.ref('tournaments/'+key).update(data); else db.ref('tournaments').push(data);
+ alert('Saved! Mod: '+(data.moderatorId||'None')); document.getElementById('tKey').value='';
 }
-function copyID(id){navigator.clipboard.writeText(id);alert('Copied: '+id)}
+function editTour(k){
+ let t=tours.find(x=>x.key===k); if(!t) return;
+ document.getElementById('tKey').value=k;
+ document.getElementById('tTitle').value=t.title||'';
+ document.getElementById('tEntry').value=t.entry||'';
+ document.getElementById('tTotal').value=t.total||'';
+ document.getElementById('tPrize').value=t.prizePool||'';
+ document.getElementById('tFirst').value=t.firstPrize||'';
+ document.getElementById('tSecond').value=t.secondPrize||'';
+ document.getElementById('tThird').value=t.thirdPrize||'';
+ document.getElementById('tKill').value=t.killPrize||'';
+ document.getElementById('tRoomId').value=t.roomId||'';
+ document.getElementById('tRoomPass').value=t.roomPass||'';
+ document.getElementById('tTime').value=t.matchTime||'';
+ document.getElementById('tMod').value=t.moderatorId||'';
+ calc(); showTab('tour');
+}
+function renderUsers(){
+ let tb=document.getElementById('usersTable');
+ tb.innerHTML=users.slice().reverse().map(u=>{
+   return `<tr><td><b>${u.ffid||u.lastFFID||'-'}</b></td><td>${u.ffname||u.displayName||'-'}<br><small style="color:#888">${u.email||''}</small></td><td style="color:var(--green)">₹${u.wallet||0}</td><td>${joins.filter(j=>j.uid===u.uid).length}</td><td><button onclick="quickAdd('${u.uid}',10)" style="background:var(--green);border:0;padding:5px 8px;border-radius:6px">+10</button> <button onclick="quickAdd('${u.uid}',-10)" style="background:var(--red);border:0;padding:5px 8px;border-radius:6px;color:#fff">-10</button></td></tr>`;
+ }).join('');
+}
+function filterUsers(){
+ let q=document.getElementById('userSearch').value.toLowerCase();
+ let f=users.filter(u=> (u.email||'').toLowerCase().includes(q) || (u.ffid||'').toLowerCase().includes(q));
+ document.getElementById('usersTable').innerHTML=f.map(u=>`<tr><td>${u.ffid||'-'}</td><td>${u.email}</td><td>₹${u.wallet||0}</td><td>${joins.filter(j=>j.uid===u.uid).length}</td><td><button onclick="quickAdd('${u.uid}',10)" style="background:var(--green);border:0;padding:4px 8px;border-radius:6px">+10</button></td></tr>`).join('');
+}
+function quickAdd(uid,amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{let b=s.val()||0; db.ref('users/'+uid+'/wallet').set(b+amt);}); }
+function approveRecharge(id,uid,amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{let b=s.val()||0; db.ref('users/'+uid+'/wallet').set(b+amt).then(()=> db.ref('walletRecharges/'+id).update({status:'approved'}));}); }
+function rejectWithdraw(id,uid,amt){ db.ref('users/'+uid+'/wallet').once('value').then(s=>{let b=s.val()||0; db.ref('users/'+uid+'/wallet').set(b+amt).then(()=> db.ref('withdrawRequests/'+id).update({status:'rejected'}));}); }
+function addMod(){
+ if(!isSuper) return alert('Only Super Admin can add moderators');
+ let id=document.getElementById('modId').value.trim().toUpperCase();
+ let name=document.getElementById('modName').value.trim();
+ let email=document.getElementById('modEmail').value.trim().toLowerCase();
+ let perc=parseInt(document.getElementById('modPerc').value)||20;
+ if(!id||!email) return alert('Enter ID and Email');
+ db.ref('moderators').push({idCard:id,name:name,email:email,commission:perc,totalEarn:0,created:Date.now()});
+ alert('Moderator '+id+' added!'); document.getElementById('modId').value=''; document.getElementById('modName').value=''; document.getElementById('modEmail').value='';
+}
+function renderMods(){
+ document.getElementById('modList').innerHTML=mods.map(m=>`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between"><div><b style="color:var(--green)">${m.idCard}</b> - ${m.name}<br><small>${m.email}</small> | ${m.commission}% | Earn ₹${m.totalEarn||0}</div><div><button onclick="if(confirm('Remove?')) db.ref('moderators/${m.key}').remove()" style="background:var(--red);border:0;padding:6px 10px;border-radius:6px;color:#fff">DEL</button></div></div>`).join('')||'No moderators';
+ document.getElementById('tMod').innerHTML='<option value="">Assign to Moderator (Optional)</option>'+mods.map(m=>`<option value="${m.idCard}">${m.idCard} - ${m.name} (${m.commission}%)</option>`).join('');
+ let report=''; mods.forEach(m=>{
+   let myT=tours.filter(t=>t.moderatorId===m.idCard);
+   let profit=0; myT.forEach(t=>{ profit+= (t.entry*t.total) - (t.prizePool||0); });
+   let comm=Math.floor(profit*(m.commission||20)/100);
+   report+=`<div style="margin-top:6px;background:#0f0f12;padding:8px;border-radius:8px;border-left:3px solid var(--green)">🛡️ ${m.idCard} | Tours ${myT.length} | Profit ₹${profit} | <b style="color:#ffcc00">20% Commission = ₹${comm}</b> | Payout after 20 days</div>`;
+ });
+ document.getElementById('commReport').innerHTML=report||'No commission yet';
+}
+function renderJoins(){
+ document.getElementById('joinsList').innerHTML=joins.slice().reverse().slice(0,100).map(j=>`<div style="background:#0f0f12;border:1px solid #222;padding:8px;border-radius:8px;margin-top:6px;display:flex;justify-content:space-between"><div><b>${j.ffid}</b> - ${j.ffname} | ${j.title}<br><small>${j.email}</small></div><div><span class="pill">${j.moderatorId||'NO MOD'}</span></div></div>`).join('')||'No joins yet';
+}
 </script>
 </body>
 </html>
