@@ -35,7 +35,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .slot-fill{height:100%;background:linear-gradient(90deg,var(--green),#00cc66);transition:width 0.5s}
 .btn-join{width:100%;padding:13px;background:linear-gradient(90deg,var(--red),#ff4d00);color:#fff;border:none;border-radius:12px;font-weight:900;font-family:Orbitron;font-size:12px;cursor:pointer}
 .wallet-card{background:linear-gradient(135deg,var(--red) 0%,#7a0000 100%);border-radius:24px;padding:20px;margin:16px}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,12,0.98);border-top:2px solid var(--red);display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,12,0.98);border-top:2px solid var(--red);display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100;overflow-x:auto}.bottom .b-item{flex:1 0 0;min-width:58px}
 .b-item{text-align:center;opacity:.5;font-size:8px;font-weight:700;cursor:pointer;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}.b-item i{font-size:18px}.b-item.active{opacity:1;color:var(--red)}
 .b-item.admin-only{display:none}.b-item.admin-only.show{display:flex}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;padding:12px;justify-content:center;align-items:flex-start;overflow-y:auto}.modal.open{display:flex}
@@ -343,7 +343,8 @@ auth.onAuthStateChanged(async u=>{
   if(logoutBtn) logoutBtn.style.display='block';
   if(loginBtn) loginBtn.disabled=false;
 
-  isSuperAdmin=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;
+  const authEmails=[u.email,...(u.providerData||[]).map(p=>p&&p.email)].filter(Boolean).map(e=>String(e).trim().toLowerCase());
+  isSuperAdmin=authEmails.includes(SUPER_ADMIN_EMAIL);
   isAdmin=isSuperAdmin;
   currentModId='';
 
@@ -397,10 +398,29 @@ auth.onAuthStateChanged(async u=>{
     }
     pic.src=photo||fallback;
   }
+  if(isAdmin){
+    let mobileAdmin=document.getElementById('mobileAdminQuick');
+    if(!mobileAdmin){
+      mobileAdmin=document.createElement('button');
+      mobileAdmin.id='mobileAdminQuick';
+      mobileAdmin.innerText='ADMIN PANEL';
+      mobileAdmin.onclick=()=>openAdmin();
+      mobileAdmin.style.cssText='position:fixed;right:12px;bottom:78px;z-index:250;background:#ffcc00;color:#000;border:0;border-radius:10px;padding:9px 12px;font-weight:900;font-size:10px;box-shadow:0 4px 14px #0008;';
+      document.body.appendChild(mobileAdmin);
+    }
+    mobileAdmin.style.display='block';
+  }
   setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':(isAdmin?'MODERATOR '+currentModId:'PLAYER'));
   if(isAdmin){
-    document.getElementById('adminHeaderBtn')?.classList.add('show');
-    document.getElementById('adminBottomBtn')?.classList.add('show');
+    const hb=document.getElementById('adminHeaderBtn');
+    const bb=document.getElementById('adminBottomBtn');
+    if(hb){hb.classList.add('show');hb.style.display='block';}
+    if(bb){bb.classList.add('show');bb.style.display='flex';}
+  } else {
+    const hb=document.getElementById('adminHeaderBtn');
+    const bb=document.getElementById('adminBottomBtn');
+    if(hb){hb.classList.remove('show');hb.style.display='none';}
+    if(bb){bb.classList.remove('show');bb.style.display='none';}
   }
 
   // Profile sync is non-critical and must never affect authentication UI.
@@ -425,6 +445,7 @@ auth.onAuthStateChanged(async u=>{
   }
 });
 function logout(){
+  const mobileAdmin=document.getElementById('mobileAdminQuick'); if(mobileAdmin) mobileAdmin.remove();
   localStorage.removeItem('ff_auth_seen');
   localStorage.removeItem('ff_login_pending');
   auth.signOut().then(()=>location.reload());
