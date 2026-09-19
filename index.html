@@ -279,36 +279,174 @@ async function submitComplete(){
     statusEl.innerText='Error: '+err.message+'\nPayout lock kept to prevent duplicate payments. Resolve before retrying.';
   }
 }
-function googleLogin(){
+let redirectLoginInProgress = false;
+
+async function googleLogin(){
   const btn=document.getElementById('gLoginBtn');
   const err=document.getElementById('loginErr');
-  if(btn){btn.innerText='Redirecting to Google...';btn.disabled=true;}
-  if(err) err.innerText='Redirecting to Google, please wait...';
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({prompt:'select_account'});
-  const isMobile = /Android|iPhone|iPad|WhatsApp/i.test(navigator.userAgent);
-  if(isMobile){
-    auth.signInWithRedirect(provider).catch((e)=>{
-      if(err) err.innerText = e.message;
-      if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
-    });
-  } else {
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithPopup(provider)).catch((e)=>{
-      if(err) err.innerText = 'Popup blocked, redirecting... '+e.code;
-      setTimeout(()=>auth.signInWithRedirect(provider), 500);
-    });
+
+  try{
+    if(btn){btn.innerText='Connecting...';btn.disabled=true;}
+    if(err) err.innerText='';
+
+    // Do not keep an old login alive when the user explicitly starts login again.
+    if(auth.currentUser){
+      await auth.signOut();
+    }
+
+    // SESSION is safer for this web app than LOCAL persistence.
+    await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+
+    const provider=new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt:'select_account'});
+
+    const isMobile=/Android|iPhone|iPad|iPod|Mobile|WhatsApp/i.test(navigator.userAgent);
+
+    if(isMobile){
+      redirectLoginInProgress=true;
+      if(btn) btn.innerText='Opening Google...';
+      await auth.signInWithRedirect(provider);
+    }else{
+      if(btn) btn.innerText='Opening Google...';
+      await auth.signInWithPopup(provider);
+    }
+  }catch(e){
+    console.error('Google Login Error:',e);
+    redirectLoginInProgress=false;
+    if(err) err.innerText='Login failed: '+(e.code||e.message);
+    if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
   }
 }
+
+// Resolve mobile redirect login. This must run before relying on the auth state.
 auth.getRedirectResult().then((result)=>{
-  if(result && result.user){console.log('Login success', result.user.email);}
+  redirectLoginInProgress=false;
+  if(result && result.user){
+    console.log('Google redirect login success:',result.user.email);
+  }
 }).catch((e)=>{
-  const err=document.getElementById('loginErr'); const btn=document.getElementById('gLoginBtn');
-  if(err) err.innerText='Error: '+e.code+' - '+e.message;
-  if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
+  redirectLoginInProgress=false;
+  console.error('Redirect login error:',e);
+  const err=document.getElementById('loginErr');
+  const btn=document.getElementById('gLoginBtn');
+  if(err) err.innerText='Login error: '+(e.code||e.message);
+  if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
 });
+
 let authStateResolved=false;
-auth.onAuthStateChanged(async u=>{authStateResolved=true;if(u){currentUser=u;let isSuper=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;let modSnap=await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');let isMod=modSnap.exists();let modData=isMod? Object.values(modSnap.val())[0]:null;isSuperAdmin=isSuper;isAdmin=isSuper||isMod;currentModId=modData?modData.idCard:'';db.ref('users/'+u.uid).once('value').then(snap=>{let ex=snap.val()||{};db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});});document.getElementById('loginScreen').style.display='none';document.getElementById('userInfo').style.display='block';document.getElementById('logoutBtn').style.display='block';document.getElementById('userName').innerText=u.displayName||'User';document.getElementById('userEmail').innerText=u.email + (currentModId?' | '+currentModId:'');document.getElementById('profileName').innerText=u.displayName||'User';document.getElementById('profileEmail').innerText=u.email;document.getElementById('profilePic').src=u.photoURL||'';document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');if(isAdmin){document.getElementById('adminHeaderBtn').classList.add('show');document.getElementById('adminBottomBtn').classList.add('show');}loadWallet();loadMyRoom();loadWalletHistory();loadMyRecharges();loadMyWithdraws();loadLeaderboard();loadMyTickets();if(isAdmin){loadMods();loadAllUsersWallet();loadWalletRequests();loadWithdrawRequests();loadAllSupportTickets();}}else{currentUser=null;document.getElementById('loginScreen').style.display='flex';let b=document.getElementById('gLoginBtn');if(b){b.innerText='Continue with Google';b.disabled=false;}}});
-function logout(){auth.signOut().then(()=>location.reload());}
+auth.onAuthStateChanged(async u=>{
+  authStateResolved=true;
+
+  if(!u){
+    currentUser=null;
+    isAdmin=false;
+    isSuperAdmin=false;
+    currentModId='';
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('userInfo').style.display='none';
+    document.getElementById('logoutBtn').style.display='none';
+    document.getElementById('adminHeaderBtn').classList.remove('show');
+    document.getElementById('adminBottomBtn').classList.remove('show');
+    const b=document.getElementById('gLoginBtn');
+    if(b){b.innerText='Continue with Google';b.disabled=false;}
+    return;
+  }
+
+  currentUser=u;
+  const email=(u.email||'').trim().toLowerCase();
+
+  // Super admin is determined directly from the authenticated Google email.
+  // This does NOT depend on the moderators database, so the admin can log in
+  // successfully even if the moderators query is slow or temporarily denied.
+  const isSuper=email===SUPER_ADMIN_EMAIL;
+  let isMod=false;
+  let modData=null;
+
+  if(!isSuper){
+    try{
+      const modSnap=await db.ref('moderators')
+        .orderByChild('email')
+        .equalTo(email)
+        .once('value');
+      isMod=modSnap.exists();
+      if(isMod){
+        const vals=Object.values(modSnap.val()||{});
+        modData=vals[0]||null;
+      }
+    }catch(e){
+      console.warn('Moderator lookup failed:',e);
+    }
+  }
+
+  isSuperAdmin=isSuper;
+  isAdmin=isSuper||isMod;
+  currentModId=modData&&modData.idCard?modData.idCard:'';
+
+  // Always open the authenticated app first. Admin controls are then enabled
+  // from the verified email/role above.
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userInfo').style.display='block';
+  document.getElementById('logoutBtn').style.display='block';
+
+  document.getElementById('userName').innerText=u.displayName||'User';
+  document.getElementById('userEmail').innerText=(u.email||'')+(currentModId?' | '+currentModId:'');
+  document.getElementById('profileName').innerText=u.displayName||'User';
+  document.getElementById('profileEmail').innerText=u.email||'';
+  document.getElementById('profilePic').src=u.photoURL||'';
+  document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');
+
+  const adminHeader=document.getElementById('adminHeaderBtn');
+  const adminBottom=document.getElementById('adminBottomBtn');
+  if(isAdmin){
+    adminHeader.classList.add('show');
+    adminBottom.classList.add('show');
+  }else{
+    adminHeader.classList.remove('show');
+    adminBottom.classList.remove('show');
+  }
+
+  // Keep the user record in sync without blocking the login UI.
+  db.ref('users/'+u.uid).once('value').then(snap=>{
+    const ex=snap.val()||{};
+    return db.ref('users/'+u.uid).update({
+      email:u.email||ex.email||'',
+      displayName:u.displayName||ex.displayName||'Unknown',
+      photoURL:u.photoURL||'',
+      wallet:ex.wallet!=null?ex.wallet:0,
+      lastLogin:Date.now()
+    });
+  }).catch(e=>console.warn('User profile sync failed:',e));
+
+  loadWallet();
+  loadMyRoom();
+  loadWalletHistory();
+  loadMyRecharges();
+  loadMyWithdraws();
+  loadLeaderboard();
+  loadMyTickets();
+
+  if(isAdmin){
+    loadMods();
+    loadAllUsersWallet();
+    loadWalletRequests();
+    loadWithdrawRequests();
+    loadAllSupportTickets();
+  }
+});
+
+async function logout(){
+  try{
+    await auth.signOut();
+    currentUser=null;
+    isAdmin=false;
+    isSuperAdmin=false;
+    currentModId='';
+    location.reload();
+  }catch(e){
+    console.error('Logout Error:',e);
+    alert('Logout failed. Please try again.');
+  }
+}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
 function closePay(){document.getElementById('payModal').classList.remove('open');}
 function openRecharge(){document.getElementById('rechargeModal').classList.add('open');updateQR();}
