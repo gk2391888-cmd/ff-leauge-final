@@ -364,7 +364,9 @@ auth.onAuthStateChanged(async u=>{
 
   const name=u.displayName||'User';
   const email=u.email||'';
-  const photo=u.photoURL||'';
+  const providerPhoto=((u.providerData||[]).find(p=>p && p.photoURL)||{}).photoURL||'';
+  let photo=u.photoURL||providerPhoto||'';
+  if(photo && /^http:\/\//i.test(photo)) photo=photo.replace(/^http:\/\//i,'https://');
   const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
   setText('userName',name);
   setText('userEmail',email + (currentModId?' | '+currentModId:''));
@@ -374,8 +376,20 @@ auth.onAuthStateChanged(async u=>{
   if(pic){
     const initials=(name||'U').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase()||'U';
     const fallback='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=160 height=160 viewBox=\"0 0 160 160\"><rect width=\"160\" height=\"160\" rx=\"80\" fill=\"#b51226\"/><text x=\"80\" y=\"96\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"58\" font-weight=\"700\" fill=\"white\">'+initials+'</text></svg>');
-    pic.referrerPolicy='no-referrer';
-    pic.onerror=function(){this.onerror=null;this.src=fallback;};
+    pic.loading='eager';
+    pic.decoding='async';
+    pic.referrerPolicy='strict-origin-when-cross-origin';
+    pic.style.objectFit='cover';
+    pic.style.background='#b51226';
+    pic.onerror=function(){
+      this.onerror=null;
+      this.src=fallback;
+    };
+    pic.onload=function(){this.style.background='transparent';};
+    // Google profile URLs can be cached differently on mobile; request a fresh 200px variant.
+    if(photo && /googleusercontent\.com/i.test(photo)){
+      photo += (photo.indexOf('?')>=0?'&':'?')+'sz=200';
+    }
     pic.src=photo||fallback;
   }
   setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':(isAdmin?'MODERATOR '+currentModId:'PLAYER'));
