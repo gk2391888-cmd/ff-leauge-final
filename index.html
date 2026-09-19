@@ -291,17 +291,20 @@ function googleLogin(){
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
   const isMobile = /Android|iPhone|iPad|WhatsApp/i.test(navigator.userAgent);
-  if(isMobile){
-    auth.signInWithRedirect(provider).catch((e)=>{
-      if(err) err.innerText = e.message;
-      if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
-    });
-  } else {
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithPopup(provider)).catch((e)=>{
-      if(err) err.innerText = 'Popup blocked, redirecting... '+e.code;
-      setTimeout(()=>auth.signInWithRedirect(provider), 500);
-    });
-  }
+  // Always establish LOCAL persistence BEFORE starting either popup or redirect.
+  // This prevents Firebase from losing the Google session immediately after login.
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+    if(isMobile){
+      return auth.signInWithRedirect(provider);
+    }
+    return auth.signInWithPopup(provider);
+  }).catch((e)=>{
+    if(err) err.innerText = (e && e.code==='auth/popup-blocked') ? 'Popup blocked, opening Google login...' : (e.message||'Google login failed');
+    if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
+    if(e && e.code==='auth/popup-blocked'){
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithRedirect(provider)).catch(()=>{});
+    }
+  });
 }
 auth.getRedirectResult().then((result)=>{
   if(result && result.user){console.log('Login success', result.user.email);}
@@ -316,14 +319,13 @@ auth.onAuthStateChanged(async u=>{
   const loginScreen=document.getElementById('loginScreen');
   const loginBtn=document.getElementById('gLoginBtn');
   if(!u){
-    currentUser=null;
-    // Do not flash/reopen the login overlay while a Google redirect/popup
-    // authentication attempt is still settling.
+    // Firebase can briefly emit null while restoring LOCAL persistence.
+    // Never reopen the login overlay during that restoration window.
     if(localStorage.getItem('ff_login_pending')==='1' || localStorage.getItem('ff_auth_seen')==='1'){
       if(loginScreen) loginScreen.style.display='none';
-      if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
       return;
     }
+    currentUser=null;
     if(loginScreen) loginScreen.style.display='flex';
     if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
     return;
