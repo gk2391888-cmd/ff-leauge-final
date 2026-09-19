@@ -378,17 +378,22 @@ auth.onAuthStateChanged(async u=>{
     const fallback='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=160 height=160 viewBox=\"0 0 160 160\"><rect width=\"160\" height=\"160\" rx=\"80\" fill=\"#b51226\"/><text x=\"80\" y=\"96\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"58\" font-weight=\"700\" fill=\"white\">'+initials+'</text></svg>');
     pic.loading='eager';
     pic.decoding='async';
-    pic.referrerPolicy='strict-origin-when-cross-origin';
+    pic.referrerPolicy='no-referrer';
+    pic.setAttribute('referrerpolicy','no-referrer');
     pic.style.objectFit='cover';
+    pic.style.display='block';
     pic.style.background='#b51226';
     pic.onerror=function(){
       this.onerror=null;
+      this.removeAttribute('src');
       this.src=fallback;
     };
     pic.onload=function(){this.style.background='transparent';};
-    // Google profile URLs can be cached differently on mobile; request a fresh 200px variant.
+    // Google photo URLs normally use a size suffix (=s96-c). Keep the same URL host
+    // and replace only the image size so mobile browsers do not reject an altered query URL.
     if(photo && /googleusercontent\.com/i.test(photo)){
-      photo += (photo.indexOf('?')>=0?'&':'?')+'sz=200';
+      photo=photo.replace(/=s\d+(?:-c)?(?:-p)?$/i,'=s200-c');
+      photo=photo.replace(/[?&]sz=\d+/i,'');
     }
     pic.src=photo||fallback;
   }
