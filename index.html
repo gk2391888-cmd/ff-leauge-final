@@ -283,6 +283,7 @@ async function submitComplete(){
   }
 }
 function googleLogin(){
+  localStorage.setItem('ff_login_pending','1');
   const btn=document.getElementById('gLoginBtn');
   const err=document.getElementById('loginErr');
   if(btn){btn.innerText='Redirecting to Google...';btn.disabled=true;}
@@ -316,6 +317,13 @@ auth.onAuthStateChanged(async u=>{
   const loginBtn=document.getElementById('gLoginBtn');
   if(!u){
     currentUser=null;
+    // Do not flash/reopen the login overlay while a Google redirect/popup
+    // authentication attempt is still settling.
+    if(localStorage.getItem('ff_login_pending')==='1' || localStorage.getItem('ff_auth_seen')==='1'){
+      if(loginScreen) loginScreen.style.display='none';
+      if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
+      return;
+    }
     if(loginScreen) loginScreen.style.display='flex';
     if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
     return;
@@ -324,6 +332,8 @@ auth.onAuthStateChanged(async u=>{
   // IMPORTANT: show the app immediately after Firebase confirms authentication.
   // Any optional database/profile/moderator lookup must never send the user back to login.
   currentUser=u;
+  localStorage.setItem('ff_auth_seen','1');
+  localStorage.removeItem('ff_login_pending');
   if(loginScreen) loginScreen.style.display='none';
   const userInfo=document.getElementById('userInfo');
   const logoutBtn=document.getElementById('logoutBtn');
@@ -386,7 +396,11 @@ auth.onAuthStateChanged(async u=>{
     try{loadAllSupportTickets();}catch(_e){}
   }
 });
-function logout(){auth.signOut().then(()=>location.reload());}
+function logout(){
+  localStorage.removeItem('ff_auth_seen');
+  localStorage.removeItem('ff_login_pending');
+  auth.signOut().then(()=>location.reload());
+}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
 function closePay(){document.getElementById('payModal').classList.remove('open');}
 function openRecharge(){document.getElementById('rechargeModal').classList.add('open');updateQR();}
