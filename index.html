@@ -282,11 +282,17 @@ async function submitComplete(){
     statusEl.innerText='Error: '+err.message+'\nPayout lock kept to prevent duplicate payments. Resolve before retrying.';
   }
 }
+let ffRedirectPendingTimer=null;
+function clearLoginPending(){
+  try{localStorage.removeItem('ff_login_pending');}catch(e){}
+  if(ffRedirectPendingTimer){clearTimeout(ffRedirectPendingTimer);ffRedirectPendingTimer=null;}
+}
 function googleLogin(){
   const btn=document.getElementById('gLoginBtn');
   const err=document.getElementById('loginErr');
+  try{localStorage.setItem('ff_login_pending','1');}catch(e){}
   if(btn){btn.innerText='Redirecting to Google...';btn.disabled=true;}
-  if(err) err.innerText='Redirecting to Google, please wait...';
+  if(err) err.innerText='Completing Google login, please wait...';
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
   const isMobile = /Android|iPhone|iPad|iPod|WhatsApp|Mobile/i.test(navigator.userAgent);
@@ -294,16 +300,23 @@ function googleLogin(){
     if(isMobile) return auth.signInWithRedirect(provider);
     return auth.signInWithPopup(provider);
   }).catch((e)=>{
+    clearLoginPending();
     if(err) err.innerText='Login error: '+(e.code||'')+' '+(e.message||e);
     if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
   });
 }
 auth.getRedirectResult().then((result)=>{
-  if(result && result.user) console.log('Login success',result.user.email);
+  if(result && result.user){
+    clearLoginPending();
+    console.log('Login success',result.user.email);
+  }
 }).catch((e)=>{
+  clearLoginPending();
   const err=document.getElementById('loginErr'); const btn=document.getElementById('gLoginBtn');
-  if(err) err.innerText='Error: '+(e.code||'')+' - '+(e.message||e);
+  if(err) err.innerText='Google login error: '+(e.code||'')+' - '+(e.message||e);
   if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
+  const loginScreen=document.getElementById('loginScreen');
+  if(loginScreen) loginScreen.style.display='flex';
 });
 
 auth.onAuthStateChanged(async u=>{
@@ -316,11 +329,34 @@ auth.onAuthStateChanged(async u=>{
     currentUser=null; isAdmin=false; isSuperAdmin=false; currentModId='';
     adminHeader?.classList.remove('show','is-visible');
     adminBottom?.classList.remove('show');
+    let pending=false;
+    try{pending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
+    if(pending){
+      // Firebase can emit null once while the mobile redirect session is being restored.
+      // Do NOT send the user back to the login screen during that short window.
+      if(loginScreen) loginScreen.style.display='none';
+      if(loginBtn){loginBtn.innerText='Completing Google login...';loginBtn.disabled=true;}
+      if(!ffRedirectPendingTimer){
+        ffRedirectPendingTimer=setTimeout(()=>{
+          let stillPending=false;
+          try{stillPending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
+          if(stillPending){
+            clearLoginPending();
+            if(loginScreen) loginScreen.style.display='flex';
+            if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
+            const err=document.getElementById('loginErr');
+            if(err) err.innerText='Google login did not complete. Please try again.';
+          }
+        },15000);
+      }
+      return;
+    }
     if(loginScreen) loginScreen.style.display='flex';
     if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
     return;
   }
 
+  clearLoginPending();
   currentUser=u;
   const email=(u.email||'').trim().toLowerCase();
   isSuperAdmin=email===SUPER_ADMIN_EMAIL;
