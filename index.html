@@ -35,7 +35,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .slot-fill{height:100%;background:linear-gradient(90deg,var(--green),#00cc66);transition:width 0.5s}
 .btn-join{width:100%;padding:13px;background:linear-gradient(90deg,var(--red),#ff4d00);color:#fff;border:none;border-radius:12px;font-weight:900;font-family:Orbitron;font-size:12px;cursor:pointer}
 .wallet-card{background:linear-gradient(135deg,var(--red) 0%,#7a0000 100%);border-radius:24px;padding:20px;margin:16px}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,12,0.98);border-top:2px solid var(--red);display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,12,0.98);border-top:2px solid var(--red);display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100;overflow-x:auto}.bottom .b-item{flex:1 0 0;min-width:58px}
 .b-item{text-align:center;opacity:.5;font-size:8px;font-weight:700;cursor:pointer;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}.b-item i{font-size:18px}.b-item.active{opacity:1;color:var(--red)}
 .b-item.admin-only{display:none}.b-item.admin-only.show{display:flex}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;padding:12px;justify-content:center;align-items:flex-start;overflow-y:auto}.modal.open{display:flex}
@@ -72,7 +72,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 </head>
 <body>
 <div id="installBanner" class="install-banner"><div><b style="font-family:Orbitron">Install FF LEAGUE App</b></div><button onclick="installPWA()" style="background:#fff;color:#000;border:none;padding:8px 14px;border-radius:10px;font-weight:900">INSTALL</button></div>
-<div id="loginScreen" class="login-screen"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
+<div id="loginScreen" class="login-screen" style="display:none"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
 <div class="header"><div class="logo"><b>TH</b> FF <span>LEAGUE</span></div><div style="display:flex;gap:6px;align-items:center"><div id="userInfo" style="display:none;text-align:right"><div id="userName" style="font-weight:800;font-size:11px"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none;background:#1e1e22" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div></div>
 <div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="list"></div></div>
 <div id="walletTab" class="tab"><div class="wallet-card"><div style="font-size:10px;letter-spacing:2px;opacity:.8">WALLET BALANCE</div><div style="font-size:36px;font-weight:900;font-family:Orbitron;margin-top:4px" id="walletBal">₹0.00</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button class="h-btn" style="background:#fff;color:#000;padding:12px;border-radius:12px;font-weight:900" onclick="openRecharge()">RECHARGE</button><button class="h-btn" style="background:#000;color:var(--green);border:1px solid var(--green);padding:12px;border-radius:12px;font-weight:900" onclick="openWithdraw()">WITHDRAW</button></div></div><div style="padding:0 16px 20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><h4 style="font-family:Orbitron;font-size:12px">MONEY HISTORY</h4></div><div style="font-size:9px;opacity:.45;margin-top:4px">Tournament Join • Tournament Win • Recharge • Withdrawal • Refunds</div><div id="walletHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE HISTORY</h4></div><div id="rechargeHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">WITHDRAW HISTORY</h4></div><div id="withdrawHistory" style="margin-bottom:20px"></div></div></div>
@@ -206,12 +206,12 @@ function render(){
     let displayTours=tours;if(!isSuperAdmin && currentModId)displayTours=tours.filter(t=> t.moderatorId===currentModId);
     let activeTours=displayTours.filter(t=> (t.status||'active')!=='completed');
     let completedTours=displayTours.filter(t=> t.status==='completed');
-    document.getElementById('aTList').innerHTML=activeTours.map(t=>`<div class="admin-card"><b>${esc(t.title)}</b> [${esc(t.type)}] - ${t.slots||0}/${t.total} | Entry:₹${t.entry} 1st:₹${t.firstPrize||0} 2nd:₹${t.secondPrize||0} 3rd:₹${t.thirdPrize||0} Kill:₹${t.killPrize||0} Pool:₹${t.prizePool||0} | Mod: ${esc(t.moderatorId||'None')}<br><div style="display:flex;gap:4px;margin-top:6px"><button onclick="editTour('${t.key}')" style="background:#ffcc00;color:#000;border:none;padding:6px 10px;border-radius:6px;font-weight:900">EDIT</button><button onclick="openCompleteModal('${t.key}')" style="background:var(--green);color:#000;border:none;padding:6px 10px;border-radius:6px;font-weight:900">COMPLETE</button><button onclick="deleteTour('${t.key}')" style="background:var(--red);color:#fff;border:none;padding:6px 10px;border-radius:6px">DELETE</button></div></div>`).join('') + (completedTours.length? `<div style="margin-top:12px"><h4 style="font-size:11px;opacity:.6">COMPLETED (${completedTours.length})</h4>`+completedTours.map(t=>`<div class="admin-card" style="opacity:.6"><b>${esc(t.title)}</b> - Net Profit ₹${safeInt(t.profit)} | Mod Commission ₹${t.modCommission||0} <button onclick="if(confirm('Reopen tournament?')) db.ref('tournaments/${t.key}').update({status:'active'})" style="background:#333;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:9px;float:right">REOPEN</button></div>`).join('')+`</div>`:'');
+    document.getElementById('aTList').innerHTML=activeTours.map(t=>`<div class="admin-card"><b>${esc(t.title)}</b> [${esc(t.type)}] - ${t.slots||0}/${t.total} | Entry:₹${t.entry} 1st:₹${t.firstPrize||0} 2nd:₹${t.secondPrize||0} 3rd:₹${t.thirdPrize||0} Kill:₹${t.killPrize||0} Pool:₹${t.prizePool||0} | Mod: ${esc(t.moderatorId||'None')}<br><div style="display:flex;gap:4px;margin-top:6px"><button onclick="editTour('${t.key}')" style="background:#ffcc00;color:#000;border:none;padding:6px 10px;border-radius:6px;font-weight:900">EDIT</button>${isAdmin?`<button onclick="openCompleteModal('${t.key}')" style="background:var(--green);color:#000;border:none;padding:6px 10px;border-radius:6px;font-weight:900">COMPLETE</button>${isSuperAdmin?`<button onclick="deleteTour('${t.key}')" style="background:var(--red);color:#fff;border:none;padding:6px 10px;border-radius:6px">DELETE</button>`:''}`:''}</div></div>`).join('') + (completedTours.length? `<div style="margin-top:12px"><h4 style="font-size:11px;opacity:.6">COMPLETED (${completedTours.length})</h4>`+completedTours.map(t=>`<div class="admin-card" style="opacity:.6"><b>${esc(t.title)}</b> - Net Profit ₹${safeInt(t.profit)} | Mod Commission ₹${t.modCommission||0} ${isSuperAdmin?`<button onclick="if(confirm('Reopen tournament?')) db.ref('tournaments/${t.key}').update({status:'active'})" style="background:#333;color:#fff;border:none;padding:4px 8px;border-radius:6px;font-size:9px;float:right">REOPEN</button>`:''}</div>`).join('')+`</div>`:'');
   }
 }
 function loadMyRoom(){if(!currentUser)return;db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{const div=document.getElementById('myRoom');if(!snap.exists()){div.style.display='none';return;}let last=null;snap.forEach(c=>{last=c.val();});if(!last||!last.tournamentKey){div.style.display='none';return;}db.ref('tournaments/'+last.tournamentKey).once('value').then(tsnap=>{if(!tsnap.exists()){div.style.display='none';return;}let t=tsnap.val();if(!t.roomId||(t.status||'active')==='completed'){div.style.display='none';return;}div.style.display='flex';div.innerHTML=`<div>Joined: ${esc(t.title)}</div><div class="room-id-box" style="width:100%"><div>Room ID: <span style="color:var(--green)">${esc(t.roomId)}</span> | Password: <span style="color:#ffcc00">${esc(t.roomPass)}</span></div><button id="copyRoomBtn" style="background:var(--green);color:#000;border:none;padding:5px 8px;border-radius:6px;font-weight:800">COPY</button></div>`;document.getElementById('copyRoomBtn').onclick=()=>copyText(String(t.roomId)+' / '+String(t.roomPass));});});}
-function loadMods(){db.ref('moderators').on('value',s=>{allMods=[];s.forEach(c=>{let v=c.val();v.key=c.key;allMods.push(v);});document.getElementById('modList').innerHTML=allMods.map(m=>`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:12px;margin-top:8px;display:flex;justify-content:space-between"><div><b style="color:#00ff88;font-size:11px">${esc(m.idCard)}</b> ${esc(m.name)} <small style="opacity:.6">${esc(m.email)}</small> | ${safeInt(m.commission,20)}%</div><button onclick="if(confirm('Remove moderator?')) db.ref('moderators/${esc(m.key)}').remove()" style="background:var(--red);border:0;padding:6px 10px;border-radius:8px;color:#fff">DELETE</button></div>`).join('') || 'No moderators found';let select=document.getElementById('aModAssign');if(select){let cur=select.value;select.innerHTML='<option value="">Assign Moderator</option>' + allMods.map(m=>`<option value="${esc(m.idCard)}">MOD ${esc(m.idCard)} - ${esc(m.name)} - ${safeInt(m.commission,20)}%</option>`).join('');select.value=cur;}autoPrize();});}
-function addModerator(){let id=document.getElementById('modId').value.trim().toUpperCase();let name=document.getElementById('modName').value.trim();let email=document.getElementById('modEmail').value.trim().toLowerCase();let perc=Math.min(100,Math.max(0,safeInt(document.getElementById('modPerc').value,20)));if(!id||!email)return alert('Please enter ID and Email');if(!isSuperAdmin)return alert('Only Super Admin can add moderators');db.ref('moderators').push({idCard:id,name:name||'Moderator',email:email,commission:perc,created:Date.now()}).then(()=>{alert('Moderator added successfully');});}
+function loadMods(){db.ref('moderators').on('value',s=>{allMods=[];s.forEach(c=>{let v=c.val();v.key=c.key;allMods.push(v);});if(isSuperAdmin){allMods.forEach(m=>{const syncRole=uid=>{if(!uid)return;const role={enabled:true,idCard:m.idCard,email:String(m.email||'').toLowerCase(),commission:safeInt(m.commission,20),moderatorKey:m.key};Promise.all([db.ref('moderators/'+m.key).update({uid:uid}),db.ref('moderatorRoles/'+uid).set(role),db.ref('moderatorIndex/'+uid).set(role)]).catch(()=>{});};if(m.uid){syncRole(String(m.uid));}else{db.ref('users').orderByChild('email').equalTo(String(m.email||'').toLowerCase()).once('value').then(us=>{let uid='';us.forEach(c=>{if(!uid)uid=c.key;});syncRole(uid);}).catch(()=>{});}});}document.getElementById('modList').innerHTML=allMods.map(m=>`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:12px;margin-top:8px;display:flex;justify-content:space-between"><div><b style="color:#00ff88;font-size:11px">${esc(m.idCard)}</b> ${esc(m.name)} <small style="opacity:.6">${esc(m.email)}</small> | ${safeInt(m.commission,20)}%</div><button onclick="if(confirm('Remove moderator?')) db.ref('moderators/${esc(m.key)}').remove()" style="background:var(--red);border:0;padding:6px 10px;border-radius:8px;color:#fff">DELETE</button></div>`).join('') || 'No moderators found';let select=document.getElementById('aModAssign');if(select){let cur=select.value;select.innerHTML='<option value="">Assign Moderator</option>' + allMods.map(m=>`<option value="${esc(m.idCard)}">MOD ${esc(m.idCard)} - ${esc(m.name)} - ${safeInt(m.commission,20)}%</option>`).join('');select.value=cur;}autoPrize();});}
+async function addModerator(){let id=document.getElementById('modId').value.trim().toUpperCase();let name=document.getElementById('modName').value.trim();let email=document.getElementById('modEmail').value.trim().toLowerCase();let perc=Math.min(100,Math.max(0,safeInt(document.getElementById('modPerc').value,20)));if(!id||!email)return alert('Please enter ID and Email');if(!isSuperAdmin)return alert('Only Super Admin can add moderators');try{const userSnap=await db.ref('users').orderByChild('email').equalTo(email).once('value');let uid='';userSnap.forEach(c=>{if(!uid)uid=c.key;});if(!uid)return alert('Moderator must login with Google once before being added.');const modRec=await db.ref('moderators').push({idCard:id,name:name||'Moderator',email:email,uid:uid,commission:perc,created:Date.now()});await db.ref('moderatorRoles/'+uid).set({enabled:true,idCard:id,email:email,commission:perc,moderatorKey:modRec.key});await db.ref('moderatorIndex/'+uid).set({enabled:true,idCard:id,email:email,commission:perc,moderatorKey:modRec.key});alert('Moderator added successfully');}catch(e){alert('Could not add moderator: '+e.message);}}
 function submitSupportTicket(){let cat=document.getElementById('ticketCat').value;let sub=document.getElementById('ticketSubject').value.trim();let msg=document.getElementById('ticketMsg').value.trim();if(!sub||!msg)return alert('Please enter subject and message');db.ref('supportTickets').push({uid:currentUser.uid,email:currentUser.email,category:cat,subject:sub,message:msg,status:'open',time:Date.now(),reply:''}).then(()=>{document.getElementById('ticketStatus').textContent='Ticket submitted successfully';});}
 function loadMyTickets(){if(!currentUser)return;db.ref('supportTickets').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{let h='';snap.forEach(c=>{let t=c.val();h+=`<div class="admin-card"><b>${esc(t.subject)}</b> - ${esc(t.status)}<p>${esc(t.message)}</p>${t.reply?`<div style="background:#00ff8815;padding:8px;border-radius:10px;margin-top:6px"><b>Admin Reply:</b> ${esc(t.reply)}</div>`:''}</div>`;});document.getElementById('myTickets').innerHTML=h||'No tickets found';});}
 function loadAllSupportTickets(){if(!isAdmin)return;db.ref('supportTickets').orderByChild('time').limitToLast(20).on('value',snap=>{let h='';snap.forEach(c=>{let t=c.val();h+=`<div class="admin-card"><b>${esc(t.subject)}</b> - ${esc(t.email)}<p>${esc(t.message)}</p><input id="reply-${esc(c.key)}" placeholder="Write reply..."><button onclick="replySupport('${esc(c.key)}')" style="background:var(--green);color:#000;border:none;padding:6px 10px;border-radius:6px;font-weight:800;margin-top:4px">SEND REPLY</button></div>`;});document.getElementById('supportTicketsList').innerHTML=h||'No tickets';});}
@@ -220,22 +220,25 @@ function autoCompletePrize(){let p1=parseInt(document.getElementById('win1_prize
 function openCompleteModal(key){let t=tours.find(x=>x.key===key);if(!t){alert('Tournament not found');return;}document.getElementById('completeKey').value=key;document.getElementById('completeTourName').innerText=t.title+' | Pool: ₹'+(t.prizePool||0)+' | Kill: ₹'+(t.killPrize||0)+' | Type: '+t.type+' | Moderator: '+(t.moderatorId||'None');document.getElementById('win1_prize').value=t.firstPrize||Math.floor((t.prizePool||0)*0.6)||'';document.getElementById('win2_prize').value=t.secondPrize||Math.floor((t.prizePool||0)*0.4)||'';document.getElementById('win1_ffid').value='';document.getElementById('win2_ffid').value='';document.getElementById('completeStatus').innerText='';autoCompletePrize();document.getElementById('completeModal').classList.add('open');}
 function closeComplete(){document.getElementById('completeModal').classList.remove('open');}
 async function submitComplete(){
+  if(!isAdmin)return alert('Access denied');
   let key=document.getElementById('completeKey').value;
   if(!key)return alert('Invalid tournament key');
   let t=tours.find(x=>x.key===key);
   if(!t)return alert('Tournament not found');
+  if(!isSuperAdmin && currentModId && t.moderatorId!==currentModId)return alert('This tournament is not assigned to you.');
   if((t.status||'active')==='completed')return alert('Tournament is already completed');
+  let w1Email=document.getElementById('win1_ffid').value.trim().toLowerCase();
+  let w1Prize=safeInt(document.getElementById('win1_prize').value);
+  let w2Email=document.getElementById('win2_ffid').value.trim().toLowerCase();
+  let w2Prize=safeInt(document.getElementById('win2_prize').value);
+  if(!w1Email||w1Prize<=0)return alert('Please enter 1st place winner and a valid prize');
+  if(w2Email && w2Prize<=0)return alert('Enter a valid 2nd place prize or clear the 2nd place winner');
   const lockRef=db.ref('tournamentPayoutLocks/'+key);
   const lock=await lockRef.transaction(v=>{
     if(v)return;
     return {status:'processing',startedBy:currentUser.uid,startedAt:Date.now()};
   });
   if(!lock.committed)return alert('Payout is already being processed. Do not submit again.');
-  let w1Email=document.getElementById('win1_ffid').value.trim().toLowerCase();
-  let w1Prize=safeInt(document.getElementById('win1_prize').value);
-  let w2Email=document.getElementById('win2_ffid').value.trim().toLowerCase();
-  let w2Prize=safeInt(document.getElementById('win2_prize').value);
-  if(!w1Email||!w1Prize){await lockRef.remove();return alert('Please enter 1st place winner');}
   let statusEl=document.getElementById('completeStatus');statusEl.innerText='Processing payments...';
   try{
     let usersSnap=await db.ref('users').once('value');
@@ -261,7 +264,7 @@ async function submitComplete(){
     if(t.moderatorId){
       let mod=allMods.find(m=>m.idCard===t.moderatorId);
       if(mod){
-        modCommission=Math.floor(profit*(safeInt(mod.commission,20))/100);
+        modCommission=Math.max(0,Math.floor(profit*(safeInt(mod.commission,20))/100));
         let modUser=allUsers.find(u=>u.email&&mod.email&&u.email.toLowerCase()===mod.email.toLowerCase());
         if(modUser){
           await db.ref('users/'+modUser.uid+'/wallet').transaction(w=>(safeInt(w)+modCommission));
@@ -280,6 +283,7 @@ async function submitComplete(){
   }
 }
 function googleLogin(){
+  localStorage.setItem('ff_login_pending','1');
   const btn=document.getElementById('gLoginBtn');
   const err=document.getElementById('loginErr');
   if(btn){btn.innerText='Redirecting to Google...';btn.disabled=true;}
@@ -287,17 +291,20 @@ function googleLogin(){
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
   const isMobile = /Android|iPhone|iPad|WhatsApp/i.test(navigator.userAgent);
-  if(isMobile){
-    auth.signInWithRedirect(provider).catch((e)=>{
-      if(err) err.innerText = e.message;
-      if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
-    });
-  } else {
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithPopup(provider)).catch((e)=>{
-      if(err) err.innerText = 'Popup blocked, redirecting... '+e.code;
-      setTimeout(()=>auth.signInWithRedirect(provider), 500);
-    });
-  }
+  // Always establish LOCAL persistence BEFORE starting either popup or redirect.
+  // This prevents Firebase from losing the Google session immediately after login.
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+    if(isMobile){
+      return auth.signInWithRedirect(provider);
+    }
+    return auth.signInWithPopup(provider);
+  }).catch((e)=>{
+    if(err) err.innerText = (e && e.code==='auth/popup-blocked') ? 'Popup blocked, opening Google login...' : (e.message||'Google login failed');
+    if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
+    if(e && e.code==='auth/popup-blocked'){
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithRedirect(provider)).catch(()=>{});
+    }
+  });
 }
 auth.getRedirectResult().then((result)=>{
   if(result && result.user){console.log('Login success', result.user.email);}
@@ -306,8 +313,143 @@ auth.getRedirectResult().then((result)=>{
   if(err) err.innerText='Error: '+e.code+' - '+e.message;
   if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
 });
-auth.onAuthStateChanged(async u=>{if(u){currentUser=u;let isSuper=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;let modSnap=await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');let isMod=modSnap.exists();let modData=isMod? Object.values(modSnap.val())[0]:null;isSuperAdmin=isSuper;isAdmin=isSuper||isMod;currentModId=modData?modData.idCard:'';db.ref('users/'+u.uid).once('value').then(snap=>{let ex=snap.val()||{};db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});});document.getElementById('loginScreen').style.display='none';document.getElementById('userInfo').style.display='block';document.getElementById('logoutBtn').style.display='block';document.getElementById('userName').innerText=u.displayName||'User';document.getElementById('userEmail').innerText=u.email + (currentModId?' | '+currentModId:'');document.getElementById('profileName').innerText=u.displayName||'User';document.getElementById('profileEmail').innerText=u.email;document.getElementById('profilePic').src=u.photoURL||'';document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');if(isAdmin){document.getElementById('adminHeaderBtn').classList.add('show');document.getElementById('adminBottomBtn').classList.add('show');}loadWallet();loadMyRoom();loadWalletHistory();loadMyRecharges();loadMyWithdraws();loadLeaderboard();loadMyTickets();if(isAdmin){loadMods();loadAllUsersWallet();loadWalletRequests();loadWithdrawRequests();loadAllSupportTickets();}}else{document.getElementById('loginScreen').style.display='flex';let b=document.getElementById('gLoginBtn');if(b){b.innerText='Continue with Google';b.disabled=false;}}});
-function logout(){auth.signOut().then(()=>location.reload());}
+let authStateResolved=false;
+auth.onAuthStateChanged(async u=>{
+  authStateResolved=true;
+  const loginScreen=document.getElementById('loginScreen');
+  const loginBtn=document.getElementById('gLoginBtn');
+  if(!u){
+    // Firebase can briefly emit null while restoring LOCAL persistence.
+    // Never reopen the login overlay during that restoration window.
+    if(localStorage.getItem('ff_login_pending')==='1' || localStorage.getItem('ff_auth_seen')==='1'){
+      if(loginScreen) loginScreen.style.display='none';
+      return;
+    }
+    currentUser=null;
+    if(loginScreen) loginScreen.style.display='flex';
+    if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
+    return;
+  }
+
+  // IMPORTANT: show the app immediately after Firebase confirms authentication.
+  // Any optional database/profile/moderator lookup must never send the user back to login.
+  currentUser=u;
+  localStorage.setItem('ff_auth_seen','1');
+  localStorage.removeItem('ff_login_pending');
+  if(loginScreen) loginScreen.style.display='none';
+  const userInfo=document.getElementById('userInfo');
+  const logoutBtn=document.getElementById('logoutBtn');
+  if(userInfo) userInfo.style.display='block';
+  if(logoutBtn) logoutBtn.style.display='block';
+  if(loginBtn) loginBtn.disabled=false;
+
+  const authEmails=[u.email,...(u.providerData||[]).map(p=>p&&p.email)].filter(Boolean).map(e=>String(e).trim().toLowerCase());
+  isSuperAdmin=authEmails.includes(SUPER_ADMIN_EMAIL);
+  isAdmin=isSuperAdmin;
+  currentModId='';
+
+  // Optional moderator lookup. A rules/permission error here must NOT break login.
+  try{
+    const modSnap=await db.ref('moderators').orderByChild('email').equalTo((u.email||'').toLowerCase()).once('value');
+    let roleSnap=null;
+    try{ roleSnap=await db.ref('moderatorRoles/'+u.uid).once('value'); }catch(_e){ roleSnap=null; }
+    const isMod=modSnap.exists() || !!(roleSnap && roleSnap.exists());
+    const modData=isMod ? ((roleSnap&&roleSnap.val()) || Object.values(modSnap.val()||{})[0]) : null;
+    isAdmin=isSuperAdmin||isMod;
+    currentModId=modData && modData.idCard ? modData.idCard : '';
+  }catch(_e){
+    // Login remains valid even if optional role data is unavailable.
+    isAdmin=isSuperAdmin;
+    currentModId='';
+  }
+
+  const name=u.displayName||'User';
+  const email=u.email||'';
+  const providerPhoto=((u.providerData||[]).find(p=>p && p.photoURL)||{}).photoURL||'';
+  let photo=u.photoURL||providerPhoto||'';
+  if(photo && /^http:\/\//i.test(photo)) photo=photo.replace(/^http:\/\//i,'https://');
+  const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
+  setText('userName',name);
+  setText('userEmail',email + (currentModId?' | '+currentModId:''));
+  setText('profileName',name);
+  setText('profileEmail',email);
+  const pic=document.getElementById('profilePic');
+  if(pic){
+    const initials=(name||'U').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase()||'U';
+    const fallback='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=160 height=160 viewBox=\"0 0 160 160\"><rect width=\"160\" height=\"160\" rx=\"80\" fill=\"#b51226\"/><text x=\"80\" y=\"96\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"58\" font-weight=\"700\" fill=\"white\">'+initials+'</text></svg>');
+    pic.loading='eager';
+    pic.decoding='async';
+    pic.referrerPolicy='no-referrer';
+    pic.setAttribute('referrerpolicy','no-referrer');
+    pic.style.objectFit='cover';
+    pic.style.display='block';
+    pic.style.background='#b51226';
+    pic.onerror=function(){
+      this.onerror=null;
+      this.removeAttribute('src');
+      this.src=fallback;
+    };
+    pic.onload=function(){this.style.background='transparent';};
+    // Google photo URLs normally use a size suffix (=s96-c). Keep the same URL host
+    // and replace only the image size so mobile browsers do not reject an altered query URL.
+    if(photo && /googleusercontent\.com/i.test(photo)){
+      photo=photo.replace(/=s\d+(?:-c)?(?:-p)?$/i,'=s200-c');
+      photo=photo.replace(/[?&]sz=\d+/i,'');
+    }
+    pic.src=photo||fallback;
+  }
+  if(isAdmin){
+    let mobileAdmin=document.getElementById('mobileAdminQuick');
+    if(!mobileAdmin){
+      mobileAdmin=document.createElement('button');
+      mobileAdmin.id='mobileAdminQuick';
+      mobileAdmin.innerText='ADMIN PANEL';
+      mobileAdmin.onclick=()=>openAdmin();
+      mobileAdmin.style.cssText='position:fixed;right:12px;bottom:78px;z-index:250;background:#ffcc00;color:#000;border:0;border-radius:10px;padding:9px 12px;font-weight:900;font-size:10px;box-shadow:0 4px 14px #0008;';
+      document.body.appendChild(mobileAdmin);
+    }
+    mobileAdmin.style.display='block';
+  }
+  setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':(isAdmin?'MODERATOR '+currentModId:'PLAYER'));
+  if(isAdmin){
+    const hb=document.getElementById('adminHeaderBtn');
+    const bb=document.getElementById('adminBottomBtn');
+    if(hb){hb.classList.add('show');hb.style.display='block';}
+    if(bb){bb.classList.add('show');bb.style.display='flex';}
+  } else {
+    const hb=document.getElementById('adminHeaderBtn');
+    const bb=document.getElementById('adminBottomBtn');
+    if(hb){hb.classList.remove('show');hb.style.display='none';}
+    if(bb){bb.classList.remove('show');bb.style.display='none';}
+  }
+
+  // Profile sync is non-critical and must never affect authentication UI.
+  db.ref('users/'+u.uid).once('value').then(snap=>{
+    const ex=snap.val()||{};
+    return db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',lastLogin:Date.now()});
+  }).catch(()=>{});
+
+  try{loadWallet();}catch(_e){}
+  try{loadMyRoom();}catch(_e){}
+  try{loadWalletHistory();}catch(_e){}
+  try{loadMyRecharges();}catch(_e){}
+  try{loadMyWithdraws();}catch(_e){}
+  try{loadLeaderboard();}catch(_e){}
+  try{loadMyTickets();}catch(_e){}
+  if(isAdmin){
+    try{loadMods();}catch(_e){}
+    try{loadAllUsersWallet();}catch(_e){}
+    try{loadWalletRequests();}catch(_e){}
+    try{loadWithdrawRequests();}catch(_e){}
+    try{loadAllSupportTickets();}catch(_e){}
+  }
+});
+function logout(){
+  const mobileAdmin=document.getElementById('mobileAdminQuick'); if(mobileAdmin) mobileAdmin.remove();
+  localStorage.removeItem('ff_auth_seen');
+  localStorage.removeItem('ff_login_pending');
+  auth.signOut().then(()=>location.reload());
+}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
 function closePay(){document.getElementById('payModal').classList.remove('open');}
 function openRecharge(){document.getElementById('rechargeModal').classList.add('open');updateQR();}
@@ -324,22 +466,13 @@ async function submitWithdraw(){
   const amt=safeInt(document.getElementById('withdrawAmt').value), upi=document.getElementById('withdrawUpi').value.trim();
   if(amt<100)return alert('Minimum withdrawal is ₹100');
   if(!/^[^\s@]+@[^\s@]+$/.test(upi))return alert('Please enter a valid UPI ID');
-  const walletRef=db.ref('users/'+currentUser.uid+'/wallet');
-  let insufficient=false;
-  const result=await walletRef.transaction(w=>{
-    const bal=safeInt(w);
-    if(bal<amt){insufficient=true;return;}
-    return bal-amt;
-  });
-  if(!result.committed)return alert(insufficient?'Insufficient wallet balance':'Withdrawal could not be processed');
+  const balSnap=await db.ref('users/'+currentUser.uid+'/wallet').once('value');
+  if(safeInt(balSnap.val())<amt)return alert('Insufficient wallet balance');
   try{
     const req=await db.ref('withdrawRequests').push({uid:currentUser.uid,email:currentUser.email,amount:amt,upi,status:'pending',time:Date.now()});
     addWalletTransaction(currentUser.uid,{type:'withdrawal',title:'Withdrawal',subtitle:'To '+upi,amount:-amt,status:'pending',reference:req.key}).catch(()=>{});
-    alert('Withdrawal request submitted');closeWithdraw();
-  }catch(e){
-    await walletRef.transaction(w=>(safeInt(w)+amt));
-    alert('Request failed; amount was returned to wallet.');
-  }
+    alert('Withdrawal request submitted. Balance will be deducted when admin approves the request.');closeWithdraw();
+  }catch(e){ alert('Withdrawal request failed: '+e.message); }
 }
 function formatDate(ts){if(!ts) return 'Just now';let d=new Date(ts);return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
 function addWalletTransaction(uid,data){if(!uid)return Promise.resolve();return db.ref('walletTransactions/'+uid).push({time:Date.now(),...data});}
@@ -401,12 +534,26 @@ async function approveWithdraw(id){
     return {...r,status:'processing',processedBy:currentUser.uid,processingAt:Date.now()};
   });
   if(!claim.committed)return alert('Request already processed or locked');
-  await ref.update({status:'approved',processedAt:Date.now()});
-  alert('Withdrawal approved');
+  const r=claim.snapshot.val()||{};
+  try{
+    let insufficient=false;
+    const wallet=await db.ref('users/'+r.uid+'/wallet').transaction(w=>{
+      const bal=safeInt(w), amount=safeInt(r.amount);
+      if(bal<amount){insufficient=true;return;}
+      return bal-amount;
+    });
+    if(!wallet.committed)throw new Error(insufficient?'Insufficient wallet balance':'Wallet deduction failed');
+    await ref.update({status:'approved',processedAt:Date.now()});
+    addWalletTransaction(r.uid,{type:'withdrawal',title:'Withdrawal',subtitle:'To '+r.upi,amount:-safeInt(r.amount),status:'approved',reference:id}).catch(()=>{});
+    alert('Withdrawal approved and wallet deducted ₹'+safeInt(r.amount));
+  }catch(e){
+    await ref.update({status:'pending',processedBy:null,processingAt:null});
+    alert('Approval failed: '+e.message+'\nRequest returned to pending.');
+  }
 }
 async function rejectWithdraw(id,uid,amt){
   if(!isAdmin)return alert('Access denied');
-  if(!confirm('Reject withdrawal and refund ₹'+amt+'?'))return;
+  if(!confirm('Reject this withdrawal request? No wallet deduction has been made yet.'))return;
   const ref=db.ref('withdrawRequests/'+id);
   const claim=await ref.transaction(r=>{
     if(!r || r.status!=='pending')return;
@@ -414,20 +561,18 @@ async function rejectWithdraw(id,uid,amt){
   });
   if(!claim.committed)return alert('Request already processed or locked');
   try{
-    const refund=await db.ref('users/'+uid+'/wallet').transaction(w=>(safeInt(w)+safeInt(amt)));
-    if(!refund.committed)throw new Error('Refund failed');
     await ref.update({status:'rejected',processedAt:Date.now()});
-    addWalletTransaction(uid,{type:'withdrawal_refund',title:'Withdrawal Refund',subtitle:'Withdrawal rejected',amount:safeInt(amt),status:'approved',reference:id}).catch(()=>{});
-    alert('Rejected and refunded');
+    addWalletTransaction(uid,{type:'withdrawal_refund',title:'Withdrawal Request Rejected',subtitle:'No deduction was made',amount:0,status:'approved',reference:id}).catch(()=>{});
+    alert('Withdrawal rejected');
   }catch(e){
     await ref.update({status:'pending',processedBy:null,processingAt:null});
-    alert('Refund failed; request returned to pending.');
+    alert('Could not reject request: '+e.message);
   }
 }
 function loadAllUsersWallet(){if(!isAdmin)return;db.ref('users').once('value').then(snap=>{proAllUsersData=[];let tot=0;snap.forEach(c=>{let v=c.val();tot+= (v.wallet||0);proAllUsersData.push({uid:c.key,email:v.email||'',wallet:v.wallet||0,ffid:v.ffid||'-',ffname:v.ffname||v.displayName||'-'});});document.getElementById('proTotalUsers').innerText=proAllUsersData.length;document.getElementById('proTotalBal').innerText='₹'+tot;document.getElementById('allUsersWallet').innerHTML=proAllUsersData.slice().reverse().map(u=>`<tr><td><b>${esc(u.ffid)}</b></td><td>${esc(u.ffname)}</td><td style="color:var(--green);font-weight:900">₹${safeInt(u.wallet)}</td><td style="font-size:9px">${esc(u.email)}</td><td><button onclick="quickProAdd('${esc(u.uid)}',10)" style="background:var(--green);color:#000;border:none;padding:4px 6px;border-radius:6px;font-size:9px">+10</button></td></tr>`).join('');db.ref('walletRecharges').orderByChild('status').equalTo('pending').once('value').then(s=>{document.getElementById('proPending').innerText=s.numChildren();});let profit=0;tours.forEach(t=>{if(t.status==='completed')profit+= (t.profit||0);});document.getElementById('proProfit').innerText='₹'+profit;});}
 function filterProUsers(){let q=document.getElementById('userSearch').value.toLowerCase();let f=proAllUsersData.filter(u=> (u.ffid+'').toLowerCase().includes(q) || (u.ffname+'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q));document.getElementById('allUsersWallet').innerHTML=f.slice().reverse().map(u=>`<tr><td><b>${esc(u.ffid)}</b></td><td>${esc(u.ffname)}</td><td style="color:var(--green);font-weight:900">₹${safeInt(u.wallet)}</td><td style="font-size:9px">${esc(u.email)}</td><td><button onclick="quickProAdd('${esc(u.uid)}',10)" style="background:var(--green);color:#000;border:none;padding:4px 6px;border-radius:6px;font-size:9px">+10</button></td></tr>`).join('');}
-function proUpdateBal(type){let search=document.getElementById('proFFSearch').value.trim().toLowerCase();let amt=parseInt(document.getElementById('proAmount').value);if(!search||!amt)return alert('Please enter search term and amount');let found=proAllUsersData.find(u=>u.email.toLowerCase().includes(search) || (u.ffid+'').toLowerCase().includes(search));if(!found)return alert('User not found');db.ref('users/'+found.uid+'/wallet').transaction(w=> (w||0)+amt*type).then(()=>addWalletTransaction(found.uid,{type:type>0?'admin_credit':'admin_debit',title:type>0?'Admin Added Balance':'Admin Deducted Balance',subtitle:'Admin wallet adjustment',amount:amt*type,status:'approved',reference:currentUser.uid})).then(()=>{document.getElementById('proBalMsg').innerText=`Updated balance for ${found.email}`;loadAllUsersWallet();});}
-function quickProAdd(uid, amt){db.ref('users/'+uid+'/wallet').transaction(w=> (w||0)+amt).then(()=>loadAllUsersWallet());}
+function proUpdateBal(type){if(!isSuperAdmin)return alert('Only Super Admin can perform wallet operations');let search=document.getElementById('proFFSearch').value.trim().toLowerCase();let amt=parseInt(document.getElementById('proAmount').value);if(!search||!amt)return alert('Please enter search term and amount');let found=proAllUsersData.find(u=>u.email.toLowerCase().includes(search) || (u.ffid+'').toLowerCase().includes(search));if(!found)return alert('User not found');db.ref('users/'+found.uid+'/wallet').transaction(w=> (w||0)+amt*type).then(()=>addWalletTransaction(found.uid,{type:type>0?'admin_credit':'admin_debit',title:type>0?'Admin Added Balance':'Admin Deducted Balance',subtitle:'Admin wallet adjustment',amount:amt*type,status:'approved',reference:currentUser.uid})).then(()=>{document.getElementById('proBalMsg').innerText=`Updated balance for ${found.email}`;loadAllUsersWallet();});}
+function quickProAdd(uid, amt){if(!isSuperAdmin)return alert('Only Super Admin can perform wallet operations');const a=safeInt(amt);if(a<=0)return alert('Invalid amount');db.ref('users/'+uid+'/wallet').transaction(w=>(safeInt(w)+a)).then(r=>{if(!r.committed)throw new Error('Wallet update failed');return addWalletTransaction(uid,{type:'admin_credit',title:'Admin Added Balance',subtitle:'Quick admin wallet adjustment',amount:a,status:'approved',reference:currentUser.uid});}).then(()=>loadAllUsersWallet()).catch(e=>alert('Wallet update failed: '+e.message));}
 function loadWallet(){db.ref('users/'+currentUser.uid+'/wallet').on('value',s=>{document.getElementById('walletBal').innerText='₹'+(s.val()||0)+'.00';document.getElementById('profileWallet').innerHTML='Wallet Balance: <b>₹'+safeInt(s.val())+'</b>';});}
 async function joinWithWallet(){
   const uid=document.getElementById('ffuid').value.trim(), name=document.getElementById('ffname').value.trim();
@@ -436,37 +581,57 @@ async function joinWithWallet(){
   const lockRef=db.ref('joinLocks/'+currentUser.uid+'/'+selected.key);
   const lock=await lockRef.transaction(v=>v||{time:Date.now()});
   if(!lock.committed)return alert('You have already joined this tournament or a join is in progress');
+  const fee=safeInt(selected.entry);
+  const spendRef=db.ref('walletSpends/'+currentUser.uid);
+  const spend=await spendRef.transaction(v=>{
+    if(v && v.status==='pending')return;
+    return {uid:currentUser.uid,type:'tournament_join',amount:fee,tournamentKey:selected.key,status:'pending',time:Date.now()};
+  });
+  if(!spend.committed){await lockRef.remove();return alert('Another wallet operation is already processing. Please try again.');}
   const slotRef=db.ref('tournaments/'+selected.key+'/slots');
   let full=false;
   const slot=await slotRef.transaction(v=>{
-    const n=safeInt(v);
-    const total=safeInt(selected.total,50);
+    const n=safeInt(v), total=safeInt(selected.total,50);
     if(n>=total){full=true;return;}
     return n+1;
   });
-  if(!slot.committed){await lockRef.remove();return alert(full?'Slots are full':'Could not reserve a slot');}
+  if(!slot.committed){await spendRef.update({status:'cancelled',cancelledAt:Date.now()});await lockRef.remove();return alert(full?'Slots are full':'Could not reserve a slot');}
   const walletRef=db.ref('users/'+currentUser.uid+'/wallet');
   let insufficient=false;
   const wallet=await walletRef.transaction(v=>{
-    const bal=safeInt(v), fee=safeInt(selected.entry);
+    const bal=safeInt(v);
     if(bal<fee){insufficient=true;return;}
     return bal-fee;
   });
   if(!wallet.committed){
-    await slotRef.transaction(v=>Math.max(0,safeInt(v)-1));
-    await lockRef.remove();
+    await slotRef.transaction(v=>Math.max(0,safeInt(v)-1)).catch(()=>{});
+    await spendRef.update({status:'cancelled',cancelledAt:Date.now()}).catch(()=>{});
+    await lockRef.remove().catch(()=>{});
     return alert(insufficient?'Insufficient wallet balance':'Wallet update failed');
   }
+  let joinKey='';
   try{
     await db.ref('users/'+currentUser.uid).update({ffid:uid,ffname:name});
-    const joinRec=await db.ref('joins').push({uid:currentUser.uid,email:currentUser.email,ffid:uid,ffname:name,title:selected.title,tournamentKey:selected.key,entryFee:safeInt(selected.entry),time:Date.now()});
-    addWalletTransaction(currentUser.uid,{type:'tournament_join',title:'Tournament Join',subtitle:selected.title,amount:-safeInt(selected.entry),status:'completed',reference:joinRec.key}).catch(()=>{});
+    const joinRef=db.ref('joins').push();
+    joinKey=joinRef.key;
+    const joinData={uid:currentUser.uid,email:currentUser.email,ffid:uid,ffname:name,title:selected.title,tournamentKey:selected.key,entryFee:fee,time:Date.now()};
+    try{ await joinRef.set(joinData); }
+    catch(firstErr){ await new Promise(r=>setTimeout(r,500)); await joinRef.set(joinData); }
+    await spendRef.update({reference:joinKey,status:'completed',completedAt:Date.now()});
+    addWalletTransaction(currentUser.uid,{type:'tournament_join',title:'Tournament Join',subtitle:selected.title,amount:-fee,status:'completed',reference:joinKey}).catch(()=>{});
+    await lockRef.remove().catch(()=>{});
     alert('Successfully joined tournament');closePay();
   }catch(e){
-    await walletRef.transaction(v=>safeInt(v)+safeInt(selected.entry));
-    await slotRef.transaction(v=>Math.max(0,safeInt(v)-1));
-    await lockRef.remove();
-    alert('Join failed; entry fee was returned.');
+    // Wallet debit and slot reservation are already committed. Keep them intact and leave the spend record pending for reconciliation.
+    if(joinKey){
+      await spendRef.update({reference:joinKey,status:'pending',error:String(e.message||e),updatedAt:Date.now()}).catch(()=>{});
+      await lockRef.remove().catch(()=>{});
+      alert('Join payment completed; the join record is syncing. Please do not retry this tournament.');
+      return;
+    }
+    await spendRef.update({status:'pending',error:String(e.message||e),updatedAt:Date.now()}).catch(()=>{});
+    await lockRef.remove().catch(()=>{});
+    alert('Wallet payment completed; please refresh before trying again.');
   }
 }
 function loadLeaderboard(){db.ref('users').orderByChild('wallet').limitToLast(10).once('value').then(snap=>{let list=[];snap.forEach(c=>list.push(c.val()));list.reverse();document.getElementById('leaderboard').innerHTML=list.map(u=>`<div style="background:#111114;padding:10px;border-radius:12px;margin-top:6px;display:flex;justify-content:space-between"><div><b>${esc(u.ffname||u.displayName||'Player')}</b></div><div style="color:var(--green);font-weight:900">₹${safeInt(u.wallet)}</div></div>`).join('');});}
@@ -483,19 +648,28 @@ function saveTournament(){
   let poolInput=parseInt(document.getElementById('aPrizePool').value)||0;
   let poolVal = poolInput || (firstVal+secondVal+thirdVal+killVal*totalVal) || Math.floor(entryVal*totalVal*0.8);
   let timeVal=document.getElementById('aTime').value; if(!timeVal){let now=new Date(); now.setMinutes(now.getMinutes()+10); timeVal=now.toISOString().slice(0,16);}
+  let assignedMod=document.getElementById('aModAssign').value||'';
+  if(!isSuperAdmin){
+    if(!currentModId)return alert('Moderator role not available');
+    assignedMod=currentModId;
+  }
   let data={
     title:t,entry:entryVal,total:totalVal,prizePool:poolVal,
     firstPrize:firstVal,secondPrize:secondVal,thirdPrize:thirdVal,killPrize:killVal,
     slots:0,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,
     type:document.getElementById('aType').value||'4v4',status:'active',time:timeVal,matchTime:timeVal,
-    moderatorId:document.getElementById('aModAssign').value||''
+    moderatorId:assignedMod
   };
   let k=document.getElementById('aKey').value;
   if(k){
     let old=tours.find(x=>x.key===k);if(old)data.slots=old.slots||0;
-    db.ref('tournaments/'+k).update(data).then(()=>{alert('Tournament updated successfully');});
+    db.ref('tournaments/'+k).update(data)
+      .then(()=>{alert('Tournament updated successfully');})
+      .catch(e=>{console.error('Tournament update failed',e);alert('Tournament update failed: '+(e&&e.message?e.message:'Permission denied'));});
   }else{
-    db.ref('tournaments').push(data).then(()=>{alert('Tournament created successfully');});
+    db.ref('tournaments').push(data)
+      .then(ref=>{document.getElementById('aKey').value=ref.key;alert('Tournament created successfully');})
+      .catch(e=>{console.error('Tournament create failed',e);alert('Tournament create failed: '+(e&&e.message?e.message:'Permission denied'));});
   }
 }
 function editTour(k){
@@ -516,7 +690,7 @@ function editTour(k){
   document.getElementById('aModAssign').value=t.moderatorId||'';
   autoPrize();
 }
-function deleteTour(k){if(confirm('Are you sure you want to delete this tournament?'))db.ref('tournaments/'+k).remove();}
+function deleteTour(k){if(!isSuperAdmin)return alert('Only Super Admin can delete tournaments');if(confirm('Are you sure you want to delete this tournament?'))db.ref('tournaments/'+k).remove();}
 function openCalendar(){document.getElementById('calDateNow').innerText = new Date().toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});renderCalendar();document.getElementById('calendarModal').classList.add('open');}
 function closeCalendar(){document.getElementById('calendarModal').classList.remove('open');}
 function renderCalendar(){let listEl=document.getElementById('calendarList');const fixedSchedule=[{title:"MATCH 1 - SOLO",sub:"Battle Royale",time:"11:00 AM"},{title:"MATCH 2 - SOLO",sub:"Battle Royale",time:"12:10 PM"},{title:"MATCH 3 - SOLO",sub:"Battle Royale",time:"01:20 PM"},{title:"MATCH 4 - SOLO",sub:"Battle Royale",time:"02:30 PM"},{title:"MATCH 5 - SOLO",sub:"Battle Royale",time:"03:40 PM"},{title:"MATCH 6 - SOLO",sub:"Battle Royale",time:"04:50 PM"},{title:"MATCH 7 - SOLO",sub:"Battle Royale",time:"06:00 PM"},{title:"MATCH 8 - GRAND FINAL",sub:"Final Showdown",time:"07:10 PM",isFinal:true}];listEl.innerHTML=fixedSchedule.map((m,i)=>{let cls=m.isFinal?'cal-match-row final':'cal-match-row';let icon=m.isFinal?'🏆':'🕐';let label=m.isFinal?'FINAL':'MATCH '+(i+1);return `<div class="${cls}"><div style="display:flex;gap:10px;align-items:center"><span style="font-size:18px">${icon}</span><div><div style="font-weight:900;font-size:13px;font-family:Orbitron">${m.title}</div><div style="font-size:10px;opacity:.7;margin-top:2px">${m.sub}</div></div></div><div style="text-align:right"><div style="font-weight:900;font-size:14px;color:${m.isFinal?'#fff':'var(--red)'}">${m.time}</div><div style="font-size:9px;background:${m.isFinal?'#fff':'var(--red)'};color:${m.isFinal?'#E11D2D':'#fff'};padding:3px 8px;border-radius:10px;font-weight:900;margin-top:4px;text-align:center">${label}</div></div></div>`;}).join('');}
