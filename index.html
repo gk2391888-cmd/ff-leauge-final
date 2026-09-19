@@ -20,7 +20,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .header{position:sticky;top:0;z-index:100;background:rgba(12,12,14,0.95);backdrop-filter:blur(20px);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--red);height:56px}
 .logo{font-family:Orbitron;font-weight:900;font-size:16px;display:flex;align-items:center;gap:8px}.logo b{width:34px;height:34px;background:var(--red);display:grid;place-items:center;border-radius:8px}.logo span{color:var(--red)}
 .h-btn{background:var(--red);border:none;color:#fff;padding:8px 12px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer}
-.admin-btn{display:none;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show{display:block}
+.admin-btn{display:none!important;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show{display:block!important}
 .hero{padding:18px 16px 8px}.hero h1{font-family:Orbitron;font-size:26px;font-weight:900}.hero h1 span{color:var(--red)}.hero p{opacity:.5;font-size:12px;margin-top:6px}
 .mode-bar{display:flex;gap:8px;margin:12px 0;padding:0 16px;overflow-x:auto}.mode-bar::-webkit-scrollbar{display:none}
 .mode-btn{flex:0 0 auto;padding:12px 14px;border-radius:14px;border:2px solid var(--border);background:#111114;color:#fff;font-weight:900;font-family:Orbitron;font-size:11px;cursor:pointer;min-width:72px;text-align:center}
@@ -35,7 +35,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .slot-fill{height:100%;background:linear-gradient(90deg,var(--green),#00cc66);transition:width 0.5s}
 .btn-join{width:100%;padding:13px;background:linear-gradient(90deg,var(--red),#ff4d00);color:#fff;border:none;border-radius:12px;font-weight:900;font-family:Orbitron;font-size:12px;cursor:pointer}
 .wallet-card{background:linear-gradient(135deg,var(--red) 0%,#7a0000 100%);border-radius:24px;padding:20px;margin:16px}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,12,0.98);border-top:2px solid var(--red);display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100;overflow-x:auto}.bottom .b-item{flex:1 0 0;min-width:58px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,12,0.98);border-top:2px solid var(--red);display:flex;justify-content:space-around;padding:10px 0 18px;z-index:100}
 .b-item{text-align:center;opacity:.5;font-size:8px;font-weight:700;cursor:pointer;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}.b-item i{font-size:18px}.b-item.active{opacity:1;color:var(--red)}
 .b-item.admin-only{display:none}.b-item.admin-only.show{display:flex}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;padding:12px;justify-content:center;align-items:flex-start;overflow-y:auto}.modal.open{display:flex}
@@ -68,7 +68,6 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 #calIconBtn{position:fixed;bottom:92px;right:16px;width:58px;height:58px;background:linear-gradient(135deg,#E11D2D,#ff4d00);border-radius:50%;display:grid;place-items:center;font-size:26px;color:#fff;cursor:pointer;z-index:150;box-shadow:0 6px 22px rgba(225,29,45,0.6);border:2px solid #fff}
 .cal-match-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#0a0a0c;border:1px solid var(--border);border-radius:12px;margin-top:8px}
 .cal-match-row.final{background:linear-gradient(90deg,#E11D2D,#ff4d00);border:none;color:#fff}
-.profile-pic-mobile-fix{display:block!important;width:56px!important;height:56px!important;min-width:56px!important;min-height:56px!important;border-radius:50%!important;object-fit:cover!important;}
 </style>
 </head>
 <body>
@@ -85,8 +84,8 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 <div id="withdrawModal" class="modal" onclick="closeWithdraw()"><div class="box" onclick="event.stopPropagation()"><h3>WITHDRAW FUNDS</h3><div id="withdrawBal"></div><input id="withdrawAmt" type="number" placeholder="Minimum ₹100"><input id="withdrawUpi" placeholder="UPI ID"><button class="btn-join" style="background:var(--green);color:#000" onclick="submitWithdraw()">REQUEST WITHDRAWAL</button></div></div>
 <div id="playersModal" class="modal" onclick="closePlayers()"><div class="box" onclick="event.stopPropagation()"><h3>LIVE PLAYERS - <span id="liveSlotCount"></span></h3><div id="livePlayersList"></div><button class="h-btn" onclick="closePlayers()">Close</button></div></div>
 <div id="completeModal" class="modal" onclick="closeComplete()"><div class="box" onclick="event.stopPropagation()" style="border:2px solid var(--green)"><h2 style="font-family:Orbitron;color:var(--green);font-size:14px">COMPLETE TOURNAMENT</h2><p id="completeTourName" style="font-size:11px;opacity:.6;margin-top:6px"></p><input id="completeKey" type="hidden"><div style="margin-top:12px;background:rgba(0,255,136,0.06);border:1.5px dashed var(--green);padding:12px;border-radius:12px"><label style="font-size:11px;color:var(--green);font-weight:800">1ST PLACE WINNER</label><div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:4px"><input id="win1_ffid" placeholder="Winner Email / FF ID"><input id="win1_prize" type="number" placeholder="Prize" oninput="autoCompletePrize()"></div><label style="font-size:11px;color:#C0C0C0;font-weight:800;margin-top:10px;display:block">2ND PLACE WINNER</label><div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:4px"><input id="win2_ffid" placeholder="2nd Place Email / FF ID"><input id="win2_prize" type="number" placeholder="Prize" oninput="autoCompletePrize()"></div></div><div id="completeProfitPreview" style="margin-top:10px;background:#050507;padding:10px;border-radius:10px;border:1px solid var(--border);font-size:11px">Prize Total: ₹0</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button onclick="closeComplete()" style="background:#1e1e22;color:#fff;border:1px solid var(--border);padding:12px;border-radius:12px">CANCEL</button><button onclick="submitComplete()" style="background:linear-gradient(90deg,var(--green),#00cc66);color:#000;border:none;padding:12px;border-radius:12px;font-weight:900">DECLARE WINNERS & PAY</button></div><p id="completeStatus" style="text-align:center;margin-top:8px;font-size:11px;white-space:pre-wrap"></p></div></div>
-<div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" style="max-width:860px" onclick="event.stopPropagation()"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="background:#ffcc0015;border:1px solid #ffcc0050;padding:8px;border-radius:10px;font-size:9px;color:#ffcc00;margin-bottom:10px">Security: admin permissions and wallet operations must also be enforced by Firebase RTDB Rules / trusted backend. Client-side checks alone are not authorization.</div><h2 style="font-family:Orbitron;color:#ffcc00;font-size:16px">ADMIN PANEL <span id="adminRoleBadge" class="th-pill">SUPER ADMIN</span></h2><button onclick="closeAdmin()" style="background:#1e1e22;color:#fff;border:none;padding:6px 12px;border-radius:8px">✕</button></div><div class="pro-stats"><div class="pro-stat"><h2 id="proTotalUsers">0</h2><p>TOTAL USERS</p></div><div class="pro-stat"><h2 id="proTotalBal">₹0</h2><p>WALLET BALANCE</p></div><div class="pro-stat"><h2 id="proPending">0</h2><p>PENDING</p></div><div class="pro-stat profit"><h2 id="proProfit">₹0</h2><p>NET PROFIT</p></div></div><div style="margin-top:12px;background:#00ff8815;border:2px solid var(--green);padding:12px;border-radius:14px"><h4 style="color:var(--green);font-family:Orbitron;font-size:13px">SUPPORT TICKETS</h4><div id="supportTicketsList" style="max-height:400px;overflow:auto;margin-top:8px"></div></div><div id="walletManagementSection" style="margin-top:12px;background:#050507;padding:12px;border-radius:14px;border:1px solid var(--border)"><h4 style="color:var(--green);font-size:12px">WALLET MANAGEMENT</h4><div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:6px"><input id="proFFSearch" placeholder="Search by Email or FF ID" style="margin:0"><input id="proAmount" type="number" placeholder="Amount" style="margin:0"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px"><button onclick="proUpdateBal(1)" style="background:var(--green);color:#000;padding:10px;border:none;border-radius:10px;font-weight:900">+ ADD BALANCE</button><button onclick="proUpdateBal(-1)" style="background:var(--red);color:#fff;padding:10px;border:none;border-radius:10px;font-weight:900">- DEDUCT BALANCE</button></div><p id="proBalMsg" style="font-size:10px;margin-top:6px;color:var(--green)"></p></div><div style="margin-top:12px;background:#050507;border:2px solid var(--green);padding:12px;border-radius:14px" id="modSection"><h4 style="font-family:Orbitron;color:var(--green);font-size:12px">MODERATOR MANAGEMENT</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"><input id="modId" placeholder="ID e.g. TH001"><input id="modName" placeholder="Moderator Name"><input id="modEmail" placeholder="Moderator Email"><input id="modPerc" type="number" value="20" placeholder="Commission %"></div><button onclick="addModerator()" style="width:100%;margin-top:8px;background:var(--green);color:#000;padding:10px;border:none;border-radius:10px;font-weight:900">ADD MODERATOR</button><div id="modList" style="margin-top:10px"></div></div><div id="allUsersSection" style="margin-top:12px;background:#00ff8815;border:1px solid #00ff8850;padding:10px;border-radius:14px"><div style="display:flex;justify-content:space-between"><h4 style="color:var(--green);font-size:12px">ALL USERS</h4><button onclick="loadAllUsersWallet()" style="background:#1a1a1e;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:10px">REFRESH</button></div><input id="userSearch" placeholder="Search users" style="margin:8px 0" oninput="filterProUsers()"><div style="overflow:auto;max-height:350px"><table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr><th style="color:var(--red);text-align:left;padding:6px">FF ID</th><th style="color:var(--red);text-align:left;padding:6px">NAME</th><th style="color:var(--red);text-align:left;padding:6px">BALANCE</th><th style="color:var(--red);text-align:left;padding:6px">EMAIL</th><th style="color:var(--red);text-align:left;padding:6px">ACTION</th></tr></thead><tbody id="allUsersWallet"></tbody></table></div></div><div style="margin-top:12px;background:#ff660015;border:1px solid #ff660050;padding:10px;border-radius:14px"><h4 style="color:#ff6600;font-size:12px">WITHDRAWAL REQUESTS</h4><div id="withdrawReqList"></div></div><div style="margin-top:12px;background:#111114;border:1px solid var(--border);padding:10px;border-radius:14px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE REQUESTS</h4><div id="walletReqList"></div></div>
-<div id="moderatorAccessNote" style="display:none;margin-top:12px;background:#ffcc0015;border:1px solid #ffcc0050;padding:10px;border-radius:12px;font-size:10px;color:#ffcc00">MODERATOR ACCESS: Create/edit assigned tournaments, set Room ID & Password, approve/reject recharge and withdrawal requests, and complete tournament payouts. Wallet +/- and moderator management are Super Admin only.</div><div style="margin-top:12px;border:2px solid var(--red);padding:12px;border-radius:14px;background:#0f0f12"><h4 style="font-family:Orbitron;color:#fff;font-size:12px">CREATE TOURNAMENT</h4><input id="aKey" type="hidden"><input id="aTitle" placeholder="Tournament Title"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+<div id="adminModal" class="modal" onclick="closeAdmin()"><div class="box" style="max-width:860px" onclick="event.stopPropagation()"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="background:#ffcc0015;border:1px solid #ffcc0050;padding:8px;border-radius:10px;font-size:9px;color:#ffcc00;margin-bottom:10px">Security: admin permissions and wallet operations must also be enforced by Firebase RTDB Rules / trusted backend. Client-side checks alone are not authorization.</div><h2 style="font-family:Orbitron;color:#ffcc00;font-size:16px">ADMIN PANEL <span id="adminRoleBadge" class="th-pill">SUPER ADMIN</span></h2><button onclick="closeAdmin()" style="background:#1e1e22;color:#fff;border:none;padding:6px 12px;border-radius:8px">✕</button></div><div class="pro-stats"><div class="pro-stat"><h2 id="proTotalUsers">0</h2><p>TOTAL USERS</p></div><div class="pro-stat"><h2 id="proTotalBal">₹0</h2><p>WALLET BALANCE</p></div><div class="pro-stat"><h2 id="proPending">0</h2><p>PENDING</p></div><div class="pro-stat profit"><h2 id="proProfit">₹0</h2><p>NET PROFIT</p></div></div><div style="margin-top:12px;background:#00ff8815;border:2px solid var(--green);padding:12px;border-radius:14px"><h4 style="color:var(--green);font-family:Orbitron;font-size:13px">SUPPORT TICKETS</h4><div id="supportTicketsList" style="max-height:400px;overflow:auto;margin-top:8px"></div></div><div style="margin-top:12px;background:#050507;padding:12px;border-radius:14px;border:1px solid var(--border)"><h4 style="color:var(--green);font-size:12px">WALLET MANAGEMENT</h4><div style="display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-top:6px"><input id="proFFSearch" placeholder="Search by Email or FF ID" style="margin:0"><input id="proAmount" type="number" placeholder="Amount" style="margin:0"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px"><button onclick="proUpdateBal(1)" style="background:var(--green);color:#000;padding:10px;border:none;border-radius:10px;font-weight:900">+ ADD BALANCE</button><button onclick="proUpdateBal(-1)" style="background:var(--red);color:#fff;padding:10px;border:none;border-radius:10px;font-weight:900">- DEDUCT BALANCE</button></div><p id="proBalMsg" style="font-size:10px;margin-top:6px;color:var(--green)"></p></div><div style="margin-top:12px;background:#050507;border:2px solid var(--green);padding:12px;border-radius:14px" id="modSection"><h4 style="font-family:Orbitron;color:var(--green);font-size:12px">MODERATOR MANAGEMENT</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"><input id="modId" placeholder="ID e.g. TH001"><input id="modName" placeholder="Moderator Name"><input id="modEmail" placeholder="Moderator Email"><input id="modPerc" type="number" value="20" placeholder="Commission %"></div><button onclick="addModerator()" style="width:100%;margin-top:8px;background:var(--green);color:#000;padding:10px;border:none;border-radius:10px;font-weight:900">ADD MODERATOR</button><div id="modList" style="margin-top:10px"></div></div><div style="margin-top:12px;background:#00ff8815;border:1px solid #00ff8850;padding:10px;border-radius:14px"><div style="display:flex;justify-content:space-between"><h4 style="color:var(--green);font-size:12px">ALL USERS</h4><button onclick="loadAllUsersWallet()" style="background:#1a1a1e;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:10px">REFRESH</button></div><input id="userSearch" placeholder="Search users" style="margin:8px 0" oninput="filterProUsers()"><div style="overflow:auto;max-height:350px"><table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr><th style="color:var(--red);text-align:left;padding:6px">FF ID</th><th style="color:var(--red);text-align:left;padding:6px">NAME</th><th style="color:var(--red);text-align:left;padding:6px">BALANCE</th><th style="color:var(--red);text-align:left;padding:6px">EMAIL</th><th style="color:var(--red);text-align:left;padding:6px">ACTION</th></tr></thead><tbody id="allUsersWallet"></tbody></table></div></div><div style="margin-top:12px;background:#ff660015;border:1px solid #ff660050;padding:10px;border-radius:14px"><h4 style="color:#ff6600;font-size:12px">WITHDRAWAL REQUESTS</h4><div id="withdrawReqList"></div></div><div style="margin-top:12px;background:#111114;border:1px solid var(--border);padding:10px;border-radius:14px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE REQUESTS</h4><div id="walletReqList"></div></div>
+<div style="margin-top:12px;border:2px solid var(--red);padding:12px;border-radius:14px;background:#0f0f12"><h4 style="font-family:Orbitron;color:#fff;font-size:12px">CREATE TOURNAMENT</h4><input id="aKey" type="hidden"><input id="aTitle" placeholder="Tournament Title"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
 <input id="aEntry" type="number" placeholder="Entry Fee" oninput="autoPrize()">
 <input id="aTotal" type="number" placeholder="Total Slots (e.g. 50)" oninput="autoPrize()">
 <input id="aPrizePool" type="number" placeholder="Prize Pool (Auto Calculated)" oninput="autoPrize()">
@@ -344,28 +343,23 @@ auth.onAuthStateChanged(async u=>{
   if(logoutBtn) logoutBtn.style.display='block';
   if(loginBtn) loginBtn.disabled=false;
 
-  const authEmails=[u.email,...(u.providerData||[]).map(p=>p&&p.email)].filter(Boolean).map(e=>String(e).trim().toLowerCase());
-  isSuperAdmin=authEmails.includes(SUPER_ADMIN_EMAIL);
+  isSuperAdmin=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;
   isAdmin=isSuperAdmin;
   currentModId='';
-  if(!isSuperAdmin){
-    try{
-      const roleSnap=await db.ref('moderatorRoles/'+u.uid).once('value');
-      const role=roleSnap.val()||{};
-      if(role.enabled!==false && (role.enabled===true || role.idCard || role.moderatorKey)){
-        currentModId=String(role.idCard||'').trim();
-        isAdmin=!!currentModId;
-      }
-      if(!isAdmin){
-        const modSnap=await db.ref('moderators').orderByChild('uid').equalTo(u.uid).once('value');
-        modSnap.forEach(c=>{
-          const m=c.val()||{};
-          if(!isAdmin && m.idCard && String(m.email||'').toLowerCase()===String(u.email||'').toLowerCase()){
-            currentModId=String(m.idCard); isAdmin=true;
-          }
-        });
-      }
-    }catch(_e){ currentModId=''; if(!isSuperAdmin)isAdmin=false; }
+
+  // Optional moderator lookup. A rules/permission error here must NOT break login.
+  try{
+    const modSnap=await db.ref('moderators').orderByChild('email').equalTo((u.email||'').toLowerCase()).once('value');
+    let roleSnap=null;
+    try{ roleSnap=await db.ref('moderatorRoles/'+u.uid).once('value'); }catch(_e){ roleSnap=null; }
+    const isMod=modSnap.exists() || !!(roleSnap && roleSnap.exists());
+    const modData=isMod ? ((roleSnap&&roleSnap.val()) || Object.values(modSnap.val()||{})[0]) : null;
+    isAdmin=isSuperAdmin||isMod;
+    currentModId=modData && modData.idCard ? modData.idCard : '';
+  }catch(_e){
+    // Login remains valid even if optional role data is unavailable.
+    isAdmin=isSuperAdmin;
+    currentModId='';
   }
 
   const name=u.displayName||'User';
@@ -375,7 +369,7 @@ auth.onAuthStateChanged(async u=>{
   if(photo && /^http:\/\//i.test(photo)) photo=photo.replace(/^http:\/\//i,'https://');
   const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
   setText('userName',name);
-  setText('userEmail',email + (currentModId?' | MOD '+currentModId:''));
+  setText('userEmail',email + (currentModId?' | '+currentModId:''));
   setText('profileName',name);
   setText('profileEmail',email);
   const pic=document.getElementById('profilePic');
@@ -386,7 +380,6 @@ auth.onAuthStateChanged(async u=>{
     pic.decoding='async';
     pic.referrerPolicy='no-referrer';
     pic.setAttribute('referrerpolicy','no-referrer');
-    pic.classList.add('profile-pic-mobile-fix');
     pic.style.objectFit='cover';
     pic.style.display='block';
     pic.style.background='#b51226';
@@ -404,7 +397,11 @@ auth.onAuthStateChanged(async u=>{
     }
     pic.src=photo||fallback;
   }
-  updateAdminUI();
+  setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':(isAdmin?'MODERATOR '+currentModId:'PLAYER'));
+  if(isAdmin){
+    document.getElementById('adminHeaderBtn')?.classList.add('show');
+    document.getElementById('adminBottomBtn')?.classList.add('show');
+  }
 
   // Profile sync is non-critical and must never affect authentication UI.
   db.ref('users/'+u.uid).once('value').then(snap=>{
@@ -421,35 +418,13 @@ auth.onAuthStateChanged(async u=>{
   try{loadMyTickets();}catch(_e){}
   if(isAdmin){
     try{loadMods();}catch(_e){}
-    if(isSuperAdmin){try{loadAllUsersWallet();}catch(_e){}}
+    try{loadAllUsersWallet();}catch(_e){}
     try{loadWalletRequests();}catch(_e){}
     try{loadWithdrawRequests();}catch(_e){}
     try{loadAllSupportTickets();}catch(_e){}
   }
 });
-function updateAdminUI(){
-  const roleText=isSuperAdmin?'SUPER ADMIN':(currentModId?'MODERATOR '+currentModId:'PLAYER');
-  const badge=document.getElementById('adminRoleBadge'); if(badge) badge.innerText=roleText;
-  const hb=document.getElementById('adminHeaderBtn'), bb=document.getElementById('adminBottomBtn');
-  if(isAdmin){
-    if(hb){hb.classList.add('show');hb.style.display='block';}
-    if(bb){bb.classList.add('show');bb.style.display='flex';}
-    let mobileAdmin=document.getElementById('mobileAdminQuick');
-    if(!mobileAdmin){mobileAdmin=document.createElement('button');mobileAdmin.id='mobileAdminQuick';mobileAdmin.innerText='ADMIN PANEL';mobileAdmin.onclick=()=>openAdmin();mobileAdmin.style.cssText='position:fixed;right:12px;bottom:78px;z-index:250;background:#ffcc00;color:#000;border:0;border-radius:10px;padding:9px 12px;font-weight:900;font-size:10px;box-shadow:0 4px 14px #0008;';document.body.appendChild(mobileAdmin);}
-    mobileAdmin.style.display='block';
-  }else{
-    if(hb){hb.classList.remove('show');hb.style.display='none';}
-    if(bb){bb.classList.remove('show');bb.style.display='none';}
-    const mobileAdmin=document.getElementById('mobileAdminQuick'); if(mobileAdmin)mobileAdmin.remove();
-  }
-  const modSection=document.getElementById('modSection'); if(modSection)modSection.style.display=isSuperAdmin?'block':'none';
-  const walletSection=document.getElementById('walletManagementSection'); if(walletSection)walletSection.style.display=isSuperAdmin?'block':'none';
-  const usersSection=document.getElementById('allUsersSection'); if(usersSection)usersSection.style.display=isSuperAdmin?'block':'none';
-  const note=document.getElementById('moderatorAccessNote'); if(note)note.style.display=(!isSuperAdmin&&currentModId)?'block':'none';
-}
-
 function logout(){
-  const mobileAdmin=document.getElementById('mobileAdminQuick'); if(mobileAdmin) mobileAdmin.remove();
   localStorage.removeItem('ff_auth_seen');
   localStorage.removeItem('ff_login_pending');
   auth.signOut().then(()=>location.reload());
@@ -642,7 +617,6 @@ function loadLeaderboard(){db.ref('users').orderByChild('wallet').limitToLast(10
 function openLivePlayers(key){db.ref('joins').orderByChild('tournamentKey').equalTo(key).once('value').then(snap=>{let h='';let count=snap.numChildren();document.getElementById('liveSlotCount').innerText=count+' Players Joined';if(!snap.exists())h='<p>No players have joined yet</p>';else snap.forEach(c=>{let j=c.val();h+=`<div class="admin-card"><b>${esc(j.ffid)}</b> - ${esc(j.ffname)}</div>`;});document.getElementById('livePlayersList').innerHTML=h;openPlayers();});}
 db.ref('tournaments').on('value',s=>{let list=[];s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);});tours=list;render();});
 function saveTournament(){
-  if(!isAdmin)return alert('Access denied');
   let t=document.getElementById('aTitle').value.trim();if(!t) return alert('Please enter tournament title');
   let entryVal=parseInt(document.getElementById('aEntry').value)||0;
   let totalVal=parseInt(document.getElementById('aTotal').value)||50;
@@ -679,7 +653,6 @@ function saveTournament(){
 }
 function editTour(k){
   let t=tours.find(x=>x.key===k);if(!t)return;
-  if(!isSuperAdmin && (!currentModId || t.moderatorId!==currentModId))return alert('This tournament is not assigned to you.');
   document.getElementById('aKey').value=k;
   document.getElementById('aTitle').value=t.title||'';
   document.getElementById('aEntry').value=t.entry||'';
