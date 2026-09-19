@@ -68,6 +68,40 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 #calIconBtn{position:fixed;bottom:92px;right:16px;width:58px;height:58px;background:linear-gradient(135deg,#E11D2D,#ff4d00);border-radius:50%;display:grid;place-items:center;font-size:26px;color:#fff;cursor:pointer;z-index:150;box-shadow:0 6px 22px rgba(225,29,45,0.6);border:2px solid #fff}
 .cal-match-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#0a0a0c;border:1px solid var(--border);border-radius:12px;margin-top:8px}
 .cal-match-row.final{background:linear-gradient(90deg,#E11D2D,#ff4d00);border:none;color:#fff}
+
+/* Mobile parity: keep the same desktop functions, but make every admin/control area usable on phones. */
+@media (max-width:600px){
+  body{padding-bottom:82px;}
+  .header{height:56px;padding:9px 10px;}
+  .logo{font-size:14px;gap:6px}.logo b{width:30px;height:30px}.h-btn{padding:8px 10px;font-size:10px;}
+  .bottom{padding:8px 0 12px;min-height:64px;}
+  .b-item{font-size:7px;gap:2px;min-width:0;overflow:hidden;white-space:nowrap;}
+  .b-item i{font-size:16px;}
+  .admin-btn.show{display:block!important;}
+  .modal{padding:0;align-items:stretch;}
+  #adminModal{padding:0;}
+  #adminModal .box{width:100%;max-width:none;min-height:100vh;margin:0;border-radius:0;border-left:0;border-right:0;padding:14px 10px 90px;overflow-x:hidden;}
+  #adminModal .box>div{max-width:100%;} 
+  #adminModal .pro-stats{grid-template-columns:1fr 1fr!important;gap:7px;}
+  #adminModal .pro-stat{padding:9px 5px;}
+  #adminModal .pro-stat h2{font-size:15px;}
+  #adminModal input,#adminModal select,#adminModal textarea{font-size:13px;padding:11px 10px;}
+  #adminModal button{max-width:100%;white-space:normal;}
+  #adminModal table{min-width:650px;}
+  #adminModal .admin-card{font-size:11px;}
+  #adminModal .admin-card>div{flex-wrap:wrap;}
+  #adminModal #aTList .admin-card{overflow:hidden;}
+  #adminModal #aTList .admin-card button{padding:7px 9px!important;}
+  #adminModal #supportTicketsList,#adminModal #walletReqList,#adminModal #withdrawReqList,#adminModal #modList,#adminModal #aTList{overflow-x:hidden;}
+  #adminModal .box>div[style*="overflow:auto"]{overflow-x:auto!important;-webkit-overflow-scrolling:touch;}
+  #calendarModal .box,#playersModal .box,#completeModal .box,#payModal .box,#rechargeModal .box,#withdrawModal .box{margin:10px auto;max-height:calc(100vh - 20px);overflow-y:auto;}
+  #calIconBtn{bottom:78px;right:12px;width:52px;height:52px;font-size:22px;}
+}
+@media (max-width:380px){
+  .logo{font-size:12px}.logo b{width:28px;height:28px;}
+  .b-item{font-size:6px}.b-item i{font-size:15px;}
+  #adminModal .box{padding-left:8px;padding-right:8px;}
+}
 </style>
 </head>
 <body>
@@ -402,6 +436,10 @@ auth.onAuthStateChanged(async u=>{
     document.getElementById('adminHeaderBtn')?.classList.add('show');
     document.getElementById('adminBottomBtn')?.classList.add('show');
   }
+  if(!isAdmin){
+    document.getElementById('adminHeaderBtn')?.classList.remove('show');
+    document.getElementById('adminBottomBtn')?.classList.remove('show');
+  }
 
   // Profile sync is non-critical and must never affect authentication UI.
   db.ref('users/'+u.uid).once('value').then(snap=>{
@@ -437,7 +475,7 @@ function openWithdraw(){document.getElementById('withdrawModal').classList.add('
 function closeWithdraw(){document.getElementById('withdrawModal').classList.remove('open');}
 function openPlayers(){document.getElementById('playersModal').classList.add('open');}
 function closePlayers(){document.getElementById('playersModal').classList.remove('open');}
-function openAdmin(){if(!isAdmin){alert('Access denied: Admin only');return;}document.getElementById('adminModal').classList.add('open');render();loadMods();}
+function openAdmin(){if(!isAdmin){alert('Access denied: Admin only');return;}document.getElementById('adminModal').classList.add('open');const modSection=document.getElementById('modSection');const walletSection=modSection?.previousElementSibling;if(modSection)modSection.style.display=isSuperAdmin?'block':'none';if(walletSection&&walletSection.querySelector('#proFFSearch'))walletSection.style.display=isSuperAdmin?'block':'none';render();loadMods();}
 function closeAdmin(){document.getElementById('adminModal').classList.remove('open');}
 function updateQR(){let amt=safeInt(document.getElementById('rechargeAmt').value,10);if(amt<10)amt=10;const upiLink=`upi://pay?pa=${MY_UPI}&pn=THE%20TECH%20HUB&am=${amt}&cu=INR&tn=FFLEAGUE`;const qrApi=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;document.getElementById('qrImg').src=qrApi;document.getElementById('upiLink2').href=upiLink;document.getElementById('qrText').textContent=`Pay ₹${amt} | UPI: ${MY_UPI}`;}
 function submitRecharge(){const amt=safeInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim();if(amt<10)return alert('Minimum recharge is ₹10');if(!/^\d{6,20}$/.test(utr))return alert('Please enter a valid UTR number');db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending'}).then(()=>{alert('Recharge request submitted');closeRecharge();});}
@@ -548,7 +586,7 @@ async function rejectWithdraw(id,uid,amt){
     alert('Could not reject request: '+e.message);
   }
 }
-function loadAllUsersWallet(){if(!isAdmin)return;db.ref('users').once('value').then(snap=>{proAllUsersData=[];let tot=0;snap.forEach(c=>{let v=c.val();tot+= (v.wallet||0);proAllUsersData.push({uid:c.key,email:v.email||'',wallet:v.wallet||0,ffid:v.ffid||'-',ffname:v.ffname||v.displayName||'-'});});document.getElementById('proTotalUsers').innerText=proAllUsersData.length;document.getElementById('proTotalBal').innerText='₹'+tot;document.getElementById('allUsersWallet').innerHTML=proAllUsersData.slice().reverse().map(u=>`<tr><td><b>${esc(u.ffid)}</b></td><td>${esc(u.ffname)}</td><td style="color:var(--green);font-weight:900">₹${safeInt(u.wallet)}</td><td style="font-size:9px">${esc(u.email)}</td><td><button onclick="quickProAdd('${esc(u.uid)}',10)" style="background:var(--green);color:#000;border:none;padding:4px 6px;border-radius:6px;font-size:9px">+10</button></td></tr>`).join('');db.ref('walletRecharges').orderByChild('status').equalTo('pending').once('value').then(s=>{document.getElementById('proPending').innerText=s.numChildren();});let profit=0;tours.forEach(t=>{if(t.status==='completed')profit+= (t.profit||0);});document.getElementById('proProfit').innerText='₹'+profit;});}
+function loadAllUsersWallet(){if(!isAdmin)return;const walletSection=document.getElementById('modSection')?.previousElementSibling;if(walletSection&&walletSection.querySelector('#proFFSearch'))walletSection.style.display=isSuperAdmin?'block':'none';db.ref('users').once('value').then(snap=>{proAllUsersData=[];let tot=0;snap.forEach(c=>{let v=c.val();tot+= (v.wallet||0);proAllUsersData.push({uid:c.key,email:v.email||'',wallet:v.wallet||0,ffid:v.ffid||'-',ffname:v.ffname||v.displayName||'-'});});document.getElementById('proTotalUsers').innerText=proAllUsersData.length;document.getElementById('proTotalBal').innerText='₹'+tot;document.getElementById('allUsersWallet').innerHTML=proAllUsersData.slice().reverse().map(u=>`<tr><td><b>${esc(u.ffid)}</b></td><td>${esc(u.ffname)}</td><td style="color:var(--green);font-weight:900">₹${safeInt(u.wallet)}</td><td style="font-size:9px">${esc(u.email)}</td><td><button onclick="quickProAdd('${esc(u.uid)}',10)" style="background:var(--green);color:#000;border:none;padding:4px 6px;border-radius:6px;font-size:9px">+10</button></td></tr>`).join('');db.ref('walletRecharges').orderByChild('status').equalTo('pending').once('value').then(s=>{document.getElementById('proPending').innerText=s.numChildren();});let profit=0;tours.forEach(t=>{if(t.status==='completed')profit+= (t.profit||0);});document.getElementById('proProfit').innerText='₹'+profit;});}
 function filterProUsers(){let q=document.getElementById('userSearch').value.toLowerCase();let f=proAllUsersData.filter(u=> (u.ffid+'').toLowerCase().includes(q) || (u.ffname+'').toLowerCase().includes(q) || u.email.toLowerCase().includes(q));document.getElementById('allUsersWallet').innerHTML=f.slice().reverse().map(u=>`<tr><td><b>${esc(u.ffid)}</b></td><td>${esc(u.ffname)}</td><td style="color:var(--green);font-weight:900">₹${safeInt(u.wallet)}</td><td style="font-size:9px">${esc(u.email)}</td><td><button onclick="quickProAdd('${esc(u.uid)}',10)" style="background:var(--green);color:#000;border:none;padding:4px 6px;border-radius:6px;font-size:9px">+10</button></td></tr>`).join('');}
 function proUpdateBal(type){if(!isSuperAdmin)return alert('Only Super Admin can perform wallet operations');let search=document.getElementById('proFFSearch').value.trim().toLowerCase();let amt=parseInt(document.getElementById('proAmount').value);if(!search||!amt)return alert('Please enter search term and amount');let found=proAllUsersData.find(u=>u.email.toLowerCase().includes(search) || (u.ffid+'').toLowerCase().includes(search));if(!found)return alert('User not found');db.ref('users/'+found.uid+'/wallet').transaction(w=> (w||0)+amt*type).then(()=>addWalletTransaction(found.uid,{type:type>0?'admin_credit':'admin_debit',title:type>0?'Admin Added Balance':'Admin Deducted Balance',subtitle:'Admin wallet adjustment',amount:amt*type,status:'approved',reference:currentUser.uid})).then(()=>{document.getElementById('proBalMsg').innerText=`Updated balance for ${found.email}`;loadAllUsersWallet();});}
 function quickProAdd(uid, amt){if(!isSuperAdmin)return alert('Only Super Admin can perform wallet operations');const a=safeInt(amt);if(a<=0)return alert('Invalid amount');db.ref('users/'+uid+'/wallet').transaction(w=>(safeInt(w)+a)).then(r=>{if(!r.committed)throw new Error('Wallet update failed');return addWalletTransaction(uid,{type:'admin_credit',title:'Admin Added Balance',subtitle:'Quick admin wallet adjustment',amount:a,status:'approved',reference:currentUser.uid});}).then(()=>loadAllUsersWallet()).catch(e=>alert('Wallet update failed: '+e.message));}
