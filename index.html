@@ -525,9 +525,13 @@ function saveTournament(){
   let k=document.getElementById('aKey').value;
   if(k){
     let old=tours.find(x=>x.key===k);if(old)data.slots=old.slots||0;
-    db.ref('tournaments/'+k).update(data).then(()=>{alert('Tournament updated successfully');});
+    db.ref('tournaments/'+k).update(data)
+      .then(()=>{alert('Tournament updated successfully');})
+      .catch(e=>{console.error('Tournament update failed',e);alert('Tournament update failed: '+(e&&e.message?e.message:'Permission denied'));});
   }else{
-    db.ref('tournaments').push(data).then(()=>{alert('Tournament created successfully');});
+    db.ref('tournaments').push(data)
+      .then(ref=>{document.getElementById('aKey').value=ref.key;alert('Tournament created successfully');})
+      .catch(e=>{console.error('Tournament create failed',e);alert('Tournament create failed: '+(e&&e.message?e.message:'Permission denied'));});
   }
 }
 function editTour(k){
