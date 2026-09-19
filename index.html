@@ -310,7 +310,82 @@ auth.getRedirectResult().then((result)=>{
   if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
 });
 let authStateResolved=false;
-auth.onAuthStateChanged(async u=>{authStateResolved=true;if(u){currentUser=u;let isSuper=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;let modSnap=await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');let roleSnap=await db.ref('moderatorRoles/'+u.uid).once('value');let isMod=modSnap.exists()||roleSnap.exists();let modData=isMod?(roleSnap.val()||Object.values(modSnap.val())[0]):null;isSuperAdmin=isSuper;isAdmin=isSuper||isMod;currentModId=modData?modData.idCard:'';db.ref('users/'+u.uid).once('value').then(snap=>{let ex=snap.val()||{};db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',lastLogin:Date.now()});});document.getElementById('loginScreen').style.display='none';document.getElementById('userInfo').style.display='block';document.getElementById('logoutBtn').style.display='block';document.getElementById('userName').innerText=u.displayName||'User';document.getElementById('userEmail').innerText=u.email + (currentModId?' | '+currentModId:'');document.getElementById('profileName').innerText=u.displayName||'User';document.getElementById('profileEmail').innerText=u.email;document.getElementById('profilePic').src=u.photoURL||'';document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');if(isAdmin){document.getElementById('adminHeaderBtn').classList.add('show');document.getElementById('adminBottomBtn').classList.add('show');}loadWallet();loadMyRoom();loadWalletHistory();loadMyRecharges();loadMyWithdraws();loadLeaderboard();loadMyTickets();if(isAdmin){loadMods();loadAllUsersWallet();loadWalletRequests();loadWithdrawRequests();loadAllSupportTickets();}}else{currentUser=null;document.getElementById('loginScreen').style.display='flex';let b=document.getElementById('gLoginBtn');if(b){b.innerText='Continue with Google';b.disabled=false;}}});
+auth.onAuthStateChanged(async u=>{
+  authStateResolved=true;
+  const loginScreen=document.getElementById('loginScreen');
+  const loginBtn=document.getElementById('gLoginBtn');
+  if(!u){
+    currentUser=null;
+    if(loginScreen) loginScreen.style.display='flex';
+    if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
+    return;
+  }
+
+  // IMPORTANT: show the app immediately after Firebase confirms authentication.
+  // Any optional database/profile/moderator lookup must never send the user back to login.
+  currentUser=u;
+  if(loginScreen) loginScreen.style.display='none';
+  const userInfo=document.getElementById('userInfo');
+  const logoutBtn=document.getElementById('logoutBtn');
+  if(userInfo) userInfo.style.display='block';
+  if(logoutBtn) logoutBtn.style.display='block';
+  if(loginBtn) loginBtn.disabled=false;
+
+  isSuperAdmin=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;
+  isAdmin=isSuperAdmin;
+  currentModId='';
+
+  // Optional moderator lookup. A rules/permission error here must NOT break login.
+  try{
+    const modSnap=await db.ref('moderators').orderByChild('email').equalTo((u.email||'').toLowerCase()).once('value');
+    let roleSnap=null;
+    try{ roleSnap=await db.ref('moderatorRoles/'+u.uid).once('value'); }catch(_e){ roleSnap=null; }
+    const isMod=modSnap.exists() || !!(roleSnap && roleSnap.exists());
+    const modData=isMod ? ((roleSnap&&roleSnap.val()) || Object.values(modSnap.val()||{})[0]) : null;
+    isAdmin=isSuperAdmin||isMod;
+    currentModId=modData && modData.idCard ? modData.idCard : '';
+  }catch(_e){
+    // Login remains valid even if optional role data is unavailable.
+    isAdmin=isSuperAdmin;
+    currentModId='';
+  }
+
+  const name=u.displayName||'User';
+  const email=u.email||'';
+  const photo=u.photoURL||'';
+  const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
+  setText('userName',name);
+  setText('userEmail',email + (currentModId?' | '+currentModId:''));
+  setText('profileName',name);
+  setText('profileEmail',email);
+  const pic=document.getElementById('profilePic');if(pic)pic.src=photo;
+  setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':(isAdmin?'MODERATOR '+currentModId:'PLAYER'));
+  if(isAdmin){
+    document.getElementById('adminHeaderBtn')?.classList.add('show');
+    document.getElementById('adminBottomBtn')?.classList.add('show');
+  }
+
+  // Profile sync is non-critical and must never affect authentication UI.
+  db.ref('users/'+u.uid).once('value').then(snap=>{
+    const ex=snap.val()||{};
+    return db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',lastLogin:Date.now()});
+  }).catch(()=>{});
+
+  try{loadWallet();}catch(_e){}
+  try{loadMyRoom();}catch(_e){}
+  try{loadWalletHistory();}catch(_e){}
+  try{loadMyRecharges();}catch(_e){}
+  try{loadMyWithdraws();}catch(_e){}
+  try{loadLeaderboard();}catch(_e){}
+  try{loadMyTickets();}catch(_e){}
+  if(isAdmin){
+    try{loadMods();}catch(_e){}
+    try{loadAllUsersWallet();}catch(_e){}
+    try{loadWalletRequests();}catch(_e){}
+    try{loadWithdrawRequests();}catch(_e){}
+    try{loadAllSupportTickets();}catch(_e){}
+  }
+});
 function logout(){auth.signOut().then(()=>location.reload());}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
 function closePay(){document.getElementById('payModal').classList.remove('open');}
