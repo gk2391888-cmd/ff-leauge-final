@@ -20,7 +20,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .header{position:sticky;top:0;z-index:100;background:rgba(12,12,14,0.95);backdrop-filter:blur(20px);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--red);height:56px}
 .logo{font-family:Orbitron;font-weight:900;font-size:16px;display:flex;align-items:center;gap:8px}.logo b{width:34px;height:34px;background:var(--red);display:grid;place-items:center;border-radius:8px}.logo span{color:var(--red)}
 .h-btn{background:var(--red);border:none;color:#fff;padding:8px 12px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer}
-.admin-btn{display:none!important;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show{display:block!important}
+.admin-btn{display:none!important;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show{display:block!important}.admin-btn.is-visible{display:block!important}
 .hero{padding:18px 16px 8px}.hero h1{font-family:Orbitron;font-size:26px;font-weight:900}.hero h1 span{color:var(--red)}.hero p{opacity:.5;font-size:12px;margin-top:6px}
 .mode-bar{display:flex;gap:8px;margin:12px 0;padding:0 16px;overflow-x:auto}.mode-bar::-webkit-scrollbar{display:none}
 .mode-btn{flex:0 0 auto;padding:12px 14px;border-radius:14px;border:2px solid var(--border);background:#111114;color:#fff;font-weight:900;font-family:Orbitron;font-size:11px;cursor:pointer;min-width:72px;text-align:center}
@@ -68,6 +68,13 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 #calIconBtn{position:fixed;bottom:92px;right:16px;width:58px;height:58px;background:linear-gradient(135deg,#E11D2D,#ff4d00);border-radius:50%;display:grid;place-items:center;font-size:26px;color:#fff;cursor:pointer;z-index:150;box-shadow:0 6px 22px rgba(225,29,45,0.6);border:2px solid #fff}
 .cal-match-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#0a0a0c;border:1px solid var(--border);border-radius:12px;margin-top:8px}
 .cal-match-row.final{background:linear-gradient(90deg,#E11D2D,#ff4d00);border:none;color:#fff}
+@media(max-width:600px){
+  .header .admin-btn.show,.header .admin-btn.is-visible{display:block!important;visibility:visible!important;opacity:1!important}
+  .bottom .b-item.admin-only.show{display:flex!important;visibility:visible!important;opacity:1!important}
+  .bottom{padding-left:2px;padding-right:2px}
+  .bottom .b-item{min-width:0}
+  .bottom .b-item.admin-only{flex:1 1 0}
+}
 </style>
 </head>
 <body>
@@ -287,17 +294,13 @@ function googleLogin(){
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
   const isMobile = /Android|iPhone|iPad|WhatsApp/i.test(navigator.userAgent);
-  if(isMobile){
-    auth.signInWithRedirect(provider).catch((e)=>{
-      if(err) err.innerText = e.message;
-      if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
-    });
-  } else {
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithPopup(provider)).catch((e)=>{
-      if(err) err.innerText = 'Popup blocked, redirecting... '+e.code;
-      setTimeout(()=>auth.signInWithRedirect(provider), 500);
-    });
-  }
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+    if(isMobile) return auth.signInWithRedirect(provider);
+    return auth.signInWithPopup(provider);
+  }).catch((e)=>{
+    if(err) err.innerText = 'Login error: '+(e.code||'')+' '+(e.message||e);
+    if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
+  });
 }
 auth.getRedirectResult().then((result)=>{
   if(result && result.user){console.log('Login success', result.user.email);}
@@ -306,7 +309,92 @@ auth.getRedirectResult().then((result)=>{
   if(err) err.innerText='Error: '+e.code+' - '+e.message;
   if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
 });
-auth.onAuthStateChanged(async u=>{if(u){currentUser=u;let isSuper=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;let modSnap=await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');let isMod=modSnap.exists();let modData=isMod? Object.values(modSnap.val())[0]:null;isSuperAdmin=isSuper;isAdmin=isSuper||isMod;currentModId=modData?modData.idCard:'';db.ref('users/'+u.uid).once('value').then(snap=>{let ex=snap.val()||{};db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});});document.getElementById('loginScreen').style.display='none';document.getElementById('userInfo').style.display='block';document.getElementById('logoutBtn').style.display='block';document.getElementById('userName').innerText=u.displayName||'User';document.getElementById('userEmail').innerText=u.email + (currentModId?' | '+currentModId:'');document.getElementById('profileName').innerText=u.displayName||'User';document.getElementById('profileEmail').innerText=u.email;document.getElementById('profilePic').src=u.photoURL||'';document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');if(isAdmin){document.getElementById('adminHeaderBtn').classList.add('show');document.getElementById('adminBottomBtn').classList.add('show');}loadWallet();loadMyRoom();loadWalletHistory();loadMyRecharges();loadMyWithdraws();loadLeaderboard();loadMyTickets();if(isAdmin){loadMods();loadAllUsersWallet();loadWalletRequests();loadWithdrawRequests();loadAllSupportTickets();}}else{document.getElementById('loginScreen').style.display='flex';let b=document.getElementById('gLoginBtn');if(b){b.innerText='Continue with Google';b.disabled=false;}}});
+auth.onAuthStateChanged(async u=>{
+  if(!u){
+    currentUser=null;
+    isAdmin=false;
+    isSuperAdmin=false;
+    currentModId='';
+    document.getElementById('adminHeaderBtn')?.classList.remove('show','is-visible');
+    document.getElementById('adminBottomBtn')?.classList.remove('show');
+    document.getElementById('loginScreen').style.display='flex';
+    let b=document.getElementById('gLoginBtn');
+    if(b){b.innerText='Continue with Google';b.disabled=false;}
+    return;
+  }
+
+  currentUser=u;
+  const email=(u.email||'').trim().toLowerCase();
+  const isSuper=email===SUPER_ADMIN_EMAIL;
+  let isMod=false;
+  let modData=null;
+
+  // Super Admin is determined locally from the configured admin email.
+  // Do not let a moderator read/permission error prevent the Super Admin UI from appearing.
+  if(!isSuper){
+    try{
+      const modSnap=await db.ref('moderators').orderByChild('email').equalTo(email).once('value');
+      isMod=modSnap.exists();
+      modData=isMod ? Object.values(modSnap.val()||{})[0] : null;
+    }catch(e){
+      console.warn('Moderator lookup failed:',e);
+      isMod=false;
+      modData=null;
+    }
+  }
+
+  isSuperAdmin=isSuper;
+  isAdmin=isSuper||isMod;
+  currentModId=modData&&modData.idCard ? modData.idCard : '';
+
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userInfo').style.display='block';
+  document.getElementById('logoutBtn').style.display='block';
+  document.getElementById('userName').innerText=u.displayName||'User';
+  document.getElementById('userEmail').innerText=u.email+(currentModId?' | '+currentModId:'');
+  document.getElementById('profileName').innerText=u.displayName||'User';
+  document.getElementById('profileEmail').innerText=u.email;
+  document.getElementById('profilePic').src=u.photoURL||'';
+  document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');
+
+  const adminHeader=document.getElementById('adminHeaderBtn');
+  const adminBottom=document.getElementById('adminBottomBtn');
+  if(isAdmin){
+    adminHeader?.classList.add('show','is-visible');
+    adminBottom?.classList.add('show');
+  }else{
+    adminHeader?.classList.remove('show','is-visible');
+    adminBottom?.classList.remove('show');
+  }
+
+  // Save/update the user without blocking the admin UI if the write is denied.
+  db.ref('users/'+u.uid).once('value').then(snap=>{
+    const ex=snap.val()||{};
+    return db.ref('users/'+u.uid).update({
+      email:u.email,
+      displayName:u.displayName||ex.displayName||'Unknown',
+      photoURL:u.photoURL||ex.photoURL||'',
+      wallet:ex.wallet!=null?ex.wallet:0,
+      lastLogin:Date.now()
+    });
+  }).catch(e=>console.warn('User profile sync failed:',e));
+
+  loadWallet();
+  loadMyRoom();
+  loadWalletHistory();
+  loadMyRecharges();
+  loadMyWithdraws();
+  loadLeaderboard();
+  loadMyTickets();
+
+  if(isAdmin){
+    loadMods();
+    loadAllUsersWallet();
+    loadWalletRequests();
+    loadWithdrawRequests();
+    loadAllSupportTickets();
+  }
+});
 function logout(){auth.signOut().then(()=>location.reload());}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
 function closePay(){document.getElementById('payModal').classList.remove('open');}
@@ -316,7 +404,7 @@ function openWithdraw(){document.getElementById('withdrawModal').classList.add('
 function closeWithdraw(){document.getElementById('withdrawModal').classList.remove('open');}
 function openPlayers(){document.getElementById('playersModal').classList.add('open');}
 function closePlayers(){document.getElementById('playersModal').classList.remove('open');}
-function openAdmin(){if(!isAdmin){alert('Access denied: Admin only');return;}document.getElementById('adminModal').classList.add('open');render();loadMods();}
+function openAdmin(){if(!isAdmin){alert('Access denied: Admin only');return;}document.getElementById('adminHeaderBtn')?.classList.add('show','is-visible');document.getElementById('adminBottomBtn')?.classList.add('show');document.getElementById('adminModal').classList.add('open');render();loadMods();}
 function closeAdmin(){document.getElementById('adminModal').classList.remove('open');}
 function updateQR(){let amt=safeInt(document.getElementById('rechargeAmt').value,10);if(amt<10)amt=10;const upiLink=`upi://pay?pa=${MY_UPI}&pn=THE%20TECH%20HUB&am=${amt}&cu=INR&tn=FFLEAGUE`;const qrApi=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;document.getElementById('qrImg').src=qrApi;document.getElementById('upiLink2').href=upiLink;document.getElementById('qrText').textContent=`Pay ₹${amt} | UPI: ${MY_UPI}`;}
 function submitRecharge(){const amt=safeInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim();if(amt<10)return alert('Minimum recharge is ₹10');if(!/^\d{6,20}$/.test(utr))return alert('Please enter a valid UTR number');db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending'}).then(()=>{alert('Recharge request submitted');closeRecharge();});}
