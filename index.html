@@ -3,9 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <title>FF LEAGUE - THE TECH HUB</title>
 <meta name="theme-color" content="#E11D2D">
 <link id="manifestLink" rel="manifest" href="">
@@ -23,8 +20,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .header{position:sticky;top:0;z-index:100;background:rgba(12,12,14,0.95);backdrop-filter:blur(20px);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--red);height:56px}
 .logo{font-family:Orbitron;font-weight:900;font-size:16px;display:flex;align-items:center;gap:8px}.logo b{width:34px;height:34px;background:var(--red);display:grid;place-items:center;border-radius:8px}.logo span{color:var(--red)}
 .h-btn{background:var(--red);border:none;color:#fff;padding:8px 12px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer}
-.admin-btn{display:none!important;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show,.admin-btn.is-visible{display:block!important;visibility:visible!important;opacity:1!important}.admin-only.show{display:flex!important;visibility:visible!important;opacity:1!important}
-@media(max-width:600px){.header .admin-btn.show,.header .admin-btn.is-visible{display:block!important;visibility:visible!important;opacity:1!important}.bottom .b-item.admin-only.show{display:flex!important;visibility:visible!important;opacity:1!important}}
+.admin-btn{display:none!important;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show{display:block!important}
 .hero{padding:18px 16px 8px}.hero h1{font-family:Orbitron;font-size:26px;font-weight:900}.hero h1 span{color:var(--red)}.hero p{opacity:.5;font-size:12px;margin-top:6px}
 .mode-bar{display:flex;gap:8px;margin:12px 0;padding:0 16px;overflow-x:auto}.mode-bar::-webkit-scrollbar{display:none}
 .mode-btn{flex:0 0 auto;padding:12px 14px;border-radius:14px;border:2px solid var(--border);background:#111114;color:#fff;font-weight:900;font-family:Orbitron;font-size:11px;cursor:pointer;min-width:72px;text-align:center}
@@ -76,7 +72,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 </head>
 <body>
 <div id="installBanner" class="install-banner"><div><b style="font-family:Orbitron">Install FF LEAGUE App</b></div><button onclick="installPWA()" style="background:#fff;color:#000;border:none;padding:8px 14px;border-radius:10px;font-weight:900">INSTALL</button></div>
-<div id="loginScreen" class="login-screen"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
+<div id="loginScreen" class="login-screen" style="display:none"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
 <div class="header"><div class="logo"><b>TH</b> FF <span>LEAGUE</span></div><div style="display:flex;gap:6px;align-items:center"><div id="userInfo" style="display:none;text-align:right"><div id="userName" style="font-weight:800;font-size:11px"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none;background:#1e1e22" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div></div>
 <div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="list"></div></div>
 <div id="walletTab" class="tab"><div class="wallet-card"><div style="font-size:10px;letter-spacing:2px;opacity:.8">WALLET BALANCE</div><div style="font-size:36px;font-weight:900;font-family:Orbitron;margin-top:4px" id="walletBal">₹0.00</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button class="h-btn" style="background:#fff;color:#000;padding:12px;border-radius:12px;font-weight:900" onclick="openRecharge()">RECHARGE</button><button class="h-btn" style="background:#000;color:var(--green);border:1px solid var(--green);padding:12px;border-radius:12px;font-weight:900" onclick="openWithdraw()">WITHDRAW</button></div></div><div style="padding:0 16px 20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><h4 style="font-family:Orbitron;font-size:12px">MONEY HISTORY</h4></div><div style="font-size:9px;opacity:.45;margin-top:4px">Tournament Join • Tournament Win • Recharge • Withdrawal • Refunds</div><div id="walletHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE HISTORY</h4></div><div id="rechargeHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">WITHDRAW HISTORY</h4></div><div id="withdrawHistory" style="margin-bottom:20px"></div></div></div>
@@ -131,7 +127,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
   document.getElementById('manifestLink').href=URL.createObjectURL(blob);
   const fav=document.querySelector('link[rel="icon"]'); if(fav) fav.href=icon192;
   const apple=document.querySelector('link[rel="apple-touch-icon"]'); if(apple) apple.href=icon192;
-  if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{}); if(window.caches){caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});} }
+  if('serviceWorker' in navigator){const swCode=`self.addEventListener('install',e=>{self.skipWaiting();}); self.addEventListener('activate',e=>{self.clients.claim();}); self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`; const swBlob=new Blob([swCode],{type:'application/javascript'}); navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});}
   let deferredPrompt=null; window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.add('show');});
   window.installPWA=async function(){if(deferredPrompt){deferredPrompt.prompt(); const c=await deferredPrompt.userChoice; if(c.outcome==='accepted')document.getElementById('installBanner').classList.remove('show'); deferredPrompt=null;}else{alert('Open in Chrome > Menu > Add to Home Screen');}};
 })();
@@ -283,145 +279,35 @@ async function submitComplete(){
     statusEl.innerText='Error: '+err.message+'\nPayout lock kept to prevent duplicate payments. Resolve before retrying.';
   }
 }
-let ffRedirectPendingTimer=null;
-let authBootReady=false;
-let authBootPromise=null;
-function clearLoginPending(){
-  try{localStorage.removeItem('ff_login_pending');}catch(e){}
-  if(ffRedirectPendingTimer){clearTimeout(ffRedirectPendingTimer);ffRedirectPendingTimer=null;}
-}
-function setLoginVisible(show){
-  const el=document.getElementById('loginScreen');
-  if(el) el.style.display=show?'flex':'none';
-}
-function setAdminUI(show){
-  const h=document.getElementById('adminHeaderBtn');
-  const b=document.getElementById('adminBottomBtn');
-  if(show){
-    h?.classList.add('show','is-visible');
-    b?.classList.add('show');
-  }else{
-    h?.classList.remove('show','is-visible');
-    b?.classList.remove('show');
-  }
-}
-function applyGoogleProfile(u){
-  const name=u?.displayName||'User';
-  const email=u?.email||'';
-  const providers=Array.isArray(u?.providerData)?u.providerData:[];
-  const providerPhoto=(providers.find(p=>p&&p.providerId==='google.com'&&p.photoURL)||{}).photoURL||'';
-  let photo=u?.photoURL||providerPhoto||'';
-  if(photo&&/^http:\/\//i.test(photo)) photo=photo.replace(/^http:\/\//i,'https://');
-  const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
-  setText('userName',name);setText('userEmail',email);setText('profileName',name);setText('profileEmail',email);
-  const pic=document.getElementById('profilePic');
-  if(pic){
-    const initials=(name||'U').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase()||'U';
-    pic.alt=name;
-    pic.src=photo||('https://ui-avatars.com/api/?name='+encodeURIComponent(initials)+'&background=E11D2D&color=fff&size=144');
-    pic.onerror=function(){this.onerror=null;this.src='https://ui-avatars.com/api/?name='+encodeURIComponent(initials)+'&background=E11D2D&color=fff&size=144';};
-  }
-}
 function googleLogin(){
   const btn=document.getElementById('gLoginBtn');
   const err=document.getElementById('loginErr');
-  try{localStorage.setItem('ff_login_pending','1');}catch(e){}
   if(btn){btn.innerText='Redirecting to Google...';btn.disabled=true;}
-  if(err) err.innerText='Completing Google login, please wait...';
-  const provider=new firebase.auth.GoogleAuthProvider();
+  if(err) err.innerText='Redirecting to Google, please wait...';
+  const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
-  const isMobile=/Android|iPhone|iPad|iPod|WhatsApp|Mobile/i.test(navigator.userAgent);
-  (authBootPromise||Promise.resolve()).then(()=>{
-    if(isMobile) return auth.signInWithRedirect(provider);
-    return auth.signInWithPopup(provider);
-  }).catch(e=>{
-    clearLoginPending();
-    if(err) err.innerText='Login error: '+(e.code||'')+' '+(e.message||e);
-    if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
-  });
-}
-
-// Firebase persistence is established BEFORE redirect-result processing.
-// This is important on mobile browsers where auth state can otherwise appear null during startup.
-authBootPromise=auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{}).then(()=>{authBootReady=true;});
-
-authBootPromise.then(()=>auth.getRedirectResult()).then(result=>{
-  if(result&&result.user){
-    clearLoginPending();
-    console.log('Login success',result.user.email);
+  const isMobile = /Android|iPhone|iPad|WhatsApp/i.test(navigator.userAgent);
+  if(isMobile){
+    auth.signInWithRedirect(provider).catch((e)=>{
+      if(err) err.innerText = e.message;
+      if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
+    });
+  } else {
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>auth.signInWithPopup(provider)).catch((e)=>{
+      if(err) err.innerText = 'Popup blocked, redirecting... '+e.code;
+      setTimeout(()=>auth.signInWithRedirect(provider), 500);
+    });
   }
-}).catch(e=>{
-  // Do not force the login screen here. onAuthStateChanged is the authoritative auth state.
-  const err=document.getElementById('loginErr');
-  if(err) err.innerText='Google login error: '+(e.code||'')+' - '+(e.message||e);
+}
+auth.getRedirectResult().then((result)=>{
+  if(result && result.user){console.log('Login success', result.user.email);}
+}).catch((e)=>{
+  const err=document.getElementById('loginErr'); const btn=document.getElementById('gLoginBtn');
+  if(err) err.innerText='Error: '+e.code+' - '+e.message;
+  if(btn){btn.innerText='Continue with Google'; btn.disabled=false;}
 });
-
-authBootPromise.then(()=>{
-  auth.onAuthStateChanged(async u=>{
-    const loginScreen=document.getElementById('loginScreen');
-    const loginBtn=document.getElementById('gLoginBtn');
-    const userInfo=document.getElementById('userInfo');
-    const logoutBtn=document.getElementById('logoutBtn');
-
-    if(!u){
-      currentUser=null;isAdmin=false;isSuperAdmin=false;currentModId='';setAdminUI(false);
-      let pending=false;try{pending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
-      if(pending){
-        setLoginVisible(false);
-        if(loginBtn){loginBtn.innerText='Completing Google login...';loginBtn.disabled=true;}
-        if(!ffRedirectPendingTimer){
-          ffRedirectPendingTimer=setTimeout(()=>{
-            let stillPending=false;try{stillPending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
-            if(stillPending){
-              clearLoginPending();setLoginVisible(true);
-              if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
-              const err=document.getElementById('loginErr');if(err)err.innerText='Google login did not complete. Please try again.';
-            }
-          },20000);
-        }
-        return;
-      }
-      setLoginVisible(true);
-      if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
-      return;
-    }
-
-    clearLoginPending();currentUser=u;
-    const email=(u.email||'').trim().toLowerCase();
-    isSuperAdmin=email===SUPER_ADMIN_EMAIL;
-    isAdmin=isSuperAdmin;currentModId='';
-
-    // Super Admin is determined from the authenticated Google email FIRST.
-    // No database request is allowed to hide this UI.
-    setAdminUI(isAdmin);
-    setLoginVisible(false);
-    if(userInfo)userInfo.style.display='block';
-    if(logoutBtn)logoutBtn.style.display='block';
-    if(loginBtn)loginBtn.disabled=false;
-    applyGoogleProfile(u);
-    const roleBadge=document.getElementById('adminRoleBadge');if(roleBadge)roleBadge.innerText=isSuperAdmin?'SUPER ADMIN':'PLAYER';
-
-    // Moderator lookup is optional and never blocks the authenticated app.
-    try{
-      const modSnap=await db.ref('moderators').orderByChild('email').equalTo(email).once('value');
-      if(modSnap.exists()){
-        const modData=Object.values(modSnap.val()||{})[0]||{};
-        isAdmin=true;currentModId=modData.idCard||'';setAdminUI(true);
-        const ue=document.getElementById('userEmail');if(ue)ue.innerText=(u.email||'')+(currentModId?' | '+currentModId:'');
-        if(roleBadge)roleBadge.innerText=isSuperAdmin?'SUPER ADMIN':'MODERATOR '+currentModId;
-      }
-    }catch(e){}
-
-    // Profile sync is non-critical.
-    db.ref('users/'+u.uid).once('value').then(snap=>{
-      const ex=snap.val()||{};
-      return db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});
-    }).catch(()=>{});
-
-    try{loadWallet();}catch(e){}try{loadMyRoom();}catch(e){}try{loadWalletHistory();}catch(e){}try{loadMyRecharges();}catch(e){}try{loadMyWithdraws();}catch(e){}try{loadLeaderboard();}catch(e){}try{loadMyTickets();}catch(e){}
-    if(isAdmin){try{loadMods();}catch(e){}try{loadAllUsersWallet();}catch(e){}try{loadWalletRequests();}catch(e){}try{loadWithdrawRequests();}catch(e){}try{loadAllSupportTickets();}catch(e){}}
-  });
-});
+let authStateResolved=false;
+auth.onAuthStateChanged(async u=>{authStateResolved=true;if(u){currentUser=u;let isSuper=!!u.email && u.email.toLowerCase()===SUPER_ADMIN_EMAIL;let modSnap=await db.ref('moderators').orderByChild('email').equalTo(u.email.toLowerCase()).once('value');let isMod=modSnap.exists();let modData=isMod? Object.values(modSnap.val())[0]:null;isSuperAdmin=isSuper;isAdmin=isSuper||isMod;currentModId=modData?modData.idCard:'';db.ref('users/'+u.uid).once('value').then(snap=>{let ex=snap.val()||{};db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});});document.getElementById('loginScreen').style.display='none';document.getElementById('userInfo').style.display='block';document.getElementById('logoutBtn').style.display='block';document.getElementById('userName').innerText=u.displayName||'User';document.getElementById('userEmail').innerText=u.email + (currentModId?' | '+currentModId:'');document.getElementById('profileName').innerText=u.displayName||'User';document.getElementById('profileEmail').innerText=u.email;document.getElementById('profilePic').src=u.photoURL||'';document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');if(isAdmin){document.getElementById('adminHeaderBtn').classList.add('show');document.getElementById('adminBottomBtn').classList.add('show');}loadWallet();loadMyRoom();loadWalletHistory();loadMyRecharges();loadMyWithdraws();loadLeaderboard();loadMyTickets();if(isAdmin){loadMods();loadAllUsersWallet();loadWalletRequests();loadWithdrawRequests();loadAllSupportTickets();}}else{currentUser=null;document.getElementById('loginScreen').style.display='flex';let b=document.getElementById('gLoginBtn');if(b){b.innerText='Continue with Google';b.disabled=false;}}});
 function logout(){auth.signOut().then(()=>location.reload());}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
 function closePay(){document.getElementById('payModal').classList.remove('open');}
@@ -431,7 +317,7 @@ function openWithdraw(){document.getElementById('withdrawModal').classList.add('
 function closeWithdraw(){document.getElementById('withdrawModal').classList.remove('open');}
 function openPlayers(){document.getElementById('playersModal').classList.add('open');}
 function closePlayers(){document.getElementById('playersModal').classList.remove('open');}
-function openAdmin(){if(!isAdmin){alert('Access denied: Admin only');return;}document.getElementById('adminHeaderBtn')?.classList.add('show','is-visible');document.getElementById('adminBottomBtn')?.classList.add('show');document.getElementById('adminModal').classList.add('open');render();loadMods();}
+function openAdmin(){if(!isAdmin){alert('Access denied: Admin only');return;}document.getElementById('adminModal').classList.add('open');render();loadMods();}
 function closeAdmin(){document.getElementById('adminModal').classList.remove('open');}
 function updateQR(){let amt=safeInt(document.getElementById('rechargeAmt').value,10);if(amt<10)amt=10;const upiLink=`upi://pay?pa=${MY_UPI}&pn=THE%20TECH%20HUB&am=${amt}&cu=INR&tn=FFLEAGUE`;const qrApi=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;document.getElementById('qrImg').src=qrApi;document.getElementById('upiLink2').href=upiLink;document.getElementById('qrText').textContent=`Pay ₹${amt} | UPI: ${MY_UPI}`;}
 function submitRecharge(){const amt=safeInt(document.getElementById('rechargeAmt').value), utr=document.getElementById('rechargeUtr').value.trim();if(amt<10)return alert('Minimum recharge is ₹10');if(!/^\d{6,20}$/.test(utr))return alert('Please enter a valid UTR number');db.ref('walletRecharges').push({uid:currentUser.uid,email:currentUser.email,amount:amt,utr:utr,time:Date.now(),status:'pending'}).then(()=>{alert('Recharge request submitted');closeRecharge();});}
