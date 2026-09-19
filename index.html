@@ -24,6 +24,7 @@ body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom
 .logo{font-family:Orbitron;font-weight:900;font-size:16px;display:flex;align-items:center;gap:8px}.logo b{width:34px;height:34px;background:var(--red);display:grid;place-items:center;border-radius:8px}.logo span{color:var(--red)}
 .h-btn{background:var(--red);border:none;color:#fff;padding:8px 12px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer}
 .admin-btn{display:none!important;background:#ffcc00;color:#000;padding:6px 12px;border-radius:10px;font-weight:900;border:none;font-size:11px}.admin-btn.show,.admin-btn.is-visible{display:block!important;visibility:visible!important;opacity:1!important}.admin-only.show{display:flex!important;visibility:visible!important;opacity:1!important}
+@media(max-width:600px){.header .admin-btn.show,.header .admin-btn.is-visible{display:block!important;visibility:visible!important;opacity:1!important}.bottom .b-item.admin-only.show{display:flex!important;visibility:visible!important;opacity:1!important}}
 .hero{padding:18px 16px 8px}.hero h1{font-family:Orbitron;font-size:26px;font-weight:900}.hero h1 span{color:var(--red)}.hero p{opacity:.5;font-size:12px;margin-top:6px}
 .mode-bar{display:flex;gap:8px;margin:12px 0;padding:0 16px;overflow-x:auto}.mode-bar::-webkit-scrollbar{display:none}
 .mode-btn{flex:0 0 auto;padding:12px 14px;border-radius:14px;border:2px solid var(--border);background:#111114;color:#fff;font-weight:900;font-family:Orbitron;font-size:11px;cursor:pointer;min-width:72px;text-align:center}
@@ -283,9 +284,43 @@ async function submitComplete(){
   }
 }
 let ffRedirectPendingTimer=null;
+let authBootReady=false;
+let authBootPromise=null;
 function clearLoginPending(){
   try{localStorage.removeItem('ff_login_pending');}catch(e){}
   if(ffRedirectPendingTimer){clearTimeout(ffRedirectPendingTimer);ffRedirectPendingTimer=null;}
+}
+function setLoginVisible(show){
+  const el=document.getElementById('loginScreen');
+  if(el) el.style.display=show?'flex':'none';
+}
+function setAdminUI(show){
+  const h=document.getElementById('adminHeaderBtn');
+  const b=document.getElementById('adminBottomBtn');
+  if(show){
+    h?.classList.add('show','is-visible');
+    b?.classList.add('show');
+  }else{
+    h?.classList.remove('show','is-visible');
+    b?.classList.remove('show');
+  }
+}
+function applyGoogleProfile(u){
+  const name=u?.displayName||'User';
+  const email=u?.email||'';
+  const providers=Array.isArray(u?.providerData)?u.providerData:[];
+  const providerPhoto=(providers.find(p=>p&&p.providerId==='google.com'&&p.photoURL)||{}).photoURL||'';
+  let photo=u?.photoURL||providerPhoto||'';
+  if(photo&&/^http:\/\//i.test(photo)) photo=photo.replace(/^http:\/\//i,'https://');
+  const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
+  setText('userName',name);setText('userEmail',email);setText('profileName',name);setText('profileEmail',email);
+  const pic=document.getElementById('profilePic');
+  if(pic){
+    const initials=(name||'U').trim().split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase()||'U';
+    pic.alt=name;
+    pic.src=photo||('https://ui-avatars.com/api/?name='+encodeURIComponent(initials)+'&background=E11D2D&color=fff&size=144');
+    pic.onerror=function(){this.onerror=null;this.src='https://ui-avatars.com/api/?name='+encodeURIComponent(initials)+'&background=E11D2D&color=fff&size=144';};
+  }
 }
 function googleLogin(){
   const btn=document.getElementById('gLoginBtn');
@@ -293,135 +328,99 @@ function googleLogin(){
   try{localStorage.setItem('ff_login_pending','1');}catch(e){}
   if(btn){btn.innerText='Redirecting to Google...';btn.disabled=true;}
   if(err) err.innerText='Completing Google login, please wait...';
-  const provider = new firebase.auth.GoogleAuthProvider();
+  const provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
-  const isMobile = /Android|iPhone|iPad|iPod|WhatsApp|Mobile/i.test(navigator.userAgent);
-  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
+  const isMobile=/Android|iPhone|iPad|iPod|WhatsApp|Mobile/i.test(navigator.userAgent);
+  (authBootPromise||Promise.resolve()).then(()=>{
     if(isMobile) return auth.signInWithRedirect(provider);
     return auth.signInWithPopup(provider);
-  }).catch((e)=>{
+  }).catch(e=>{
     clearLoginPending();
     if(err) err.innerText='Login error: '+(e.code||'')+' '+(e.message||e);
     if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
   });
 }
-auth.getRedirectResult().then((result)=>{
-  if(result && result.user){
+
+// Firebase persistence is established BEFORE redirect-result processing.
+// This is important on mobile browsers where auth state can otherwise appear null during startup.
+authBootPromise=auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{}).then(()=>{authBootReady=true;});
+
+authBootPromise.then(()=>auth.getRedirectResult()).then(result=>{
+  if(result&&result.user){
     clearLoginPending();
     console.log('Login success',result.user.email);
   }
-}).catch((e)=>{
-  clearLoginPending();
-  const err=document.getElementById('loginErr'); const btn=document.getElementById('gLoginBtn');
+}).catch(e=>{
+  // Do not force the login screen here. onAuthStateChanged is the authoritative auth state.
+  const err=document.getElementById('loginErr');
   if(err) err.innerText='Google login error: '+(e.code||'')+' - '+(e.message||e);
-  if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
-  const loginScreen=document.getElementById('loginScreen');
-  if(loginScreen) loginScreen.style.display='flex';
 });
 
-auth.onAuthStateChanged(async u=>{
-  const loginScreen=document.getElementById('loginScreen');
-  const loginBtn=document.getElementById('gLoginBtn');
-  const adminHeader=document.getElementById('adminHeaderBtn');
-  const adminBottom=document.getElementById('adminBottomBtn');
+authBootPromise.then(()=>{
+  auth.onAuthStateChanged(async u=>{
+    const loginScreen=document.getElementById('loginScreen');
+    const loginBtn=document.getElementById('gLoginBtn');
+    const userInfo=document.getElementById('userInfo');
+    const logoutBtn=document.getElementById('logoutBtn');
 
-  if(!u){
-    currentUser=null; isAdmin=false; isSuperAdmin=false; currentModId='';
-    adminHeader?.classList.remove('show','is-visible');
-    adminBottom?.classList.remove('show');
-    let pending=false;
-    try{pending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
-    if(pending){
-      // Firebase can emit null once while the mobile redirect session is being restored.
-      // Do NOT send the user back to the login screen during that short window.
-      if(loginScreen) loginScreen.style.display='none';
-      if(loginBtn){loginBtn.innerText='Completing Google login...';loginBtn.disabled=true;}
-      if(!ffRedirectPendingTimer){
-        ffRedirectPendingTimer=setTimeout(()=>{
-          let stillPending=false;
-          try{stillPending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
-          if(stillPending){
-            clearLoginPending();
-            if(loginScreen) loginScreen.style.display='flex';
-            if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
-            const err=document.getElementById('loginErr');
-            if(err) err.innerText='Google login did not complete. Please try again.';
-          }
-        },15000);
+    if(!u){
+      currentUser=null;isAdmin=false;isSuperAdmin=false;currentModId='';setAdminUI(false);
+      let pending=false;try{pending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
+      if(pending){
+        setLoginVisible(false);
+        if(loginBtn){loginBtn.innerText='Completing Google login...';loginBtn.disabled=true;}
+        if(!ffRedirectPendingTimer){
+          ffRedirectPendingTimer=setTimeout(()=>{
+            let stillPending=false;try{stillPending=localStorage.getItem('ff_login_pending')==='1';}catch(e){}
+            if(stillPending){
+              clearLoginPending();setLoginVisible(true);
+              if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
+              const err=document.getElementById('loginErr');if(err)err.innerText='Google login did not complete. Please try again.';
+            }
+          },20000);
+        }
+        return;
       }
+      setLoginVisible(true);
+      if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
       return;
     }
-    if(loginScreen) loginScreen.style.display='flex';
-    if(loginBtn){loginBtn.innerText='Continue with Google';loginBtn.disabled=false;}
-    return;
-  }
 
-  clearLoginPending();
-  currentUser=u;
-  const email=(u.email||'').trim().toLowerCase();
-  isSuperAdmin=email===SUPER_ADMIN_EMAIL;
-  isAdmin=isSuperAdmin;
-  currentModId='';
+    clearLoginPending();currentUser=u;
+    const email=(u.email||'').trim().toLowerCase();
+    isSuperAdmin=email===SUPER_ADMIN_EMAIL;
+    isAdmin=isSuperAdmin;currentModId='';
 
-  // IMPORTANT: Super Admin UI is decided locally first, before any RTDB request.
-  // This prevents a slow/failing mobile database read from hiding ADMIN.
-  if(isAdmin){
-    adminHeader?.classList.add('show','is-visible');
-    adminBottom?.classList.add('show');
-  }
+    // Super Admin is determined from the authenticated Google email FIRST.
+    // No database request is allowed to hide this UI.
+    setAdminUI(isAdmin);
+    setLoginVisible(false);
+    if(userInfo)userInfo.style.display='block';
+    if(logoutBtn)logoutBtn.style.display='block';
+    if(loginBtn)loginBtn.disabled=false;
+    applyGoogleProfile(u);
+    const roleBadge=document.getElementById('adminRoleBadge');if(roleBadge)roleBadge.innerText=isSuperAdmin?'SUPER ADMIN':'PLAYER';
 
-  if(loginScreen) loginScreen.style.display='none';
-  const userInfo=document.getElementById('userInfo');
-  const logoutBtn=document.getElementById('logoutBtn');
-  if(userInfo) userInfo.style.display='block';
-  if(logoutBtn) logoutBtn.style.display='block';
-  if(loginBtn) loginBtn.disabled=false;
+    // Moderator lookup is optional and never blocks the authenticated app.
+    try{
+      const modSnap=await db.ref('moderators').orderByChild('email').equalTo(email).once('value');
+      if(modSnap.exists()){
+        const modData=Object.values(modSnap.val()||{})[0]||{};
+        isAdmin=true;currentModId=modData.idCard||'';setAdminUI(true);
+        const ue=document.getElementById('userEmail');if(ue)ue.innerText=(u.email||'')+(currentModId?' | '+currentModId:'');
+        if(roleBadge)roleBadge.innerText=isSuperAdmin?'SUPER ADMIN':'MODERATOR '+currentModId;
+      }
+    }catch(e){}
 
-  const name=u.displayName||'User';
-  const setText=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
-  setText('userName',name);
-  setText('userEmail',u.email||'');
-  setText('profileName',name);
-  setText('profileEmail',u.email||'');
-  const pic=document.getElementById('profilePic'); if(pic) pic.src=u.photoURL||'';
-  setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':'PLAYER');
+    // Profile sync is non-critical.
+    db.ref('users/'+u.uid).once('value').then(snap=>{
+      const ex=snap.val()||{};
+      return db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});
+    }).catch(()=>{});
 
-  // Moderator lookup is optional and can never block Super Admin UI.
-  try{
-    const modSnap=await db.ref('moderators').orderByChild('email').equalTo(email).once('value');
-    const isMod=modSnap.exists();
-    const modData=isMod ? Object.values(modSnap.val()||{})[0] : null;
-    if(isMod){
-      isAdmin=true;
-      currentModId=modData?.idCard||'';
-      adminHeader?.classList.add('show','is-visible');
-      adminBottom?.classList.add('show');
-      setText('userEmail',(u.email||'')+(currentModId?' | '+currentModId:''));
-      setText('adminRoleBadge',isSuperAdmin?'SUPER ADMIN':'MODERATOR '+currentModId);
-    }
-  }catch(e){
-    // Ignore optional moderator-read errors. Authentication/Admin Super Admin state stays valid.
-  }
-
-  db.ref('users/'+u.uid).once('value').then(snap=>{
-    const ex=snap.val()||{};
-    return db.ref('users/'+u.uid).update({email:u.email,displayName:u.displayName||ex.displayName||'Unknown',photoURL:u.photoURL||'',wallet:ex.wallet!=null?ex.wallet:0,lastLogin:Date.now()});
-  }).catch(()=>{});
-
-  try{loadWallet();}catch(e){}
-  try{loadMyRoom();}catch(e){}
-  try{loadWalletHistory();}catch(e){}
-  try{loadMyRecharges();}catch(e){}
-  try{loadMyWithdraws();}catch(e){}
-  try{loadLeaderboard();}catch(e){}
-  try{loadMyTickets();}catch(e){}
-  if(isAdmin){
-    try{loadMods();}catch(e){}
-    try{loadAllUsersWallet();}catch(e){}
-    try{loadWalletRequests();}catch(e){}
-    try{loadWithdrawRequests();}catch(e){}
-    try{loadAllSupportTickets();}catch(e){}
-  }
+    try{loadWallet();}catch(e){}try{loadMyRoom();}catch(e){}try{loadWalletHistory();}catch(e){}try{loadMyRecharges();}catch(e){}try{loadMyWithdraws();}catch(e){}try{loadLeaderboard();}catch(e){}try{loadMyTickets();}catch(e){}
+    if(isAdmin){try{loadMods();}catch(e){}try{loadAllUsersWallet();}catch(e){}try{loadWalletRequests();}catch(e){}try{loadWithdrawRequests();}catch(e){}try{loadAllSupportTickets();}catch(e){}}
+  });
 });
 function logout(){auth.signOut().then(()=>location.reload());}
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
