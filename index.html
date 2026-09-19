@@ -279,58 +279,33 @@ async function submitComplete(){
     statusEl.innerText='Error: '+err.message+'\nPayout lock kept to prevent duplicate payments. Resolve before retrying.';
   }
 }
-let redirectLoginInProgress = false;
-
-async function googleLogin(){
+function googleLogin(){
   const btn=document.getElementById('gLoginBtn');
   const err=document.getElementById('loginErr');
+  if(btn){btn.innerText='Opening Google...';btn.disabled=true;}
+  if(err) err.innerText='';
 
-  try{
-    if(btn){btn.innerText='Connecting...';btn.disabled=true;}
-    if(err) err.innerText='';
+  const provider=new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({prompt:'select_account'});
 
-    // Do not keep an old login alive when the user explicitly starts login again.
-    if(auth.currentUser){
-      await auth.signOut();
-    }
-
-    // SESSION is safer for this web app than LOCAL persistence.
-    await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-
-    const provider=new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({prompt:'select_account'});
-
-    const isMobile=/Android|iPhone|iPad|iPod|Mobile|WhatsApp/i.test(navigator.userAgent);
-
-    if(isMobile){
-      redirectLoginInProgress=true;
-      if(btn) btn.innerText='Opening Google...';
-      await auth.signInWithRedirect(provider);
-    }else{
-      if(btn) btn.innerText='Opening Google...';
-      await auth.signInWithPopup(provider);
-    }
-  }catch(e){
-    console.error('Google Login Error:',e);
-    redirectLoginInProgress=false;
-    if(err) err.innerText='Login failed: '+(e.code||e.message);
-    if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
-  }
+  // IMPORTANT: use the same login method on mobile and desktop.
+  // This avoids the mobile redirect loop seen in some browsers/PWA mode.
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(()=>auth.signInWithPopup(provider))
+    .catch((e)=>{
+      console.error('Google login error:',e);
+      if(err) err.innerText='Login failed: '+(e.code||e.message||'Unknown error');
+      if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
+    });
 }
 
-// Resolve mobile redirect login. This must run before relying on the auth state.
+// Handle redirect result only if an older session/provider left one pending.
 auth.getRedirectResult().then((result)=>{
-  redirectLoginInProgress=false;
   if(result && result.user){
-    console.log('Google redirect login success:',result.user.email);
+    console.log('Redirect login success:',result.user.email);
   }
 }).catch((e)=>{
-  redirectLoginInProgress=false;
-  console.error('Redirect login error:',e);
-  const err=document.getElementById('loginErr');
-  const btn=document.getElementById('gLoginBtn');
-  if(err) err.innerText='Login error: '+(e.code||e.message);
-  if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
+  console.warn('Redirect result:',e);
 });
 
 let authStateResolved=false;
@@ -342,95 +317,100 @@ auth.onAuthStateChanged(async u=>{
     isAdmin=false;
     isSuperAdmin=false;
     currentModId='';
-    document.getElementById('loginScreen').style.display='flex';
-    document.getElementById('userInfo').style.display='none';
-    document.getElementById('logoutBtn').style.display='none';
-    document.getElementById('adminHeaderBtn').classList.remove('show');
-    document.getElementById('adminBottomBtn').classList.remove('show');
-    const b=document.getElementById('gLoginBtn');
-    if(b){b.innerText='Continue with Google';b.disabled=false;}
+    const login=document.getElementById('loginScreen');
+    if(login) login.style.display='flex';
+    const btn=document.getElementById('gLoginBtn');
+    if(btn){btn.innerText='Continue with Google';btn.disabled=false;}
     return;
   }
 
+  // Set the user immediately. Do NOT wait for the moderators DB query
+  // before hiding the login screen.
   currentUser=u;
   const email=(u.email||'').trim().toLowerCase();
-
-  // Super admin is determined directly from the authenticated Google email.
-  // This does NOT depend on the moderators database, so the admin can log in
-  // successfully even if the moderators query is slow or temporarily denied.
   const isSuper=email===SUPER_ADMIN_EMAIL;
-  let isMod=false;
-  let modData=null;
-
-  if(!isSuper){
-    try{
-      const modSnap=await db.ref('moderators')
-        .orderByChild('email')
-        .equalTo(email)
-        .once('value');
-      isMod=modSnap.exists();
-      if(isMod){
-        const vals=Object.values(modSnap.val()||{});
-        modData=vals[0]||null;
-      }
-    }catch(e){
-      console.warn('Moderator lookup failed:',e);
-    }
-  }
 
   isSuperAdmin=isSuper;
-  isAdmin=isSuper||isMod;
-  currentModId=modData&&modData.idCard?modData.idCard:'';
+  isAdmin=isSuper;
+  currentModId='';
 
-  // Always open the authenticated app first. Admin controls are then enabled
-  // from the verified email/role above.
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('userInfo').style.display='block';
-  document.getElementById('logoutBtn').style.display='block';
+  // Show the logged-in UI immediately.
+  const login=document.getElementById('loginScreen');
+  if(login) login.style.display='none';
+  const userInfo=document.getElementById('userInfo');
+  if(userInfo) userInfo.style.display='block';
+  const logoutBtn=document.getElementById('logoutBtn');
+  if(logoutBtn) logoutBtn.style.display='block';
 
-  document.getElementById('userName').innerText=u.displayName||'User';
-  document.getElementById('userEmail').innerText=(u.email||'')+(currentModId?' | '+currentModId:'');
-  document.getElementById('profileName').innerText=u.displayName||'User';
-  document.getElementById('profileEmail').innerText=u.email||'';
-  document.getElementById('profilePic').src=u.photoURL||'';
-  document.getElementById('adminRoleBadge').innerText=isSuper?'SUPER ADMIN':(isMod?'MODERATOR '+currentModId:'PLAYER');
+  const userName=document.getElementById('userName');
+  const userEmail=document.getElementById('userEmail');
+  const profileName=document.getElementById('profileName');
+  const profileEmail=document.getElementById('profileEmail');
+  const profilePic=document.getElementById('profilePic');
+  const badge=document.getElementById('adminRoleBadge');
+
+  if(userName) userName.innerText=u.displayName||'User';
+  if(userEmail) userEmail.innerText=u.email||'';
+  if(profileName) profileName.innerText=u.displayName||'User';
+  if(profileEmail) profileEmail.innerText=u.email||'';
+  if(profilePic) profilePic.src=u.photoURL||'';
+  if(badge) badge.innerText=isSuper?'SUPER ADMIN':'PLAYER';
+
+  // SUPER ADMIN is determined directly from the email.
+  // Moderator lookup is optional and can never block login.
+  try{
+    const modSnap=await db.ref('moderators')
+      .orderByChild('email')
+      .equalTo(email)
+      .once('value');
+
+    if(!isSuper && modSnap.exists()){
+      const values=Object.values(modSnap.val()||{});
+      const modData=values[0]||null;
+      if(modData){
+        isAdmin=true;
+        currentModId=modData.idCard||'';
+        if(badge) badge.innerText='MODERATOR '+currentModId;
+        if(userEmail) userEmail.innerText=(u.email||'')+' | '+currentModId;
+      }
+    }
+  }catch(modError){
+    // A DB permission/index problem must NOT send the user back to login.
+    console.warn('Moderator lookup skipped:',modError);
+  }
 
   const adminHeader=document.getElementById('adminHeaderBtn');
   const adminBottom=document.getElementById('adminBottomBtn');
-  if(isAdmin){
-    adminHeader.classList.add('show');
-    adminBottom.classList.add('show');
-  }else{
-    adminHeader.classList.remove('show');
-    adminBottom.classList.remove('show');
-  }
+  if(adminHeader) adminHeader.classList.toggle('show',isAdmin);
+  if(adminBottom) adminBottom.classList.toggle('show',isAdmin);
 
-  // Keep the user record in sync without blocking the login UI.
+  // Create/update user profile without blocking authentication UI.
   db.ref('users/'+u.uid).once('value').then(snap=>{
     const ex=snap.val()||{};
     return db.ref('users/'+u.uid).update({
-      email:u.email||ex.email||'',
+      email:u.email||'',
       displayName:u.displayName||ex.displayName||'Unknown',
       photoURL:u.photoURL||'',
       wallet:ex.wallet!=null?ex.wallet:0,
       lastLogin:Date.now()
     });
-  }).catch(e=>console.warn('User profile sync failed:',e));
+  }).catch(e=>console.warn('User profile update skipped:',e));
 
-  loadWallet();
-  loadMyRoom();
-  loadWalletHistory();
-  loadMyRecharges();
-  loadMyWithdraws();
-  loadLeaderboard();
-  loadMyTickets();
+  // Load normal user data.
+  try{loadWallet();}catch(e){console.warn(e);}
+  try{loadMyRoom();}catch(e){console.warn(e);}
+  try{loadWalletHistory();}catch(e){console.warn(e);}
+  try{loadMyRecharges();}catch(e){console.warn(e);}
+  try{loadMyWithdraws();}catch(e){console.warn(e);}
+  try{loadLeaderboard();}catch(e){console.warn(e);}
+  try{loadMyTickets();}catch(e){console.warn(e);}
 
   if(isAdmin){
-    loadMods();
-    loadAllUsersWallet();
-    loadWalletRequests();
-    loadWithdrawRequests();
-    loadAllSupportTickets();
+    try{loadMods();}catch(e){console.warn(e);}
+    try{loadAllUsersWallet();}catch(e){console.warn(e);}
+    try{loadWalletRequests();}catch(e){console.warn(e);}
+    try{loadWithdrawRequests();}catch(e){console.warn(e);}
+    try{loadAllSupportTickets();}catch(e){console.warn(e);}
   }
 });
 
@@ -441,10 +421,14 @@ async function logout(){
     isAdmin=false;
     isSuperAdmin=false;
     currentModId='';
+    const adminHeader=document.getElementById('adminHeaderBtn');
+    const adminBottom=document.getElementById('adminBottomBtn');
+    if(adminHeader) adminHeader.classList.remove('show');
+    if(adminBottom) adminBottom.classList.remove('show');
     location.reload();
   }catch(e){
-    console.error('Logout Error:',e);
-    alert('Logout failed. Please try again.');
+    console.error('Logout error:',e);
+    alert('Logout failed: '+(e.message||e));
   }
 }
 function openPay(k){selected=tours.find(t=>t.key===k);if(!selected)return;if((selected.slots||0)>=(selected.total||50)){alert('Slots are full');return;}document.getElementById('pTitle').innerText=selected.title;document.getElementById('payModal').classList.add('open');}
