@@ -1,13 +1,24 @@
 {
-  "name": "FF LEAGUE",
+  "name": "FF LEAGUE - THE TECH HUB",
   "short_name": "FF LEAGUE",
-  "start_url": "https://gk2391888-cmd.github.io/ff-leauge-final/",
+  "description": "Join Tournaments • Win Cash",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#070a14",
-  "theme_color": "#ff0033",
-  "icons": [{
-    "src": "https://cdn-icons-png.flaticon.com/512/3069/3069028.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }]
+  "background_color": "#08080a",
+  "theme_color": "#E11D2D",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
