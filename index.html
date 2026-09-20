@@ -119,50 +119,117 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 <div id="calendarModal" class="modal" onclick="closeCalendar()"><div class="box" onclick="event.stopPropagation()" style="border:2px solid var(--red);max-width:420px"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-family:Orbitron;font-size:15px"><i class="fa-solid fa-calendar" style="color:var(--red)"></i> THE TECH HUB<br><span style="font-size:10px;color:var(--red)">TOURNAMENT SCHEDULE</span></h2><button onclick="closeCalendar()" style="background:#1e1e22;color:#fff;border:none;width:32px;height:32px;border-radius:50%">✕</button></div><div style="margin-top:12px;background:#E11D2D15;border:1px dashed var(--red);padding:10px;border-radius:12px;text-align:center;font-size:11px"><span style="color:var(--red);font-weight:900">LIVE SCHEDULE</span> • <span id="calDateNow"></span><br><span style="font-size:10px;opacity:.7" id="calSubInfo">Entry Fee | Per Kill | Top 3 Prizes</span></div><div id="calendarList" style="margin-top:12px;max-height:60vh;overflow:auto"></div></div></div>
 <script>
 (function(){
-  // FF LEAGUE standalone app icon — separate from THE TECH HUB branding.
-  // PWA: use real same-origin manifest + service worker files.
-  // Blob URLs are not used because Chrome requires a real service-worker scope for reliable installation.
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register('./sw.js', {scope:'./'})
-        .then(function(reg){ console.log('FF LEAGUE SW ready:', reg.scope); })
-        .catch(function(err){ console.error('FF LEAGUE SW registration failed:', err); });
-    });
-  }
+  // ==========================================
+  // FF LEAGUE PWA INSTALL SYSTEM
+  // ==========================================
+  // The browser can fire beforeinstallprompt BEFORE Firebase login finishes.
+  // We therefore save the event and show the install banner ONLY after login.
 
   let deferredPrompt = null;
   const installBanner = document.getElementById('installBanner');
 
+  function isPWAInstalled(){
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function hideInstallBanner(){
+    if(installBanner) installBanner.classList.remove('show');
+  }
+
+  function showInstallBanner(){
+    if(!installBanner) return;
+
+    // Never show the install banner inside an already installed PWA.
+    if(isPWAInstalled()){
+      hideInstallBanner();
+      return;
+    }
+
+    // Only show after Firebase authentication has completed.
+    if(!window.__ffLeagueLoggedIn){
+      hideInstallBanner();
+      return;
+    }
+
+    // Chrome must have supplied a real install prompt.
+    if(deferredPrompt){
+      installBanner.classList.add('show');
+    }
+  }
+
+  // Expose only the functions needed by the Firebase auth handler.
+  window.ffLeagueShowInstall = showInstallBanner;
+  window.ffLeagueHideInstall = hideInstallBanner;
+
+  // Register the real same-origin service worker.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js', {scope:'./'})
+        .then(function(reg){
+          console.log('FF LEAGUE SW ready:', reg.scope);
+        })
+        .catch(function(err){
+          console.error('FF LEAGUE SW registration failed:', err);
+        });
+    });
+  }
+
+  // Chrome/Edge fires this when the site becomes installable.
+  // IMPORTANT: do NOT show the banner here because the user may not be logged in.
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     deferredPrompt = e;
-    if (installBanner) installBanner.classList.add('show');
+
+    console.log('FF LEAGUE: PWA install prompt captured');
+
+    // If login has already completed, show it now.
+    showInstallBanner();
   });
 
+  // The PWA was installed successfully.
   window.addEventListener('appinstalled', function(){
+    console.log('FF LEAGUE: PWA installed');
     deferredPrompt = null;
-    if (installBanner) installBanner.classList.remove('show');
+    hideInstallBanner();
   });
 
+  // INSTALL button.
   window.installPWA = async function(){
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-      if (installBanner) installBanner.classList.remove('show');
+    if(isPWAInstalled()){
+      hideInstallBanner();
       return;
     }
 
-    if (deferredPrompt) {
+    if(!window.__ffLeagueLoggedIn){
+      hideInstallBanner();
+      return;
+    }
+
+    if(!deferredPrompt){
+      alert('Chrome menu (⋮) → Install app / Add to Home screen चुनें।');
+      return;
+    }
+
+    try{
       deferredPrompt.prompt();
-      try {
-        const choice = await deferredPrompt.userChoice;
-        if (choice && choice.outcome === 'accepted' && installBanner) {
-          installBanner.classList.remove('show');
-        }
-      } catch(e) {}
-      deferredPrompt = null;
-      return;
+
+      const choice = await deferredPrompt.userChoice;
+
+      console.log('FF LEAGUE install choice:', choice && choice.outcome);
+
+      if(choice && choice.outcome === 'accepted'){
+        hideInstallBanner();
+      }
+    }catch(err){
+      console.error('FF LEAGUE install prompt error:', err);
     }
 
-    alert('Chrome menu (⋮) → Add to Home screen / Install app चुनें।');
+    // A beforeinstallprompt event can only be used once.
+    deferredPrompt = null;
   };
 
 })();
@@ -349,6 +416,10 @@ auth.onAuthStateChanged(async u=>{
 
   if(!u){
     currentUser=null;
+    window.__ffLeagueLoggedIn=false;
+    if(typeof window.ffLeagueHideInstall === 'function'){
+      window.ffLeagueHideInstall();
+    }
     isAdmin=false;
     isSuperAdmin=false;
     currentModId='';
@@ -362,6 +433,18 @@ auth.onAuthStateChanged(async u=>{
   // Set the user immediately. Do NOT wait for the moderators DB query
   // before hiding the login screen.
   currentUser=u;
+
+  // Mark authentication complete so the PWA install banner can be shown.
+  window.__ffLeagueLoggedIn=true;
+
+  // If Chrome already supplied beforeinstallprompt, show the banner now.
+  // Small delay lets the logged-in UI finish rendering first.
+  setTimeout(function(){
+    if(typeof window.ffLeagueShowInstall === 'function'){
+      window.ffLeagueShowInstall();
+    }
+  }, 700);
+
   const email=(u.email||'').trim().toLowerCase();
   const isSuper=email===SUPER_ADMIN_EMAIL;
 
