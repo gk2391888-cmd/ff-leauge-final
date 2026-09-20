@@ -1,4 +1,4 @@
-const CACHE_NAME = "ff-league-v1";
+const CACHE_NAME = "ff-league-v2";
 
 self.addEventListener("install", event => {
   self.skipWaiting();
@@ -11,14 +11,13 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
-
-  if (event.request.method !== "GET") {
-    return;
-  }
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
     fetch(event.request)
+      .then(response => {
+        return response;
+      })
       .catch(() => caches.match(event.request))
   );
-
 });
