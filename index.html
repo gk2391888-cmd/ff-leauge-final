@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>FF LEAGUE - THE TECH HUB</title>
 <meta name="theme-color" content="#E11D2D">
-<link id="manifestLink" rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" href="./icon-192.png">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./icon192.png">
+<link rel="apple-touch-icon" href="./icon192.png">
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -120,43 +120,51 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 <script>
 (function(){
   // FF LEAGUE standalone app icon — separate from THE TECH HUB branding.
-  // PWA: use real same-origin manifest.json and service worker files.
+  // PWA: use real same-origin manifest + service worker files.
+  // Blob URLs are not used because Chrome requires a real service-worker scope for reliable installation.
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js', {scope: './'}).catch(err => {
-        console.warn('Service worker registration failed:', err);
-      });
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js', {scope:'./'})
+        .then(function(reg){ console.log('FF LEAGUE SW ready:', reg.scope); })
+        .catch(function(err){ console.error('FF LEAGUE SW registration failed:', err); });
     });
   }
 
   let deferredPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e) => {
+  const installBanner = document.getElementById('installBanner');
+
+  window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     deferredPrompt = e;
-    const banner = document.getElementById('installBanner');
-    if (banner) banner.classList.add('show');
+    if (installBanner) installBanner.classList.add('show');
   });
 
-  window.installPWA = async function () {
-    if (!deferredPrompt) {
-      alert('If INSTALL is not available, open Chrome menu (⋮) and choose Add to Home screen / Install app.');
+  window.addEventListener('appinstalled', function(){
+    deferredPrompt = null;
+    if (installBanner) installBanner.classList.remove('show');
+  });
+
+  window.installPWA = async function(){
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      if (installBanner) installBanner.classList.remove('show');
       return;
     }
 
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    const banner = document.getElementById('installBanner');
-    if (choice && choice.outcome === 'accepted' && banner) {
-      banner.classList.remove('show');
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      try {
+        const choice = await deferredPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted' && installBanner) {
+          installBanner.classList.remove('show');
+        }
+      } catch(e) {}
+      deferredPrompt = null;
+      return;
     }
-    deferredPrompt = null;
+
+    alert('Chrome menu (⋮) → Add to Home screen / Install app चुनें।');
   };
 
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    const banner = document.getElementById('installBanner');
-    if (banner) banner.classList.remove('show');
-  });
 })();
 const ADMIN_EMAIL="gaurav.kumar.mail1109@gmail.com";const MY_UPI="9709461672@ybl";
   // Client-side hardening helpers. Real authorization MUST still be enforced by Firebase RTDB Rules / trusted backend.
