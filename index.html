@@ -128,6 +128,11 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
   let deferredPrompt = null;
   const installBanner = document.getElementById('installBanner');
 
+  // Install prompt is ONLY for phones. Never show it on laptop/desktop.
+  // Android phones + iPhone/iPod are treated as phone devices.
+  // iPad/tablets and desktop computers are intentionally excluded.
+  const isPhoneDevice = /Android.*Mobile|iPhone|iPod/i.test(navigator.userAgent);
+
   function isPWAInstalled(){
     return (
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -142,6 +147,12 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 
   function showInstallBanner(){
     if(!installBanner) return;
+
+    // NEVER show the install banner on laptop/desktop/tablet.
+    if(!isPhoneDevice){
+      hideInstallBanner();
+      return;
+    }
 
     // Never show the install banner inside an already installed PWA.
     if(isPWAInstalled()){
@@ -181,10 +192,16 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
   // Chrome/Edge fires this when the site becomes installable.
   // IMPORTANT: do NOT show the banner here because the user may not be logged in.
   window.addEventListener('beforeinstallprompt', function(e){
+    // Desktop/laptop: do not capture/use the install prompt at all.
+    if(!isPhoneDevice){
+      console.log('FF LEAGUE: Desktop install prompt ignored');
+      return;
+    }
+
     e.preventDefault();
     deferredPrompt = e;
 
-    console.log('FF LEAGUE: PWA install prompt captured');
+    console.log('FF LEAGUE: Phone PWA install prompt captured');
 
     // If login has already completed, show it now.
     showInstallBanner();
@@ -199,6 +216,12 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 
   // INSTALL button.
   window.installPWA = async function(){
+    // Safety check: installation UI can never be triggered on desktop/tablet.
+    if(!isPhoneDevice){
+      hideInstallBanner();
+      return;
+    }
+
     if(isPWAInstalled()){
       hideInstallBanner();
       return;
