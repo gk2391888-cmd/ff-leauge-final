@@ -101,7 +101,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 <input id="aRoomPass" placeholder="Room Password">
 <select id="aType"><option value="SOLO">SOLO</option><option value="DUO">DUO</option><option value="4v4" selected>4v4</option><option value="SQUAD">SQUAD</option></select>
 <select id="aModAssign" style="border:2px solid var(--green)"><option value="">Assign Moderator</option></select>
-</div><div id="profitPreview" style="margin-top:8px;background:#050507;padding:8px;border-radius:10px;border:2px dashed var(--red);font-size:11px">Collection: ₹0 | Profit: ₹0</div><div id="modPreview" style="margin-top:6px;background:rgba(0,255,136,0.08);border:1px dashed var(--green);padding:8px;border-radius:10px;font-size:11px;display:none"></div><div style="margin-top:10px; background: rgba(255,204,0,0.08); border: 2px solid #ffcc00; border-radius: 14px; padding: 12px;"><label style="font-size:10px; color:#ffcc00; font-weight:900;">MATCH TIME</label><input id="aTime" type="datetime-local"></div><button class="h-btn" style="width:100%;margin-top:12px" onclick="saveTournament()">SAVE TOURNAMENT</button><div id="aTList" style="margin-top:12px"></div>
+</div><div id="profitPreview" style="margin-top:8px;background:#050507;padding:8px;border-radius:10px;border:2px dashed var(--red);font-size:11px">Collection: ₹0 | Profit: ₹0</div><div id="modPreview" style="margin-top:6px;background:rgba(0,255,136,0.08);border:1px dashed var(--green);padding:8px;border-radius:10px;font-size:11px;display:none"></div><div style="margin-top:10px; background: rgba(255,204,0,0.08); border: 2px solid #ffcc00; border-radius: 14px; padding: 12px;"><label style="font-size:10px; color:#ffcc00; font-weight:900;">CALENDAR MATCH</label><select id="aCalendarIndex" style="border:2px solid #ffcc00"><option value="">Use title / manual time</option><option value="0">MATCH 1 - 11:00 AM</option><option value="1">MATCH 2 - 12:10 PM</option><option value="2">MATCH 3 - 01:20 PM</option><option value="3">MATCH 4 - 02:30 PM</option><option value="4">MATCH 5 - 03:40 PM</option><option value="5">MATCH 6 - 04:50 PM</option><option value="6">MATCH 7 - 06:00 PM</option><option value="7">MATCH 8 - GRAND FINAL - 07:10 PM</option></select><small style="display:block;font-size:9px;opacity:.65;margin-top:4px">Calendar slot selected = automatic daily timing. Player card appears 5 minutes before the slot.</small><label style="display:block;font-size:10px;color:#ffcc00;font-weight:900;margin-top:10px">MANUAL MATCH TIME (only if no calendar slot)</label><input id="aTime" type="datetime-local"></div><button class="h-btn" style="width:100%;margin-top:12px" onclick="saveTournament()">SAVE TOURNAMENT</button><div id="aTList" style="margin-top:12px"></div>
 <div id="calendarEditorSection" style="margin-top:12px;background:#050507;border:2px solid var(--yellow);padding:12px;border-radius:14px">
 <h4 style="font-family:Orbitron;color:var(--yellow);font-size:12px">CALENDAR SCHEDULE EDITOR</h4>
 <p style="font-size:9px;opacity:.6;margin-top:4px">Admin and Moderator can edit the existing 8-match schedule. Current schedule is kept unless you save changes.</p>
@@ -313,25 +313,48 @@ function autoPrize(){
   document.getElementById('profitPreview').innerHTML=`Collection: ₹${coll} | Prize Pool: ₹${pool} (1st:${first}+2nd:${second}+3rd:${third}+Kill:${kill}x${t}) | <span style="color:var(--green)">Total Profit: ₹${profit}</span>`;
   let mp=document.getElementById('modPreview');if(mod){mp.style.display='block';mp.innerHTML=`Moderator ${mod.idCard} Commission ${mod.commission||20}% = ₹${modComm} | Your Net Profit = ₹${profit-modComm}`;}else mp.style.display='none';
 }
+function parseCalendarTimeMs(timeText, baseDate){
+  const m=String(timeText||'').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if(!m)return null;
+  let h=parseInt(m[1],10), min=parseInt(m[2],10); const ap=m[3].toUpperCase();
+  if(h===12)h=0; if(ap==='PM')h+=12;
+  const d=new Date(baseDate||Date.now()); d.setHours(h,min,0,0); return d.getTime();
+}
+function getCalendarIndex(t){
+  if(t&&t.calendarIndex!==undefined&&t.calendarIndex!==null&&t.calendarIndex!==''){
+    const n=parseInt(t.calendarIndex,10); if(n>=0&&n<8)return n;
+  }
+  const text=String(t&&(t.title||'')||'').toUpperCase();
+  const m=text.match(/MATCH\s*(\d+)/); if(m){const n=parseInt(m[1],10)-1;if(n>=0&&n<8)return n;}
+  if(/GRAND\s*FINAL|FINAL/.test(text))return 7;
+  return null;
+}
 function getTournamentStartMs(t){
+  const idx=getCalendarIndex(t);
+  if(idx!==null && calendarSchedule.length){
+    const ms=parseCalendarTimeMs(calendarSchedule[idx]&&calendarSchedule[idx].time,Date.now());
+    if(ms!==null)return ms;
+  }
   const raw=t&&(t.matchTime||t.time); if(!raw)return null;
   const ms=new Date(raw).getTime(); return Number.isFinite(ms)?ms:null;
 }
 function getJoinState(t){
   const start=getTournamentStartMs(t);
-  if(!start)return {allowed:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
+  if(!start)return {allowed:true,visible:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
   const openAt=start-5*60*1000, now=Date.now();
-  if(now<openAt)return {allowed:false,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
-  if(now>start+30*60*1000 && (t.status||'active')!=='completed')return {allowed:false,label:'MATCH TIME PASSED',reason:'late'};
-  return {allowed:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
+  if(now<openAt)return {allowed:false,visible:false,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
+  if(now>start+30*60*1000 && (t.status||'active')!=='completed')return {allowed:false,visible:false,label:'MATCH TIME PASSED',reason:'late'};
+  return {allowed:true,visible:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
 }
 function render(){
   let allActive=tours.filter(t=>(t.status||'active')!=='completed');
-  let filtered=allActive.filter(t=>(t.type||'SOLO').toUpperCase()===currentMode);
-  let displayList=filtered.length?filtered:allActive;
+  // Calendar is the automatic player-facing schedule: a tournament appears exactly 5 minutes before its calendar time.
+  let visibleActive=allActive.filter(t=>getJoinState(t).visible);
+  let filtered=visibleActive.filter(t=>(t.type||'SOLO').toUpperCase()===currentMode);
+  let displayList=filtered.length?filtered:visibleActive;
   const list=document.getElementById('list');
   if(list)list.innerHTML=displayList.map(t=>{
-    let timeDisplay=t.matchTime?new Date(t.matchTime).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):(t.time||'Soon');
+    let startMs=getTournamentStartMs(t); let timeDisplay=startMs?new Date(startMs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):(t.time||'Soon');
     let modBadge=t.moderatorId?`<span class="mod-badge">MOD ${esc(t.moderatorId)}</span>`:`<span class="mod-badge unassigned">No Moderator</span>`;
     let slots=safeInt(t.slots), total=safeInt(t.total,50), percent=total?Math.min(100,Math.round(slots/total*100)):0;
     let entry=safeInt(t.entry), first=safeInt(t.firstPrize), second=safeInt(t.secondPrize), third=safeInt(t.thirdPrize), kill=safeInt(t.killPrize);
@@ -753,13 +776,15 @@ function saveTournament(){
   let killVal=parseInt(document.getElementById('aKill').value)||0;
   let poolInput=parseInt(document.getElementById('aPrizePool').value)||0;
   let poolVal = poolInput || (firstVal+secondVal+thirdVal+killVal*totalVal) || Math.floor(entryVal*totalVal*0.8);
+  let calendarIndex=document.getElementById('aCalendarIndex').value;
   let timeVal=document.getElementById('aTime').value; if(!timeVal){let now=new Date(); now.setMinutes(now.getMinutes()+10); timeVal=now.toISOString().slice(0,16);}
   let data={
     title:t,entry:entryVal,total:totalVal,prizePool:poolVal,
     firstPrize:firstVal,secondPrize:secondVal,thirdPrize:thirdVal,killPrize:killVal,
     slots:0,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,
     type:document.getElementById('aType').value||'4v4',status:'active',time:timeVal,matchTime:timeVal,
-    moderatorId:document.getElementById('aModAssign').value||''
+    moderatorId:document.getElementById('aModAssign').value||'',
+    calendarIndex:calendarIndex===''?null:parseInt(calendarIndex,10)
   };
   let k=document.getElementById('aKey').value;
   if(k){
@@ -783,6 +808,7 @@ function editTour(k){
   document.getElementById('aRoomId').value=t.roomId||'';
   document.getElementById('aRoomPass').value=t.roomPass||'';
   document.getElementById('aTime').value=t.matchTime||'';
+  document.getElementById('aCalendarIndex').value=t.calendarIndex===undefined||t.calendarIndex===null?'':String(t.calendarIndex);
   document.getElementById('aType').value=t.type||'4v4';
   document.getElementById('aModAssign').value=t.moderatorId||'';
   autoPrize();
