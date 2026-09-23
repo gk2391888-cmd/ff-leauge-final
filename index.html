@@ -305,6 +305,7 @@ const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomai
 firebase.initializeApp(firebaseConfig); const auth=firebase.auth(), db=firebase.database();
 let ffMessaging=null;
 let ffNotifyListenerAttached=false;
+const VAPID_KEY='BH5eI1yVNlPxnGOE9JrbxUaOrqTyF8pJzonB9rEzhjXQCzDf3HTXJaDH9_oVi2etht0k_KjrK2uLg5hvAqelSGM';
 
 function closeFFNotifyPopup(){
   const m=document.getElementById('ffNotifyModal');
@@ -365,7 +366,7 @@ async function setupFFPushNotifications(forcePopup){
     const swReg=window.__ffLeagueSWRegistration || (window.__ffLeagueSWRegistrationPromise ? await window.__ffLeagueSWRegistrationPromise : await navigator.serviceWorker.register('./sw.js',{scope:'./'}));
     if(!swReg) return false;
     ffMessaging=ffMessaging || firebase.messaging();
-    const token=await ffMessaging.getToken({serviceWorkerRegistration:swReg});
+    const token=await ffMessaging.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:swReg});
     if(!token) return false;
     const tokenKey=btoa(unescape(encodeURIComponent(token))).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,180);
     await db.ref('users/'+currentUser.uid+'/fcmTokens/'+tokenKey).set({token:token,updatedAt:Date.now(),platform:'web'});
