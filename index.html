@@ -1192,9 +1192,33 @@ setInterval(()=>{render();},30000);
     m.setAttribute('aria-hidden','false');
   };
 
+  const FF_WA_POPUP_STORAGE_KEY='ffLeagueWhatsappPopupLastShown';
+  const FF_WA_POPUP_INTERVAL_MS=24*60*60*1000; // show again after 1 day
+
+  function shouldShowFFWhatsappPopup(){
+    try{
+      const raw=localStorage.getItem(FF_WA_POPUP_STORAGE_KEY);
+      if(!raw)return true;
+      const last=Number(raw);
+      if(!Number.isFinite(last)||last<=0)return true;
+      return (Date.now()-last)>=FF_WA_POPUP_INTERVAL_MS;
+    }catch(e){
+      // If storage is unavailable, show the popup rather than silently disabling it.
+      return true;
+    }
+  }
+
+  function markFFWhatsappPopupShown(){
+    try{
+      localStorage.setItem(FF_WA_POPUP_STORAGE_KEY,String(Date.now()));
+    }catch(e){}
+  }
+
   function startFFWhatsappPopup(){
-    // Show after the page has rendered so it does not interfere with login/loading.
+    // First visit: show once. Returning visitors: show again only after 1 day.
+    if(!shouldShowFFWhatsappPopup())return;
     setTimeout(function(){
+      markFFWhatsappPopupShown();
       showFFWhatsappPopup();
     },1800);
   }
