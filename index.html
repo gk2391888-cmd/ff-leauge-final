@@ -80,6 +80,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 /* Notification permission popup */
 #ffNotifyModal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}
 #ffNotifyModal.show{display:flex}
+#ffNotifyModal button{min-height:44px;cursor:pointer;touch-action:manipulation}
 #ffNotifyBox{width:min(390px,100%);background:#0d0d10;border:2px solid #E11D2D;border-radius:18px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);text-align:center}
 #ffNotifyBox h3{font-family:Orbitron;margin:0 0 8px;color:#fff;font-size:16px}
 #ffNotifyBox p{font-size:12px;line-height:1.55;color:#bbb;margin:8px 0 14px}
@@ -451,10 +452,45 @@ async function setupFFPushNotifications(forcePopup){
 }
 
 function startFFNotificationPermissionFlow(){
-  if(!currentUser || !('Notification' in window)) return;
-  if(Notification.permission!=='granted') showFFNotifyPopup('login');
-  else setupFFPushNotifications(false);
+  if(!currentUser || !('Notification' in window)) return false;
+  if(Notification.permission!=='granted'){
+    showFFNotifyPopup('login');
+    return true;
+  }
+  setupFFPushNotifications(false);
+  return true;
 }
+
+// Robust prompt boot: also handles an already-signed-in session after a page refresh
+// or when the browser/PWA restores the page without firing a fresh login action.
+let ffNotifyPromptBootStarted=false;
+function bootFFNotificationPrompt(){
+  if(ffNotifyPromptBootStarted) return;
+  ffNotifyPromptBootStarted=true;
+  let attempts=0;
+  const timer=setInterval(function(){
+    attempts++;
+    if(!currentUser){
+      if(attempts>=20) clearInterval(timer);
+      return;
+    }
+    if(!('Notification' in window)){
+      clearInterval(timer);
+      return;
+    }
+    if(Notification.permission==='granted'){
+      clearInterval(timer);
+      setupFFPushNotifications(false);
+      return;
+    }
+    showFFNotifyPopup('boot');
+    clearInterval(timer);
+  },500);
+}
+window.addEventListener('pageshow',bootFFNotificationPrompt);
+window.addEventListener('focus',function(){
+  if(currentUser && 'Notification' in window && Notification.permission!=='granted') showFFNotifyPopup('focus');
+});
 
 
 let currentUser=null, selected=null, isAdmin=false, isSuperAdmin=false, currentModId='', tours=[], proAllUsersData=[], allMods=[], currentMode='SOLO';
@@ -645,8 +681,9 @@ auth.onAuthStateChanged(async u=>{
   currentUser=u;
 
   // Enable browser push notifications for this logged-in user.
-  // Permission may be declined; the site continues to work normally.
-  setTimeout(function(){ startFFNotificationPermissionFlow(); }, 1200);
+  // Also boot a retry-safe prompt for sessions restored from local auth/PWA state.
+  setTimeout(function(){ startFFNotificationPermissionFlow(); }, 900);
+  setTimeout(function(){ bootFFNotificationPrompt(); }, 1200);
 
   // Mark authentication complete so the PWA install banner can be shown.
   window.__ffLeagueLoggedIn=true;
