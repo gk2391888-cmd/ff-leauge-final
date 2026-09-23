@@ -11,6 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +76,17 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 .calendar-edit-row{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:6px;align-items:center;background:#0a0a0c;border:1px solid var(--border);border-radius:12px;padding:8px;margin-top:8px}
 .calendar-edit-row input{margin:0;padding:9px 10px;font-size:12px}
 @media(max-width:600px){.calendar-edit-row{grid-template-columns:1fr 1fr}.calendar-edit-row input:first-child{grid-column:1/-1}.calendar-edit-row button{grid-column:1/-1}}
+
+/* Notification permission popup */
+#ffNotifyModal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}
+#ffNotifyModal.show{display:flex}
+#ffNotifyBox{width:min(390px,100%);background:#0d0d10;border:2px solid #E11D2D;border-radius:18px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);text-align:center}
+#ffNotifyBox h3{font-family:Orbitron;margin:0 0 8px;color:#fff;font-size:16px}
+#ffNotifyBox p{font-size:12px;line-height:1.55;color:#bbb;margin:8px 0 14px}
+#ffNotifyEnable{width:100%;background:#E11D2D;color:#fff;border:0;border-radius:11px;padding:12px;font-weight:900;font-size:13px}
+#ffNotifyLater{width:100%;margin-top:7px;background:#1d1d22;color:#fff;border:1px solid #333;border-radius:11px;padding:10px;font-weight:700;font-size:12px}
+#ffNotifyHelp{font-size:10px;color:#ffcc00;margin-top:10px;display:none;line-height:1.45}
+
 </style>
 </head>
 <body>
@@ -191,17 +203,21 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
   window.ffLeagueShowInstall = showInstallBanner;
   window.ffLeagueHideInstall = hideInstallBanner;
 
-  // Register the real same-origin service worker.
+  // Register one same-origin service worker for both PWA + push notifications.
+  // FCM uses this registration for background notifications.
+  window.__ffLeagueSWRegistration = null;
+  window.__ffLeagueSWRegistrationPromise = null;
   if('serviceWorker' in navigator){
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register('./sw.js', {scope:'./'})
-        .then(function(reg){
-          console.log('FF LEAGUE SW ready:', reg.scope);
-        })
-        .catch(function(err){
-          console.error('FF LEAGUE SW registration failed:', err);
-        });
-    });
+    window.__ffLeagueSWRegistrationPromise = navigator.serviceWorker.register('./sw.js', {scope:'./'})
+      .then(function(reg){
+        window.__ffLeagueSWRegistration = reg;
+        console.log('FF LEAGUE SW ready:', reg.scope);
+        return reg;
+      })
+      .catch(function(err){
+        console.error('FF LEAGUE SW registration failed:', err);
+        return null;
+      });
   }
 
   // Chrome/Edge fires this when the site becomes installable.
@@ -287,6 +303,99 @@ const ADMIN_EMAIL="gaurav.kumar.mail1109@gmail.com";const MY_UPI="9709461672@ybl
 
 const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomain:"ff-leauge.firebaseapp.com",databaseURL:"https://ff-leauge-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"ff-leauge",storageBucket:"ff-leauge.firebasestorage.app",messagingSenderId:"26073423984",appId:"1:26073423984:web:f14329a6fa1506ec14b5"};
 firebase.initializeApp(firebaseConfig); const auth=firebase.auth(), db=firebase.database();
+let ffMessaging=null;
+let ffNotifyListenerAttached=false;
+
+function closeFFNotifyPopup(){
+  const m=document.getElementById('ffNotifyModal');
+  if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');}
+}
+function showFFNotifyPopup(reason){
+  if(!currentUser || !('Notification' in window)) return;
+  if(Notification.permission==='granted') return;
+  const m=document.getElementById('ffNotifyModal');
+  const text=document.getElementById('ffNotifyText');
+  const help=document.getElementById('ffNotifyHelp');
+  const btn=document.getElementById('ffNotifyEnable');
+  if(!m||!text||!help||!btn)return;
+  help.style.display='none';
+  if(Notification.permission==='denied'){
+    text.innerText='Notifications are blocked for FF LEAGUE. Allow Notifications in Chrome site settings, then come back and tap ENABLE.';
+    help.innerText='Chrome: site controls / lock icon → Notifications → Allow → reload FF LEAGUE.';
+    help.style.display='block';
+    btn.innerText='🔔 TRY ENABLE AGAIN';
+  }else{
+    text.innerText='Turn on notifications to get a reminder 10 minutes before every FF LEAGUE tournament, including all 8 calendar matches and custom matches.';
+    btn.innerText='🔔 ENABLE NOTIFICATIONS';
+  }
+  m.classList.add('show');
+  m.setAttribute('aria-hidden','false');
+}
+
+async function enableFFNotifications(){
+  try{
+    if(!currentUser || !('Notification' in window) || !('serviceWorker' in navigator)){
+      closeFFNotifyPopup(); return;
+    }
+    if(Notification.permission==='denied'){
+      showFFNotifyPopup('denied');
+      return;
+    }
+    const permission=Notification.permission==='granted' ? 'granted' : await Notification.requestPermission();
+    if(permission!=='granted'){
+      showFFNotifyPopup('not-granted');
+      return;
+    }
+    await setupFFPushNotifications(true);
+    closeFFNotifyPopup();
+  }catch(e){
+    console.warn('FF notification permission error:',e);
+    showFFNotifyPopup('error');
+  }
+}
+
+async function setupFFPushNotifications(forcePopup){
+  try{
+    if(!currentUser || !('Notification' in window) || !('serviceWorker' in navigator)) return false;
+    if(!firebase.messaging.isSupported()) return false;
+    if(Notification.permission!=='granted'){
+      if(forcePopup) showFFNotifyPopup('not-granted');
+      return false;
+    }
+    const swReg=window.__ffLeagueSWRegistration || (window.__ffLeagueSWRegistrationPromise ? await window.__ffLeagueSWRegistrationPromise : await navigator.serviceWorker.register('./sw.js',{scope:'./'}));
+    if(!swReg) return false;
+    ffMessaging=ffMessaging || firebase.messaging();
+    const token=await ffMessaging.getToken({serviceWorkerRegistration:swReg});
+    if(!token) return false;
+    const tokenKey=btoa(unescape(encodeURIComponent(token))).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,180);
+    await db.ref('users/'+currentUser.uid+'/fcmTokens/'+tokenKey).set({token:token,updatedAt:Date.now(),platform:'web'});
+    if(!ffNotifyListenerAttached){
+      ffNotifyListenerAttached=true;
+      ffMessaging.onMessage(function(payload){
+        try{
+          const n=payload.notification||{};
+          const d=payload.data||{};
+          const title=n.title||d.title||'FF LEAGUE';
+          const body=n.body||d.body||'Tournament starts in 10 minutes.';
+          if(Notification.permission==='granted') new Notification(title,{body,icon:'./icon-192.png',badge:'./icon-192.png',data:{url:d.url||'./'}});
+        }catch(e){console.warn('Foreground notification failed:',e);}
+      });
+    }
+    console.log('FF LEAGUE push notifications enabled');
+    return true;
+  }catch(e){
+    console.warn('FF push setup skipped:',e&&e.message?e.message:e);
+    return false;
+  }
+}
+
+function startFFNotificationPermissionFlow(){
+  if(!currentUser || !('Notification' in window)) return;
+  if(Notification.permission!=='granted') showFFNotifyPopup('login');
+  else setupFFPushNotifications(false);
+}
+
+
 let currentUser=null, selected=null, isAdmin=false, isSuperAdmin=false, currentModId='', tours=[], proAllUsersData=[], allMods=[], currentMode='SOLO';
 let calendarSchedule=[];
 const DEFAULT_CALENDAR_SCHEDULE=[
@@ -473,6 +582,10 @@ auth.onAuthStateChanged(async u=>{
   // Set the user immediately. Do NOT wait for the moderators DB query
   // before hiding the login screen.
   currentUser=u;
+
+  // Enable browser push notifications for this logged-in user.
+  // Permission may be declined; the site continues to work normally.
+  setTimeout(function(){ startFFNotificationPermissionFlow(); }, 1200);
 
   // Mark authentication complete so the PWA install banner can be shown.
   window.__ffLeagueLoggedIn=true;
@@ -792,7 +905,10 @@ function saveTournament(){
     slots:0,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,
     type:document.getElementById('aType').value||'4v4',status:'active',time:timeVal,matchTime:timeVal,
     moderatorId:document.getElementById('aModAssign').value||'',
-    calendarIndex:calendarIndex===''?null:parseInt(calendarIndex,10)
+    calendarIndex:calendarIndex===''?null:parseInt(calendarIndex,10),
+    isCustom:calendarIndex==='',
+    startAt:Date.parse(timeVal) || null,
+    notification10At:(Date.parse(timeVal) || 0) - (10*60*1000)
   };
   let k=document.getElementById('aKey').value;
   if(k){
@@ -886,5 +1002,17 @@ function renderCalendar(){
 loadCalendarSchedule();
 setInterval(()=>{render();},30000);
 </script>
+
+<div id="ffNotifyModal" aria-hidden="true">
+  <div id="ffNotifyBox" onclick="event.stopPropagation()">
+    <div style="font-size:30px;margin-bottom:5px">🔔</div>
+    <h3>TURN ON NOTIFICATIONS</h3>
+    <p id="ffNotifyText">Get a reminder 10 minutes before every FF LEAGUE tournament.</p>
+    <button id="ffNotifyEnable" type="button" onclick="enableFFNotifications()">🔔 ENABLE NOTIFICATIONS</button>
+    <button id="ffNotifyLater" type="button" onclick="closeFFNotifyPopup()">LATER</button>
+    <div id="ffNotifyHelp"></div>
+  </div>
+</div>
+
 </body>
 </html>
