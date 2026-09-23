@@ -86,6 +86,12 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 #ffNotifyEnable{width:100%;background:#E11D2D;color:#fff;border:0;border-radius:11px;padding:12px;font-weight:900;font-size:13px}
 #ffNotifyLater{width:100%;margin-top:7px;background:#1d1d22;color:#fff;border:1px solid #333;border-radius:11px;padding:10px;font-weight:700;font-size:12px}
 #ffNotifyHelp{font-size:10px;color:#ffcc00;margin-top:10px;display:none;line-height:1.45}
+#ffNotifySteps{display:none;text-align:left;margin:10px 0 14px;padding:12px;border:1px solid #2d2d33;border-radius:12px;background:#151519}
+#ffNotifySteps.show{display:block}
+#ffNotifySteps .step{display:flex;gap:9px;align-items:flex-start;margin:9px 0;color:#ddd;font-size:11px;line-height:1.45}
+#ffNotifySteps .num{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#E11D2D;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px}
+#ffNotifyCheck{width:100%;background:#E11D2D;color:#fff;border:0;border-radius:11px;padding:12px;font-weight:900;font-size:13px;display:none}
+#ffNotifyBack{width:100%;margin-top:7px;background:#1d1d22;color:#fff;border:1px solid #333;border-radius:11px;padding:10px;font-weight:700;font-size:12px;display:none}
 
 </style>
 </head>
@@ -311,26 +317,78 @@ function closeFFNotifyPopup(){
   const m=document.getElementById('ffNotifyModal');
   if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');}
 }
+
+function showFFNotifyHowToEnable(){
+  const m=document.getElementById('ffNotifyModal');
+  const title=document.getElementById('ffNotifyTitle');
+  const text=document.getElementById('ffNotifyText');
+  const steps=document.getElementById('ffNotifySteps');
+  const enable=document.getElementById('ffNotifyEnable');
+  const check=document.getElementById('ffNotifyCheck');
+  const back=document.getElementById('ffNotifyBack');
+  const later=document.getElementById('ffNotifyLater');
+  const help=document.getElementById('ffNotifyHelp');
+  if(!m||!title||!text||!steps||!enable||!check||!back||!later||!help)return;
+  title.innerText='HOW TO ENABLE';
+  text.innerText='Chrome has blocked notifications for FF LEAGUE. Allow them in site settings, then come back and check again.';
+  steps.classList.add('show');
+  enable.style.display='none';
+  check.style.display='block';
+  back.style.display='block';
+  later.style.display='none';
+  help.style.display='none';
+  m.classList.add('show');
+  m.setAttribute('aria-hidden','false');
+}
+
 function showFFNotifyPopup(reason){
   if(!currentUser || !('Notification' in window)) return;
   if(Notification.permission==='granted') return;
   const m=document.getElementById('ffNotifyModal');
+  const title=document.getElementById('ffNotifyTitle');
   const text=document.getElementById('ffNotifyText');
+  const steps=document.getElementById('ffNotifySteps');
   const help=document.getElementById('ffNotifyHelp');
   const btn=document.getElementById('ffNotifyEnable');
-  if(!m||!text||!help||!btn)return;
+  const check=document.getElementById('ffNotifyCheck');
+  const back=document.getElementById('ffNotifyBack');
+  const later=document.getElementById('ffNotifyLater');
+  if(!m||!title||!text||!steps||!help||!btn||!check||!back||!later)return;
+  steps.classList.remove('show');
   help.style.display='none';
+  check.style.display='none';
+  back.style.display='none';
+  later.style.display='block';
+  btn.style.display='block';
+  title.innerText='TURN ON NOTIFICATIONS';
   if(Notification.permission==='denied'){
-    text.innerText='Notifications are blocked for FF LEAGUE. Allow Notifications in Chrome site settings, then come back and tap ENABLE.';
-    help.innerText='Chrome: site controls / lock icon → Notifications → Allow → reload FF LEAGUE.';
-    help.style.display='block';
-    btn.innerText='🔔 TRY ENABLE AGAIN';
-  }else{
-    text.innerText='Turn on notifications to get a reminder 10 minutes before every FF LEAGUE tournament, including all 8 calendar matches and custom matches.';
-    btn.innerText='🔔 ENABLE NOTIFICATIONS';
+    showFFNotifyHowToEnable();
+    return;
   }
+  text.innerText='Turn on notifications to get a reminder 10 minutes before every FF LEAGUE tournament, including all 8 calendar matches and custom matches.';
+  btn.innerText='🔔 ENABLE NOTIFICATIONS';
   m.classList.add('show');
   m.setAttribute('aria-hidden','false');
+}
+
+async function checkFFNotificationPermission(){
+  try{
+    if(!currentUser || !('Notification' in window)) return;
+    if(Notification.permission!=='granted'){
+      showFFNotifyHowToEnable();
+      return;
+    }
+    const ok=await setupFFPushNotifications(true);
+    if(ok){
+      closeFFNotifyPopup();
+      alert('Notifications are enabled for FF LEAGUE.');
+    }else{
+      showFFNotifyHowToEnable();
+    }
+  }catch(e){
+    console.warn('FF notification check failed:',e);
+    showFFNotifyHowToEnable();
+  }
 }
 
 async function enableFFNotifications(){
@@ -339,16 +397,18 @@ async function enableFFNotifications(){
       closeFFNotifyPopup(); return;
     }
     if(Notification.permission==='denied'){
-      showFFNotifyPopup('denied');
+      showFFNotifyHowToEnable();
       return;
     }
     const permission=Notification.permission==='granted' ? 'granted' : await Notification.requestPermission();
     if(permission!=='granted'){
-      showFFNotifyPopup('not-granted');
+      if(Notification.permission==='denied') showFFNotifyHowToEnable();
+      else showFFNotifyPopup('not-granted');
       return;
     }
-    await setupFFPushNotifications(true);
-    closeFFNotifyPopup();
+    const ok=await setupFFPushNotifications(true);
+    if(ok) closeFFNotifyPopup();
+    else showFFNotifyPopup('error');
   }catch(e){
     console.warn('FF notification permission error:',e);
     showFFNotifyPopup('error');
@@ -1007,9 +1067,18 @@ setInterval(()=>{render();},30000);
 <div id="ffNotifyModal" aria-hidden="true">
   <div id="ffNotifyBox" onclick="event.stopPropagation()">
     <div style="font-size:30px;margin-bottom:5px">🔔</div>
-    <h3>TURN ON NOTIFICATIONS</h3>
+    <h3 id="ffNotifyTitle">TURN ON NOTIFICATIONS</h3>
     <p id="ffNotifyText">Get a reminder 10 minutes before every FF LEAGUE tournament.</p>
+    <div id="ffNotifySteps" aria-live="polite">
+      <div style="font-weight:900;color:#fff;font-size:12px;margin-bottom:8px">HOW TO ENABLE IN CHROME</div>
+      <div class="step"><span class="num">1</span><span>Close this screen with <b>LATER</b>.</span></div>
+      <div class="step"><span class="num">2</span><span>Open the FF LEAGUE page in <b>Chrome</b> and tap the <b>🔒 site controls</b> icon near the website address.</span></div>
+      <div class="step"><span class="num">3</span><span>Tap <b>Permissions</b> → <b>Notifications</b> → select <b>Allow</b>.</span></div>
+      <div class="step"><span class="num">4</span><span>Return to FF LEAGUE and tap <b>CHECK AGAIN</b>.</span></div>
+    </div>
     <button id="ffNotifyEnable" type="button" onclick="enableFFNotifications()">🔔 ENABLE NOTIFICATIONS</button>
+    <button id="ffNotifyCheck" type="button" onclick="checkFFNotificationPermission()">✅ CHECK AGAIN</button>
+    <button id="ffNotifyBack" type="button" onclick="showFFNotifyPopup('back')">← BACK</button>
     <button id="ffNotifyLater" type="button" onclick="closeFFNotifyPopup()">LATER</button>
     <div id="ffNotifyHelp"></div>
   </div>
