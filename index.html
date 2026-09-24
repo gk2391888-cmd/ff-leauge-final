@@ -122,7 +122,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 <div id="installBanner" class="install-banner"><div><b style="font-family:Orbitron">Install FF LEAGUE App</b></div><button onclick="installPWA()" style="background:#fff;color:#000;border:none;padding:8px 14px;border-radius:10px;font-weight:900">INSTALL</button></div>
 <div id="loginScreen" class="login-screen" style="display:none"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
 <div class="header"><div class="logo"><b>TH</b> FF <span>LEAGUE</span></div><div style="display:flex;gap:6px;align-items:center"><div id="userInfo" style="display:none;text-align:right"><div id="userName" style="font-weight:800;font-size:11px"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none;background:#1e1e22" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div></div>
-<div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div id="dailyCalendar" class="daily-schedule"></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="list"></div></div>
+<div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="dailyCalendar" class="daily-schedule"></div><div id="list"></div></div>
 <div id="walletTab" class="tab"><div class="wallet-card"><div style="font-size:10px;letter-spacing:2px;opacity:.8">WALLET BALANCE</div><div style="font-size:36px;font-weight:900;font-family:Orbitron;margin-top:4px" id="walletBal">₹0.00</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button class="h-btn" style="background:#fff;color:#000;padding:12px;border-radius:12px;font-weight:900" onclick="openRecharge()">RECHARGE</button><button class="h-btn" style="background:#000;color:var(--green);border:1px solid var(--green);padding:12px;border-radius:12px;font-weight:900" onclick="openWithdraw()">WITHDRAW</button></div></div><div style="padding:0 16px 20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><h4 style="font-family:Orbitron;font-size:12px">MONEY HISTORY</h4></div><div style="font-size:9px;opacity:.45;margin-top:4px">Tournament Join • Tournament Win • Recharge • Withdrawal • Refunds</div><div id="walletHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE HISTORY</h4></div><div id="rechargeHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">WITHDRAW HISTORY</h4></div><div id="withdrawHistory" style="margin-bottom:20px"></div></div></div>
 <div id="supportTab" class="tab"><div style="padding:18px 16px 8px"><h1 style="font-family:Orbitron;font-size:24px">SUPPORT <span style="color:var(--green)">CENTER</span></h1></div><div style="background:#111114;border-left:4px solid var(--green);border-radius:16px;padding:16px;margin:12px 16px"><select id="ticketCat"><option>Wallet Issue</option><option>Tournament Issue</option><option>Withdraw Issue</option><option>Other</option></select><input id="ticketSubject" placeholder="Subject"><textarea id="ticketMsg" placeholder="Describe your issue..."></textarea><button class="btn-join" style="background:var(--green);color:#000" onclick="submitSupportTicket()">SUBMIT TICKET</button><p id="ticketStatus" style="font-size:11px;margin-top:8px;text-align:center"></p></div><div style="padding:10px 16px"><h4 style="font-family:Orbitron;font-size:13px">MY TICKETS</h4><div id="myTickets"></div></div></div>
 <div id="leaderTab" class="tab"><div style="padding:16px"><h1 style="font-family:Orbitron;font-size:22px">LEADERBOARD</h1><div id="leaderboard" style="margin-top:12px"></div></div></div>
@@ -546,33 +546,84 @@ async function ensureDailyCalendarTournaments(){
     }
   }
 }
+function renderDailyTournamentCard(t,dateObj,m,index){
+  const startMs=getTournamentStartMs(t) || getDateTimeForCalendarSlot(dateObj,m.time);
+  const timeDisplay=startMs
+    ? new Date(startMs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+    : (m.time||'Soon');
+  const modBadge=t.moderatorId
+    ? `<span class="mod-badge">MOD ${esc(t.moderatorId)}</span>`
+    : `<span class="mod-badge unassigned">No Moderator</span>`;
+  const slots=safeInt(t.slots), total=safeInt(t.total,50);
+  const percent=total?Math.min(100,Math.round(slots/total*100)):0;
+  const entry=safeInt(t.entry), first=safeInt(t.firstPrize), second=safeInt(t.secondPrize), third=safeInt(t.thirdPrize), kill=safeInt(t.killPrize);
+  const pool=safeInt(t.prizePool)||(first+second+third+kill*total);
+  const isFull=slots>=total;
+  const js=getJoinState(t);
+  const disabled=isFull||!js.allowed?'disabled style="opacity:.55;cursor:not-allowed;background:#333"':'';
+  const joinText=isFull?'FULL':js.label;
+  const closedText=!isFull&&!js.allowed?'REGISTRATION CLOSED':'';
+  const dateBadge=startMs
+    ? new Date(startMs).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+    : getDateLabel(dateObj);
+  const finalBadge=m.isFinal?'FINAL':'MATCH '+(index+1);
+  return `<div class="card daily-calendar-card" data-calendar-date="${esc(String(t.matchDate||''))}">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+      <span style="background:#E11D2D;font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px">${esc(t.type||'SOLO')}</span>
+      <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <span style="font-size:9px;background:#ffcc0015;color:#ffcc00;padding:4px 8px;border-radius:6px">${esc(dateBadge)}, ${esc(m.time)}</span>
+        ${modBadge}
+        <span style="font-size:10px;background:#00ff8820;color:var(--green);padding:4px 8px;border-radius:20px;border:1px solid #00ff8850;font-weight:900">${slots}/${total} JOINED</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <div style="font-family:Orbitron;font-weight:700;margin-top:10px;font-size:14px">${esc(t.title)}</div>
+      <span style="margin-top:10px;font-size:8px;background:${m.isFinal?'#fff':'var(--red)'};color:${m.isFinal?'#E11D2D':'#fff'};padding:4px 7px;border-radius:9px;font-weight:900;white-space:nowrap">${finalBadge}</span>
+    </div>
+    <div style="font-size:8px;color:#aaa;margin-top:3px">${esc(m.sub)} • ${esc(getDateLabel(dateObj))}</div>
+    <div class="slot-bar"><div class="slot-fill" style="width:${percent}%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;opacity:.6"><span>${slots}/${total} Slots Filled</span><span>${percent}% Filled • ${Math.max(0,total-slots)} Spots Left</span></div>
+    <div class="prize-row">
+      <div class="prize-box"><small>1ST PRIZE</small><b>₹${first}</b></div>
+      <div class="prize-box"><small>2ND PRIZE</small><b>₹${second}</b></div>
+      <div class="prize-box" style="border-color:var(--yellow)"><small>3RD PRIZE</small><b>₹${third}</b></div>
+      <div class="prize-box" style="border-color:var(--green);background:#00ff8810"><small>PER KILL</small><b style="color:var(--green)">₹${kill}</b></div>
+    </div>
+    <div class="info"><div><small>ENTRY FEE</small><b>₹${entry}</b></div><div><small>PRIZE POOL</small><b>₹${pool}</b></div><div><small>GAME MODE</small><b>${esc(t.type||'SOLO')}</b></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn-join" ${disabled} onclick="openPay('${t.key}')">${joinText}</button>
+      <button class="h-btn" style="background:#1e1e22" onclick="openLivePlayers('${t.key}')">PLAYERS ${slots}/${total}</button>
+    </div>
+    ${closedText?`<div style="text-align:center;font-size:9px;color:var(--red);margin-top:7px;font-weight:900">${closedText} • JOIN WINDOW ENDED 10 MIN AFTER START</div>`:''}
+    ${!closedText && js.reason==='grace'?`<div style="text-align:center;font-size:9px;color:var(--yellow);margin-top:7px;font-weight:800">MATCH STARTED • JOINING OPEN FOR 10 MINUTES</div>`:''}
+  </div>`;
+}
 function renderDailyDay(dateObj,heading){
   const schedule=normalizeCalendarSchedule(calendarSchedule.length?calendarSchedule:DEFAULT_CALENDAR_SCHEDULE);
   const dateKey=getDateKeyForDate(dateObj), now=Date.now();
-  const rows=schedule.map((m,i)=>{
-    const start=getDateTimeForCalendarSlot(dateObj,m.time), end=(start||0)+10*60*1000;
-    const match=findCalendarTournament(i,dateKey);
-    let status='UPCOMING', cls='';
-    if(start && now>end){status='ENTRY CLOSED';cls='closed';}
-    else if(start && now>=start){status='JOIN OPEN • +10 MIN';cls='live';}
-    const canJoin=!!match && !!start && now<=end;
-    const button=match
-      ? `<button type="button" onclick="openPay('${match.key}')" style="border:0;cursor:${canJoin?'pointer':'not-allowed'};font-size:8px;font-weight:900;padding:6px 8px;border-radius:8px;background:${canJoin?'var(--red)':'#222'};color:${canJoin?'#fff':'#777'}">${canJoin?(match.isCustom?'REGISTER':'JOIN'):'CLOSED'}</button>`
-      : `<span class="daily-match-status pending">PREPARING</span>`;
-    const room=match&&match.roomId?'ROOM READY':'ROOM ID PENDING';
-    const entry=match?safeInt(match.entry,19):19;
-    const first=match?safeInt(match.firstPrize,50):50;
-    const second=match?safeInt(match.secondPrize,0):0;
-    const third=match?safeInt(match.thirdPrize,0):0;
-    const kill=match?safeInt(match.killPrize,10):10;
-    const total=match?safeInt(match.total,50):50;
-    const slots=match?safeInt(match.slots,0):0;
-    const pool=match?safeInt(match.prizePool)||(first+second+third+kill*total):(first+second+third+kill*total);
-    const details=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"><span style="background:#E11D2D18;color:#fff;border:1px solid #E11D2D55;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">ENTRY ₹${entry}</span><span style="background:#00ff8812;color:var(--green);border:1px solid #00ff8840;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">1ST ₹${first}</span><span style="background:#ffcc0012;color:#ffcc00;border:1px solid #ffcc0040;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">KILL ₹${kill}</span><span style="background:#fff1;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">POOL ₹${pool}</span></div><div style="font-size:8px;color:#aaa;margin-top:5px">2ND ₹${second} • 3RD ₹${third} • ${slots}/${total} JOINED • ${room}</div>`;
-    return `<div class="daily-match" style="align-items:flex-start"><div class="daily-match-time" style="min-width:62px">${esc(m.time)}</div><div style="min-width:0;flex:1"><div class="daily-match-name">${esc(m.title)}</div><div class="daily-match-sub">${esc(m.sub)} • ${esc(dateKey)}</div>${details}</div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;min-width:76px"><span class="daily-match-status ${cls}">${status}</span>${button}</div></div>`;
+  const cards=schedule.map((m,i)=>{
+    const start=getDateTimeForCalendarSlot(dateObj,m.time);
+    let match=findCalendarTournament(i,dateKey);
+    if(!match){
+      return `<div style="text-align:center;opacity:.55;padding:18px;border:1px solid #202024;border-radius:16px;margin-top:8px">${esc(m.title)} • ${esc(m.time)}<br><small>Preparing daily tournament...</small></div>`;
+    }
+    // Keep the displayed daily card synchronized with the calendar slot while preserving admin-set details.
+    if(start && Number(match.startAt)!==start){
+      match={...match,startAt:start,time:new Date(start).toISOString(),matchTime:new Date(start).toISOString(),notification10At:start-(10*60*1000),matchDate:dateKey};
+    }
+    return renderDailyTournamentCard(match,dateObj,m,i);
   }).join('');
-  return `<div style="margin-top:10px"><div class="daily-schedule-head"><div><div class="daily-schedule-title">${heading}</div><div style="font-size:8px;opacity:.5;margin-top:3px">${getDateLabel(dateObj)} • Join allowed until 10 minutes after start</div></div><div class="daily-schedule-date">${esc(dateKey)}</div></div>${rows}</div>`;
+  const todayKey=getDateKeyForDate(new Date());
+  const isToday=dateKey===todayKey;
+  return `<section class="daily-day-section" data-date="${esc(dateKey)}" style="margin-top:12px">
+    <div class="daily-schedule-head" style="margin-bottom:10px">
+      <div><div class="daily-schedule-title">${esc(heading)}</div><div style="font-size:8px;opacity:.5;margin-top:3px">${esc(getDateLabel(dateObj))} • All 8 matches • Join allowed until 10 minutes after start</div></div>
+      <div class="daily-schedule-date">${esc(dateKey)}</div>
+    </div>
+    ${cards}
+  </section>`;
 }
+
 function renderDailyCalendar(){
   const el=document.getElementById('dailyCalendar'); if(!el)return;
   const today=new Date(), tomorrow=new Date(Date.now()+24*60*60*1000);
@@ -1033,7 +1084,14 @@ function saveTournament(){
   };
   let k=document.getElementById('aKey').value;
   if(k){
-    let old=tours.find(x=>x.key===k);if(old)data.slots=old.slots||0;
+    let old=tours.find(x=>x.key===k);if(old){
+      data.slots=old.slots||0;
+      if(old.isDailyCalendarAuto){
+        data.isDailyCalendarAuto=true;
+        data.matchDate=old.matchDate||'';
+        data.isCustom=false;
+      }
+    }
     db.ref('tournaments/'+k).update(data).then(()=>{alert('Tournament updated successfully');});
   }else{
     db.ref('tournaments').push(data).then(()=>{alert('Tournament created successfully');});
@@ -1052,7 +1110,7 @@ function editTour(k){
   document.getElementById('aKill').value=t.killPrize||'';
   document.getElementById('aRoomId').value=t.roomId||'';
   document.getElementById('aRoomPass').value=t.roomPass||'';
-  document.getElementById('aTime').value=t.matchTime||'';
+  document.getElementById('aTime').value=(t.startAt?new Date(Number(t.startAt)).toISOString().slice(0,16):((t.matchTime||'').slice(0,16)));
   document.getElementById('aCalendarIndex').value=t.calendarIndex===undefined||t.calendarIndex===null?'':String(t.calendarIndex);
   document.getElementById('aType').value=t.type||'4v4';
   document.getElementById('aModAssign').value=t.moderatorId||'';
