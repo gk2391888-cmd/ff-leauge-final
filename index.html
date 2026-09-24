@@ -71,7 +71,8 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 #waChannelBtn:hover{transform:scale(1.06);box-shadow:0 8px 25px rgba(37,211,102,.7)}
 @media(max-width:600px){#waChannelBtn{right:12px;bottom:154px;width:46px;height:46px;font-size:23px}#calIconBtn{right:12px;bottom:92px;width:54px;height:54px;font-size:24px}}
 .cal-match-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#0a0a0c;border:1px solid var(--border);border-radius:12px;margin-top:8px}
-.cal-match-row.final{background:linear-gradient(90deg,#E11D2D,#ff4d00);border:none;color:#fff}
+ .cal-match-row.final{background:linear-gradient(90deg,#E11D2D,#ff4d00);border:none;color:#fff}
+.daily-schedule{margin:8px 16px 16px;background:linear-gradient(180deg,#111114,#0b0b0d);border:1px solid var(--border);border-top:2px solid var(--red);border-radius:18px;padding:12px}.daily-schedule-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.daily-schedule-title{font-family:Orbitron;font-size:12px}.daily-schedule-date{font-size:9px;color:var(--yellow);font-weight:900;background:#ffcc0015;border:1px solid #ffcc0030;padding:5px 8px;border-radius:9px}.daily-match{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;background:#08080a;border:1px solid #202024;border-radius:12px;padding:10px;margin-top:7px}.daily-match-time{font-family:Orbitron;font-size:11px;color:var(--red);font-weight:900;white-space:nowrap}.daily-match-name{font-size:11px;font-weight:900}.daily-match-sub{font-size:8px;opacity:.5;margin-top:2px}.daily-match-status{font-size:8px;font-weight:900;padding:5px 7px;border-radius:8px;background:#00ff8815;color:var(--green);border:1px solid #00ff8840;text-align:center;white-space:nowrap}.daily-match-status.closed{background:#E11D2D15;color:var(--red);border-color:#E11D2D40}.daily-match-status.live{background:#ffcc0015;color:var(--yellow);border-color:#ffcc0040}.daily-match-status.pending{background:#1a1a1e;color:#aaa;border-color:#2b2b30}
 
 .calendar-edit-row{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:6px;align-items:center;background:#0a0a0c;border:1px solid var(--border);border-radius:12px;padding:8px;margin-top:8px}
 .calendar-edit-row input{margin:0;padding:9px 10px;font-size:12px}
@@ -80,23 +81,13 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 /* Notification permission popup */
 #ffNotifyModal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}
 #ffNotifyModal.show{display:flex}
-#ffNotifyModal button{min-height:44px;cursor:pointer;touch-action:manipulation}
 #ffNotifyBox{width:min(390px,100%);background:#0d0d10;border:2px solid #E11D2D;border-radius:18px;padding:20px;box-shadow:0 18px 60px rgba(0,0,0,.55);text-align:center}
 #ffNotifyBox h3{font-family:Orbitron;margin:0 0 8px;color:#fff;font-size:16px}
 #ffNotifyBox p{font-size:12px;line-height:1.55;color:#bbb;margin:8px 0 14px}
 #ffNotifyEnable{width:100%;background:#E11D2D;color:#fff;border:0;border-radius:11px;padding:12px;font-weight:900;font-size:13px}
 #ffNotifyLater{width:100%;margin-top:7px;background:#1d1d22;color:#fff;border:1px solid #333;border-radius:11px;padding:10px;font-weight:700;font-size:12px}
 #ffNotifyHelp{font-size:10px;color:#ffcc00;margin-top:10px;display:none;line-height:1.45}
-#ffNotifySteps{display:none;text-align:left;margin:10px 0 14px;padding:12px;border:1px solid #2d2d33;border-radius:12px;background:#151519}
-#ffNotifySteps.show{display:block}
-#ffNotifySteps .step{display:flex;gap:9px;align-items:flex-start;margin:9px 0;color:#ddd;font-size:11px;line-height:1.45}
-#ffNotifySteps .num{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#E11D2D;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px}
-#ffNotifyCheck{width:100%;background:#E11D2D;color:#fff;border:0;border-radius:11px;padding:12px;font-weight:900;font-size:13px;display:none}
-#ffNotifyBack{width:100%;margin-top:7px;background:#1d1d22;color:#fff;border:1px solid #333;border-radius:11px;padding:10px;font-weight:700;font-size:12px;display:none}
 
-</style>
-
-<style id="ffWhatsappPopupStyles">
 #ffWhatsappPopup{
   position:fixed;inset:0;background:rgba(0,0,0,.80);display:none;
   align-items:center;justify-content:center;z-index:100000;padding:18px;
@@ -124,14 +115,14 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
   font-size:12px;
 }
 #ffWhatsappPopup small{display:block;color:#888;margin-top:11px;font-size:10px}
-</style>
 
+</style>
 </head>
 <body>
 <div id="installBanner" class="install-banner"><div><b style="font-family:Orbitron">Install FF LEAGUE App</b></div><button onclick="installPWA()" style="background:#fff;color:#000;border:none;padding:8px 14px;border-radius:10px;font-weight:900">INSTALL</button></div>
 <div id="loginScreen" class="login-screen" style="display:none"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
 <div class="header"><div class="logo"><b>TH</b> FF <span>LEAGUE</span></div><div style="display:flex;gap:6px;align-items:center"><div id="userInfo" style="display:none;text-align:right"><div id="userName" style="font-weight:800;font-size:11px"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none;background:#1e1e22" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div></div>
-<div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="list"></div></div>
+<div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div id="dailyCalendar" class="daily-schedule"></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="list"></div></div>
 <div id="walletTab" class="tab"><div class="wallet-card"><div style="font-size:10px;letter-spacing:2px;opacity:.8">WALLET BALANCE</div><div style="font-size:36px;font-weight:900;font-family:Orbitron;margin-top:4px" id="walletBal">₹0.00</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button class="h-btn" style="background:#fff;color:#000;padding:12px;border-radius:12px;font-weight:900" onclick="openRecharge()">RECHARGE</button><button class="h-btn" style="background:#000;color:var(--green);border:1px solid var(--green);padding:12px;border-radius:12px;font-weight:900" onclick="openWithdraw()">WITHDRAW</button></div></div><div style="padding:0 16px 20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><h4 style="font-family:Orbitron;font-size:12px">MONEY HISTORY</h4></div><div style="font-size:9px;opacity:.45;margin-top:4px">Tournament Join • Tournament Win • Recharge • Withdrawal • Refunds</div><div id="walletHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE HISTORY</h4></div><div id="rechargeHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">WITHDRAW HISTORY</h4></div><div id="withdrawHistory" style="margin-bottom:20px"></div></div></div>
 <div id="supportTab" class="tab"><div style="padding:18px 16px 8px"><h1 style="font-family:Orbitron;font-size:24px">SUPPORT <span style="color:var(--green)">CENTER</span></h1></div><div style="background:#111114;border-left:4px solid var(--green);border-radius:16px;padding:16px;margin:12px 16px"><select id="ticketCat"><option>Wallet Issue</option><option>Tournament Issue</option><option>Withdraw Issue</option><option>Other</option></select><input id="ticketSubject" placeholder="Subject"><textarea id="ticketMsg" placeholder="Describe your issue..."></textarea><button class="btn-join" style="background:var(--green);color:#000" onclick="submitSupportTicket()">SUBMIT TICKET</button><p id="ticketStatus" style="font-size:11px;margin-top:8px;text-align:center"></p></div><div style="padding:10px 16px"><h4 style="font-family:Orbitron;font-size:13px">MY TICKETS</h4><div id="myTickets"></div></div></div>
 <div id="leaderTab" class="tab"><div style="padding:16px"><h1 style="font-family:Orbitron;font-size:22px">LEADERBOARD</h1><div id="leaderboard" style="margin-top:12px"></div></div></div>
@@ -343,84 +334,31 @@ const firebaseConfig={apiKey:"AIzaSyAd9e5eLTZkxVyimuJFoCV_M_RflsFlQHc",authDomai
 firebase.initializeApp(firebaseConfig); const auth=firebase.auth(), db=firebase.database();
 let ffMessaging=null;
 let ffNotifyListenerAttached=false;
-const VAPID_KEY='BH5eI1yVNlPxnGOE9JrbxUaOrqTyF8pJzonB9rEzhjXQCzDf3HTXJaDH9_oVi2etht0k_KjrK2uLg5hvAqelSGM';
 
 function closeFFNotifyPopup(){
   const m=document.getElementById('ffNotifyModal');
   if(m){m.classList.remove('show');m.setAttribute('aria-hidden','true');}
 }
-
-function showFFNotifyHowToEnable(){
-  const m=document.getElementById('ffNotifyModal');
-  const title=document.getElementById('ffNotifyTitle');
-  const text=document.getElementById('ffNotifyText');
-  const steps=document.getElementById('ffNotifySteps');
-  const enable=document.getElementById('ffNotifyEnable');
-  const check=document.getElementById('ffNotifyCheck');
-  const back=document.getElementById('ffNotifyBack');
-  const later=document.getElementById('ffNotifyLater');
-  const help=document.getElementById('ffNotifyHelp');
-  if(!m||!title||!text||!steps||!enable||!check||!back||!later||!help)return;
-  title.innerText='HOW TO ENABLE';
-  text.innerText='Chrome has blocked notifications for FF LEAGUE. Allow them in site settings, then come back and check again.';
-  steps.classList.add('show');
-  enable.style.display='none';
-  check.style.display='block';
-  back.style.display='block';
-  later.style.display='none';
-  help.style.display='none';
-  m.classList.add('show');
-  m.setAttribute('aria-hidden','false');
-}
-
 function showFFNotifyPopup(reason){
   if(!currentUser || !('Notification' in window)) return;
   if(Notification.permission==='granted') return;
   const m=document.getElementById('ffNotifyModal');
-  const title=document.getElementById('ffNotifyTitle');
   const text=document.getElementById('ffNotifyText');
-  const steps=document.getElementById('ffNotifySteps');
   const help=document.getElementById('ffNotifyHelp');
   const btn=document.getElementById('ffNotifyEnable');
-  const check=document.getElementById('ffNotifyCheck');
-  const back=document.getElementById('ffNotifyBack');
-  const later=document.getElementById('ffNotifyLater');
-  if(!m||!title||!text||!steps||!help||!btn||!check||!back||!later)return;
-  steps.classList.remove('show');
+  if(!m||!text||!help||!btn)return;
   help.style.display='none';
-  check.style.display='none';
-  back.style.display='none';
-  later.style.display='block';
-  btn.style.display='block';
-  title.innerText='TURN ON NOTIFICATIONS';
   if(Notification.permission==='denied'){
-    showFFNotifyHowToEnable();
-    return;
+    text.innerText='Notifications are blocked for FF LEAGUE. Allow Notifications in Chrome site settings, then come back and tap ENABLE.';
+    help.innerText='Chrome: site controls / lock icon → Notifications → Allow → reload FF LEAGUE.';
+    help.style.display='block';
+    btn.innerText='🔔 TRY ENABLE AGAIN';
+  }else{
+    text.innerText='Turn on notifications to get a reminder 10 minutes before every FF LEAGUE tournament, including all 8 calendar matches and custom matches.';
+    btn.innerText='🔔 ENABLE NOTIFICATIONS';
   }
-  text.innerText='Turn on notifications to get a reminder 10 minutes before every FF LEAGUE tournament, including all 8 calendar matches and custom matches.';
-  btn.innerText='🔔 ENABLE NOTIFICATIONS';
   m.classList.add('show');
   m.setAttribute('aria-hidden','false');
-}
-
-async function checkFFNotificationPermission(){
-  try{
-    if(!currentUser || !('Notification' in window)) return;
-    if(Notification.permission!=='granted'){
-      showFFNotifyHowToEnable();
-      return;
-    }
-    const ok=await setupFFPushNotifications(true);
-    if(ok){
-      closeFFNotifyPopup();
-      alert('Notifications are enabled for FF LEAGUE.');
-    }else{
-      showFFNotifyHowToEnable();
-    }
-  }catch(e){
-    console.warn('FF notification check failed:',e);
-    showFFNotifyHowToEnable();
-  }
 }
 
 async function enableFFNotifications(){
@@ -429,18 +367,16 @@ async function enableFFNotifications(){
       closeFFNotifyPopup(); return;
     }
     if(Notification.permission==='denied'){
-      showFFNotifyHowToEnable();
+      showFFNotifyPopup('denied');
       return;
     }
     const permission=Notification.permission==='granted' ? 'granted' : await Notification.requestPermission();
     if(permission!=='granted'){
-      if(Notification.permission==='denied') showFFNotifyHowToEnable();
-      else showFFNotifyPopup('not-granted');
+      showFFNotifyPopup('not-granted');
       return;
     }
-    const ok=await setupFFPushNotifications(true);
-    if(ok) closeFFNotifyPopup();
-    else showFFNotifyPopup('error');
+    await setupFFPushNotifications(true);
+    closeFFNotifyPopup();
   }catch(e){
     console.warn('FF notification permission error:',e);
     showFFNotifyPopup('error');
@@ -458,7 +394,7 @@ async function setupFFPushNotifications(forcePopup){
     const swReg=window.__ffLeagueSWRegistration || (window.__ffLeagueSWRegistrationPromise ? await window.__ffLeagueSWRegistrationPromise : await navigator.serviceWorker.register('./sw.js',{scope:'./'}));
     if(!swReg) return false;
     ffMessaging=ffMessaging || firebase.messaging();
-    const token=await ffMessaging.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:swReg});
+    const token=await ffMessaging.getToken({serviceWorkerRegistration:swReg});
     if(!token) return false;
     const tokenKey=btoa(unescape(encodeURIComponent(token))).replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,180);
     await db.ref('users/'+currentUser.uid+'/fcmTokens/'+tokenKey).set({token:token,updatedAt:Date.now(),platform:'web'});
@@ -483,45 +419,10 @@ async function setupFFPushNotifications(forcePopup){
 }
 
 function startFFNotificationPermissionFlow(){
-  if(!currentUser || !('Notification' in window)) return false;
-  if(Notification.permission!=='granted'){
-    showFFNotifyPopup('login');
-    return true;
-  }
-  setupFFPushNotifications(false);
-  return true;
+  if(!currentUser || !('Notification' in window)) return;
+  if(Notification.permission!=='granted') showFFNotifyPopup('login');
+  else setupFFPushNotifications(false);
 }
-
-// Robust prompt boot: also handles an already-signed-in session after a page refresh
-// or when the browser/PWA restores the page without firing a fresh login action.
-let ffNotifyPromptBootStarted=false;
-function bootFFNotificationPrompt(){
-  if(ffNotifyPromptBootStarted) return;
-  ffNotifyPromptBootStarted=true;
-  let attempts=0;
-  const timer=setInterval(function(){
-    attempts++;
-    if(!currentUser){
-      if(attempts>=20) clearInterval(timer);
-      return;
-    }
-    if(!('Notification' in window)){
-      clearInterval(timer);
-      return;
-    }
-    if(Notification.permission==='granted'){
-      clearInterval(timer);
-      setupFFPushNotifications(false);
-      return;
-    }
-    showFFNotifyPopup('boot');
-    clearInterval(timer);
-  },500);
-}
-window.addEventListener('pageshow',bootFFNotificationPrompt);
-window.addEventListener('focus',function(){
-  if(currentUser && 'Notification' in window && Notification.permission!=='granted') showFFNotifyPopup('focus');
-});
 
 
 let currentUser=null, selected=null, isAdmin=false, isSuperAdmin=false, currentModId='', tours=[], proAllUsersData=[], allMods=[], currentMode='SOLO';
@@ -581,19 +482,44 @@ function getTournamentStartMs(t){
 }
 function getJoinState(t){
   const start=getTournamentStartMs(t);
-  if(!start)return {allowed:true,visible:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
-  const openAt=start-5*60*1000, now=Date.now();
-  if(now<openAt)return {allowed:false,visible:false,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
-  if(now>start+30*60*1000 && (t.status||'active')!=='completed')return {allowed:false,visible:false,label:'MATCH TIME PASSED',reason:'late'};
-  return {allowed:true,visible:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
+  if(!start)return {allowed:true,visible:true,label:t&&t.isCustom?'REGISTER - ₹'+safeInt(t.entry):'JOIN - ₹'+safeInt(t.entry),reason:''};
+  const now=Date.now();
+  const cutoff=start+10*60*1000;
+  if(now>cutoff)return {allowed:false,visible:true,label:'REGISTRATION CLOSED',reason:'late'};
+  if(now>=start)return {allowed:true,visible:true,label:t&&t.isCustom?'REGISTER NOW - ₹'+safeInt(t.entry):'JOIN NOW - ₹'+safeInt(t.entry),reason:'grace'};
+  return {allowed:true,visible:true,label:t&&t.isCustom?'REGISTER - ₹'+safeInt(t.entry):'JOIN - ₹'+safeInt(t.entry),reason:''};
 }
+function renderDailyCalendar(){
+  const el=document.getElementById('dailyCalendar');
+  if(!el)return;
+  const schedule=normalizeCalendarSchedule(calendarSchedule.length?calendarSchedule:DEFAULT_CALENDAR_SCHEDULE);
+  const today=new Date();
+  const dateText=today.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const rows=schedule.map((m,i)=>{
+    const start=parseCalendarTimeMs(m.time,today);
+    const now=Date.now();
+    const end=(start||0)+10*60*1000;
+    let status='UPCOMING', cls='';
+    if(start&&now>=end){status='ENTRY CLOSED';cls='closed';}
+    else if(start&&now>=start){status='JOIN OPEN • +10 MIN';cls='live';}
+    const match=tours.find(t=>{
+      const idx=getCalendarIndex(t);
+      return idx===i && (t.status||'active')!=='completed';
+    });
+    const action=match?`<button type="button" onclick="openPay('${match.key}')" style="border:0;cursor:pointer;font-size:8px;font-weight:900;padding:5px 7px;border-radius:8px;background:${status==='ENTRY CLOSED'?'#222;color:#777':'var(--red);color:#fff'}">${status==='ENTRY CLOSED'?'CLOSED':(match.isCustom?'REGISTER':'JOIN')}</button>`:`<span class="daily-match-status pending">SETUP PENDING</span>`;
+    return `<div class="daily-match"><div class="daily-match-time">${esc(m.time)}</div><div><div class="daily-match-name">${esc(m.title)}</div><div class="daily-match-sub">${esc(m.sub)} • ${dateText}</div></div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end"><span class="daily-match-status ${cls}">${status}</span>${action}</div></div>`;
+  }).join('');
+  el.innerHTML=`<div class="daily-schedule-head"><div><div class="daily-schedule-title">TODAY'S 8 MATCHES</div><div style="font-size:8px;opacity:.5;margin-top:3px">Full-day schedule • Join allowed until 10 minutes after start</div></div><div class="daily-schedule-date">${dateText}</div></div>${rows}`;
+}
+
 function render(){
   let allActive=tours.filter(t=>(t.status||'active')!=='completed');
-  // Calendar is the automatic player-facing schedule: a tournament appears exactly 5 minutes before its calendar time.
+  // All scheduled matches stay visible for the full day. Joining is allowed until 10 minutes after match start.
   let visibleActive=allActive.filter(t=>getJoinState(t).visible);
   let filtered=visibleActive.filter(t=>(t.type||'SOLO').toUpperCase()===currentMode);
   let displayList=filtered.length?filtered:visibleActive;
   const list=document.getElementById('list');
+  renderDailyCalendar();
   if(list)list.innerHTML=displayList.map(t=>{
     let startMs=getTournamentStartMs(t); let timeDisplay=startMs?new Date(startMs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):(t.time||'Soon');
     let modBadge=t.moderatorId?`<span class="mod-badge">MOD ${esc(t.moderatorId)}</span>`:`<span class="mod-badge unassigned">No Moderator</span>`;
@@ -712,9 +638,8 @@ auth.onAuthStateChanged(async u=>{
   currentUser=u;
 
   // Enable browser push notifications for this logged-in user.
-  // Also boot a retry-safe prompt for sessions restored from local auth/PWA state.
-  setTimeout(function(){ startFFNotificationPermissionFlow(); }, 900);
-  setTimeout(function(){ bootFFNotificationPrompt(); }, 1200);
+  // Permission may be declined; the site continues to work normally.
+  setTimeout(function(){ startFFNotificationPermissionFlow(); }, 1200);
 
   // Mark authentication complete so the PWA install banner can be shown.
   window.__ffLeagueLoggedIn=true;
@@ -1126,7 +1051,17 @@ function renderCalendar(){
   const listEl=document.getElementById('calendarList');
   if(!listEl)return;
   const schedule=normalizeCalendarSchedule(calendarSchedule.length?calendarSchedule:DEFAULT_CALENDAR_SCHEDULE);
-  listEl.innerHTML=schedule.map((m,i)=>{let cls=m.isFinal?'cal-match-row final':'cal-match-row';let icon=m.isFinal?'🏆':'🕐';let label=m.isFinal?'FINAL':'MATCH '+(i+1);return `<div class="${cls}"><div style="display:flex;gap:10px;align-items:center"><span style="font-size:18px">${icon}</span><div><div style="font-weight:900;font-size:13px;font-family:Orbitron">${esc(m.title)}</div><div style="font-size:10px;opacity:.7;margin-top:2px">${esc(m.sub)}</div></div></div><div style="text-align:right"><div style="font-weight:900;font-size:14px;color:${m.isFinal?'#fff':'var(--red)'}">${esc(m.time)}</div><div style="font-size:9px;background:${m.isFinal?'#fff':'var(--red)'};color:${m.isFinal?'#E11D2D':'#fff'};padding:3px 8px;border-radius:10px;font-weight:900;margin-top:4px;text-align:center">${label}</div></div></div>`;}).join('');
+  const today=new Date();
+  const dateText=today.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  const now=Date.now();
+  listEl.innerHTML=schedule.map((m,i)=>{
+    const start=parseCalendarTimeMs(m.time,today), cutoff=(start||0)+10*60*1000;
+    const match=tours.find(t=>getCalendarIndex(t)===i && (t.status||'active')!=='completed');
+    let status=start&&now>=cutoff?'ENTRY CLOSED':(start&&now>=start?'JOIN OPEN':'UPCOMING');
+    let statusColor=status==='ENTRY CLOSED'?'#777':status==='JOIN OPEN'?'#ffcc00':'#00ff88';
+    let room=match&&match.roomId?'ROOM READY':'ROOM ID PENDING';
+    return `<div class="cal-match-row ${m.isFinal?'final':''}"><div style="display:flex;gap:10px;align-items:center"><span style="font-size:18px">${m.isFinal?'🏆':'🕐'}</span><div><div style="font-weight:900;font-size:13px;font-family:Orbitron">${esc(m.title)}</div><div style="font-size:10px;opacity:.7;margin-top:2px">${esc(m.sub)} • ${dateText}</div><div style="font-size:8px;color:${statusColor};font-weight:900;margin-top:4px">${status} • ${room}</div></div></div><div style="text-align:right"><div style="font-weight:900;font-size:14px;color:${m.isFinal?'#fff':'var(--red)'}">${esc(m.time)}</div><div style="font-size:9px;background:${m.isFinal?'#fff':'var(--red)'};color:${m.isFinal?'#E11D2D':'#fff'};padding:3px 8px;border-radius:10px;font-weight:900;margin-top:4px;text-align:center">${m.isFinal?'FINAL':'MATCH '+(i+1)}</div>${match?`<button type="button" onclick="openPay('${match.key}')" style="margin-top:6px;border:0;border-radius:8px;padding:5px 8px;background:${status==='ENTRY CLOSED'?'#222':'var(--red)'};color:${status==='ENTRY CLOSED'?'#777':'#fff'};font-size:8px;font-weight:900">${status==='ENTRY CLOSED'?'CLOSED':(match.isCustom?'REGISTER':'JOIN')}</button>`:''}</div></div>`;
+  }).join('');
 }
 loadCalendarSchedule();
 setInterval(()=>{render();},30000);
@@ -1135,18 +1070,9 @@ setInterval(()=>{render();},30000);
 <div id="ffNotifyModal" aria-hidden="true">
   <div id="ffNotifyBox" onclick="event.stopPropagation()">
     <div style="font-size:30px;margin-bottom:5px">🔔</div>
-    <h3 id="ffNotifyTitle">TURN ON NOTIFICATIONS</h3>
+    <h3>TURN ON NOTIFICATIONS</h3>
     <p id="ffNotifyText">Get a reminder 10 minutes before every FF LEAGUE tournament.</p>
-    <div id="ffNotifySteps" aria-live="polite">
-      <div style="font-weight:900;color:#fff;font-size:12px;margin-bottom:8px">HOW TO ENABLE IN CHROME</div>
-      <div class="step"><span class="num">1</span><span>Close this screen with <b>LATER</b>.</span></div>
-      <div class="step"><span class="num">2</span><span>Open the FF LEAGUE page in <b>Chrome</b> and tap the <b>🔒 site controls</b> icon near the website address.</span></div>
-      <div class="step"><span class="num">3</span><span>Tap <b>Permissions</b> → <b>Notifications</b> → select <b>Allow</b>.</span></div>
-      <div class="step"><span class="num">4</span><span>Return to FF LEAGUE and tap <b>CHECK AGAIN</b>.</span></div>
-    </div>
     <button id="ffNotifyEnable" type="button" onclick="enableFFNotifications()">🔔 ENABLE NOTIFICATIONS</button>
-    <button id="ffNotifyCheck" type="button" onclick="checkFFNotificationPermission()">✅ CHECK AGAIN</button>
-    <button id="ffNotifyBack" type="button" onclick="showFFNotifyPopup('back')">← BACK</button>
     <button id="ffNotifyLater" type="button" onclick="closeFFNotifyPopup()">LATER</button>
     <div id="ffNotifyHelp"></div>
   </div>
@@ -1174,6 +1100,7 @@ setInterval(()=>{render();},30000);
     <small>Join karke tournament ki latest information paate raho.</small>
   </div>
 </div>
+
 
 
 <script id="ffWhatsappPopupScript">
@@ -1230,6 +1157,5 @@ setInterval(()=>{render();},30000);
   }
 })();
 </script>
-
 </body>
 </html>
