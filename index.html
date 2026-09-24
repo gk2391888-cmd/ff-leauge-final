@@ -582,15 +582,15 @@ function getTournamentStartMs(t){
 function getJoinState(t){
   const start=getTournamentStartMs(t);
   if(!start)return {allowed:true,visible:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
-  const openAt=start-5*60*1000, now=Date.now();
-  if(now<openAt)return {allowed:false,visible:false,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
-  if(now>start+10*60*1000 && (t.status||'active')!=='completed')return {allowed:false,visible:true,label:'REGISTRATION CLOSED',reason:'late'};
+  const openAt=start-5*60*1000, now=Date.now(), cutoff=start+10*60*1000;
+  if(now<openAt)return {allowed:false,visible:true,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
+  if(now>=cutoff && (t.status||'active')!=='completed')return {allowed:false,visible:true,label:'REGISTRATION CLOSED',reason:'late'};
   return {allowed:true,visible:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
 }
 function render(){
   let allActive=tours.filter(t=>(t.status||'active')!=='completed');
-  // Calendar/tournament join window: joining is allowed until exactly 10 minutes after match start.
-  let visibleActive=allActive.filter(t=>getJoinState(t).visible);
+  // Keep the tournament card visible. Only the JOIN state changes with time.
+  let visibleActive=allActive;
   let filtered=visibleActive.filter(t=>(t.type||'SOLO').toUpperCase()===currentMode);
   let displayList=filtered.length?filtered:visibleActive;
   const list=document.getElementById('list');
@@ -1016,6 +1016,8 @@ function loadLeaderboard(){
 }
 function openLivePlayers(key){db.ref('joins').orderByChild('tournamentKey').equalTo(key).once('value').then(snap=>{let h='';let count=snap.numChildren();document.getElementById('liveSlotCount').innerText=count+' Players Joined';if(!snap.exists())h='<p>No players have joined yet</p>';else snap.forEach(c=>{let j=c.val();h+=`<div class="admin-card"><b>${esc(j.ffid)}</b> - ${esc(j.ffname)}</div>`;});document.getElementById('livePlayersList').innerHTML=h;openPlayers();});}
 db.ref('tournaments').on('value',s=>{let list=[];s.forEach(c=>{let v=c.val();v.key=c.key;list.push(v);});tours=list;render();});
+// Refresh time-based JOIN labels automatically; tournament cards never disappear just because the clock changed.
+if(!window.__ffLeagueJoinClock){window.__ffLeagueJoinClock=setInterval(()=>{if(tours&&tours.length)render();},1000);}
 function saveTournament(){
   let t=document.getElementById('aTitle').value.trim();if(!t) return alert('Please enter tournament title');
   let entryVal=parseInt(document.getElementById('aEntry').value)||0;
