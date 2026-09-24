@@ -116,6 +116,242 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 }
 #ffWhatsappPopup small{display:block;color:#888;margin-top:11px;font-size:10px}
 
+
+/* ===== FF LEAGUE RESPONSIVE PRO UI ===== */
+html{background:#050507}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(900px 420px at 50% -120px, rgba(225,29,45,.13), transparent 65%),
+    linear-gradient(180deg,#07070a 0%,#09090c 45%,#060609 100%);
+}
+.header{
+  height:64px;
+  padding:10px 18px;
+  border-bottom:2px solid var(--red);
+  box-shadow:0 8px 30px rgba(0,0,0,.28);
+}
+.logo{font-size:17px;gap:9px;white-space:nowrap}
+.logo b{width:38px;height:38px;border-radius:10px}
+.hero{padding:26px 20px 12px}
+.hero h1{font-size:clamp(26px,4vw,38px);letter-spacing:.3px}
+.hero p{font-size:13px}
+.mode-bar{max-width:980px;margin:12px auto 16px;padding:0 20px;gap:10px}
+.mode-btn{min-width:92px;padding:13px 18px;border-radius:15px;font-size:11px}
+.daily-schedule{
+  width:calc(100% - 40px);
+  max-width:980px;
+  margin:10px auto 18px;
+  padding:16px;
+  border-radius:22px;
+  box-shadow:0 14px 40px rgba(0,0,0,.22);
+}
+.daily-day-section{
+  padding:4px 0 8px;
+}
+.daily-schedule-head{
+  padding:4px 2px 4px;
+}
+.daily-schedule-title{font-size:14px;letter-spacing:.2px}
+.daily-schedule-date{font-size:10px;padding:7px 10px}
+.daily-calendar-card{
+  margin:12px 0 !important;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 12px 30px rgba(0,0,0,.22);
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.daily-calendar-card:hover{
+  transform:translateY(-2px);
+  border-color:#3a3a42;
+  box-shadow:0 18px 38px rgba(0,0,0,.30);
+}
+.daily-calendar-card > div:first-child{
+  flex-wrap:wrap !important;
+}
+.daily-calendar-card .prize-row{
+  gap:8px;
+}
+.daily-calendar-card .prize-box{
+  min-height:68px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.daily-calendar-card .info{
+  min-height:76px;
+  align-items:center;
+}
+#list{
+  max-width:980px;
+  margin:0 auto;
+}
+#list .card{
+  margin-left:20px;
+  margin-right:20px;
+}
+.bottom{
+  box-shadow:0 -10px 30px rgba(0,0,0,.38);
+  backdrop-filter:blur(18px);
+}
+@media(min-width:801px){
+  body{padding-bottom:78px}
+  .header{padding-left:max(22px,calc((100vw - 1180px)/2));padding-right:max(22px,calc((100vw - 1180px)/2))}
+  .hero{max-width:980px;margin:0 auto;padding-top:32px}
+  .daily-day-section{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .daily-day-section .daily-schedule-head{
+    grid-column:1/-1;
+  }
+  .daily-calendar-card{margin:0 !important;min-width:0}
+  #list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+    padding:0 20px;
+  }
+  #list .card{margin:0}
+  .bottom{
+    left:50%;
+    right:auto;
+    width:min(980px,100%);
+    transform:translateX(-50%);
+    border-radius:18px 18px 0 0;
+  }
+}
+@media(max-width:800px){
+  .header{padding:8px 12px}
+  .logo{font-size:14px;gap:7px}
+  .logo b{width:34px;height:34px}
+  #userInfo{max-width:132px;overflow:hidden}
+  #userName,#userEmail{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hero{padding:22px 16px 8px}
+  .hero h1{font-size:25px}
+  .mode-bar{padding:0 16px}
+  .daily-schedule{
+    width:calc(100% - 24px);
+    padding:12px;
+    border-radius:19px;
+  }
+  .daily-schedule-head{align-items:flex-start}
+  .daily-schedule-head > div:first-child{min-width:0}
+  .daily-schedule-date{flex:0 0 auto}
+  .daily-calendar-card{
+    padding:15px !important;
+    border-radius:18px;
+  }
+  .daily-calendar-card .prize-row{grid-template-columns:repeat(2,1fr)}
+  .daily-calendar-card .info{gap:7px;padding:10px 8px}
+  .daily-calendar-card .info b{font-size:11px}
+  .daily-calendar-card .info small{font-size:8px}
+  .daily-calendar-card .btn-join,
+  .daily-calendar-card .h-btn{min-height:48px}
+  #list .card{margin-left:12px;margin-right:12px}
+}
+@media(max-width:420px){
+  .header{height:60px}
+  .logo{font-size:12px}
+  .logo b{width:32px;height:32px}
+  .admin-btn.show{padding:6px 9px;font-size:10px}
+  .h-btn{padding:8px 9px}
+  .hero h1{font-size:22px}
+  .hero p{font-size:11px}
+  .mode-btn{min-width:76px;padding:11px 13px}
+  .daily-schedule{width:calc(100% - 16px);padding:10px}
+  .daily-schedule-title{font-size:12px}
+  .daily-schedule-date{font-size:9px;padding:6px 8px}
+  .daily-calendar-card{padding:13px !important}
+  .daily-calendar-card > div:first-child > div{
+    flex:1 1 100%;
+  }
+  .daily-calendar-card > div:first-child > span:first-child{
+    order:2;
+  }
+  .daily-calendar-card > div:first-child > div{
+    order:1;
+  }
+  .daily-calendar-card .prize-box{min-height:62px;padding:7px 5px}
+  .daily-calendar-card .prize-box small{font-size:6.5px}
+  .daily-calendar-card .prize-box b{font-size:11px}
+  .daily-calendar-card .info{font-size:9px}
+  .daily-calendar-card .info b{font-size:10px}
+  .daily-calendar-card .btn-join{font-size:10px;padding:12px 8px}
+}
+
+
+/* ===== ADMIN PANEL PRO UI ===== */
+#adminModal{background:rgba(2,2,5,.94);backdrop-filter:blur(14px);padding:14px}
+#adminModal .box{width:min(1180px,100%);max-width:1180px;margin:10px auto 30px;padding:18px;background:linear-gradient(180deg,#101014 0%,#08080a 100%);border:1px solid #2a2a30;border-radius:26px;box-shadow:0 24px 80px rgba(0,0,0,.65);display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+#adminModal .box>div:nth-child(1){grid-column:1/-1;display:flex!important;align-items:center;gap:12px;margin:0!important;padding:14px 16px;border:1px solid #29292f;border-radius:18px;background:linear-gradient(135deg,#17171c,#0b0b0e);position:relative;overflow:hidden}
+#adminModal .box>div:nth-child(1):before{content:'CONTROL CENTER';position:absolute;right:16px;top:10px;font:900 8px Orbitron;color:#ffcc0066;letter-spacing:1.5px}
+#adminModal .box>div:nth-child(1)>div:first-child{order:2;margin:0!important;max-width:430px;background:#ffcc000d!important;border:1px solid #ffcc0033!important;border-radius:10px!important;padding:7px 9px!important;color:#ffcc00!important}
+#adminModal .box>div:nth-child(1)>h2{order:1;margin:0!important;font:900 18px Orbitron!important;color:#fff!important;white-space:nowrap}
+#adminModal .box>div:nth-child(1)>button{order:3;margin-left:auto;min-width:38px;height:38px;border:1px solid #33343a!important;border-radius:11px!important;background:#19191e!important;color:#fff!important;font-weight:900;cursor:pointer}
+#adminModal .box>div:nth-child(2){grid-column:1/-1;margin:0!important;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+#adminModal .pro-stat{min-height:92px;padding:14px 12px;border:1px solid #29292f;border-radius:16px;background:linear-gradient(145deg,#15151a,#0a0a0d);border-bottom:2px solid var(--red);box-shadow:inset 0 1px 0 #ffffff08}
+#adminModal .pro-stat h2{font-size:21px;line-height:1.1;margin-bottom:7px}
+#adminModal .pro-stat p{font-size:8px;letter-spacing:1px}
+#adminModal .pro-stat:nth-child(2) h2{color:#55cfff}
+#adminModal .pro-stat:nth-child(3) h2{color:#ffcc00}
+#adminModal .pro-stat.profit h2{color:var(--green)}
+#adminModal .box>div:nth-child(3),#adminModal .box>div:nth-child(6){grid-column:1/-1;margin:0!important;background:linear-gradient(145deg,#11151a,#08090b)!important;border:1px solid #293238!important;border-radius:18px!important;padding:14px!important;box-shadow:inset 0 1px 0 #ffffff08}
+#adminModal .box>div:nth-child(4),#adminModal .box>div:nth-child(5),#adminModal .box>div:nth-child(7),#adminModal .box>div:nth-child(8){margin:0!important;border-radius:18px!important;padding:14px!important;background:linear-gradient(145deg,#111114,#09090b)!important;border:1px solid #29292f!important;box-shadow:inset 0 1px 0 #ffffff08}
+#adminModal .box>div:nth-child(4){border-left:2px solid var(--green)!important}
+#adminModal .box>div:nth-child(5){border-left:2px solid #00cfff!important}
+#adminModal .box>div:nth-child(7){border-left:2px solid #ff6600!important}
+#adminModal .box>div:nth-child(8){border-left:2px solid #ffcc00!important}
+#adminModal .box>div:nth-child(9){grid-column:1/-1;margin:0!important;padding:16px!important;border:1px solid #3a2c30!important;border-top:2px solid var(--red)!important;border-radius:20px!important;background:linear-gradient(180deg,#151519,#0b0b0e)!important;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+#adminModal .box>div:nth-child(9)>h4{font-size:14px!important;letter-spacing:.6px;margin-bottom:8px}
+#adminModal .box>div:nth-child(9) input,#adminModal .box>div:nth-child(9) select{background:#070709!important;border-color:#29292f!important;min-height:44px}
+#adminModal .box>div:nth-child(9) input:focus,#adminModal .box>div:nth-child(9) select:focus,#adminModal input:focus,#adminModal textarea:focus{border-color:var(--red)!important;box-shadow:0 0 0 3px #e11d2d18}
+#adminModal #calendarEditorSection{margin-top:14px!important;border-color:#4d420e!important;background:linear-gradient(145deg,#17150d,#0b0b09)!important}
+#adminModal #calendarEditorSection h4{font-size:13px!important;letter-spacing:.5px}
+#adminModal #calendarEditorList>div{background:#0a0a0c;border:1px solid #2d2d32;border-radius:12px;padding:9px;margin-top:7px}
+#adminModal .admin-card{background:linear-gradient(145deg,#111115,#09090b);border-color:#29292f;border-radius:14px;padding:12px;box-shadow:inset 0 1px 0 #ffffff07}
+#adminModal button{transition:transform .12s ease,filter .12s ease,box-shadow .12s ease}
+#adminModal button:hover{filter:brightness(1.08);box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#adminModal button:active{transform:scale(.98)}
+#adminModal input,#adminModal select,#adminModal textarea{background:#070709;border-color:#29292f;border-radius:11px;min-height:42px}
+#adminModal table thead{position:sticky;top:0;background:#0b0b0e;z-index:2}
+#adminModal table th{font-size:8px!important;letter-spacing:.5px!important;border-bottom:1px solid #29292f}
+#adminModal table td{padding:8px 6px!important;border-bottom:1px solid #1d1d21}
+#adminModal .box>button:last-child{grid-column:1/-1;margin:0!important;height:44px;border:1px solid #29292f!important;background:#17171c!important;border-radius:12px!important;font-weight:900}
+@media (max-width:900px){
+ #adminModal{padding:8px}
+ #adminModal .box{grid-template-columns:1fr;gap:9px;padding:12px;border-radius:20px;margin:5px auto 22px}
+ #adminModal .box>div:nth-child(n),#adminModal .box>button:last-child{grid-column:1/-1}
+ #adminModal .box>div:nth-child(1){padding:12px;gap:8px;flex-wrap:wrap}
+ #adminModal .box>div:nth-child(1):before{display:none}
+ #adminModal .box>div:nth-child(1)>div:first-child{order:3;width:100%;max-width:none}
+ #adminModal .box>div:nth-child(1)>h2{font-size:15px!important}
+ #adminModal .box>div:nth-child(2){grid-template-columns:repeat(2,1fr);gap:8px}
+ #adminModal .pro-stat{min-height:78px;padding:11px 8px}
+ #adminModal .pro-stat h2{font-size:17px}
+ #adminModal .box>div:nth-child(4) .pro-search-row{grid-template-columns:1fr!important}
+ #adminModal .box>div:nth-child(9)>div:nth-of-type(2){grid-template-columns:1fr 1fr!important}
+ #adminModal .box>div:nth-child(9)>div:nth-of-type(2) input,#adminModal .box>div:nth-child(9)>div:nth-of-type(2) select{grid-column:span 1}
+}
+@media (max-width:520px){
+ #adminModal{padding:5px}
+ #adminModal .box{padding:9px;border-radius:17px}
+ #adminModal .box>div:nth-child(1){padding:10px}
+ #adminModal .box>div:nth-child(1)>h2{font-size:13px!important}
+ #adminModal .box>div:nth-child(2){grid-template-columns:1fr 1fr}
+ #adminModal .pro-stat{min-height:70px;padding:9px 6px;border-radius:12px}
+ #adminModal .pro-stat h2{font-size:15px}
+ #adminModal .pro-stat p{font-size:7px}
+ #adminModal .box>div:nth-child(9){padding:11px!important}
+ #adminModal .box>div:nth-child(9)>div:nth-of-type(2){grid-template-columns:1fr!important}
+ #adminModal .box>div:nth-child(9)>div:nth-of-type(2) input,#adminModal .box>div:nth-child(9)>div:nth-of-type(2) select{grid-column:auto}
+ #adminModal table{min-width:560px}
+ #adminModal .box>div:nth-child(6)>div:nth-child(3){overflow-x:auto}
+}
+@media (min-width:901px){
+ #adminModal .box>div:nth-child(4),#adminModal .box>div:nth-child(5),#adminModal .box>div:nth-child(7),#adminModal .box>div:nth-child(8){min-height:150px}
+}
 </style>
 </head>
 <body>
