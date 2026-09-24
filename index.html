@@ -584,12 +584,12 @@ function getJoinState(t){
   if(!start)return {allowed:true,visible:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
   const openAt=start-5*60*1000, now=Date.now();
   if(now<openAt)return {allowed:false,visible:false,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
-  if(now>start+30*60*1000 && (t.status||'active')!=='completed')return {allowed:false,visible:false,label:'MATCH TIME PASSED',reason:'late'};
+  if(now>start+10*60*1000 && (t.status||'active')!=='completed')return {allowed:false,visible:true,label:'REGISTRATION CLOSED',reason:'late'};
   return {allowed:true,visible:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
 }
 function render(){
   let allActive=tours.filter(t=>(t.status||'active')!=='completed');
-  // Calendar is the automatic player-facing schedule: a tournament appears exactly 5 minutes before its calendar time.
+  // Calendar/tournament join window: joining is allowed until exactly 10 minutes after match start.
   let visibleActive=allActive.filter(t=>getJoinState(t).visible);
   let filtered=visibleActive.filter(t=>(t.type||'SOLO').toUpperCase()===currentMode);
   let displayList=filtered.length?filtered:visibleActive;
