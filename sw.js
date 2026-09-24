@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ff-league-v2';
+const CACHE_NAME = 'ff-league-v3';
 
 importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js');
@@ -24,13 +24,13 @@ messaging.onBackgroundMessage(function(payload) {
   const url = d.url || './';
 
   return self.registration.showNotification(title, {
-    body,
-    icon: './icon192.png',
-    badge: './icon192.png',
-    tag: d.tag || ('ff-tournament-' + (d.tournamentId || 'notification')),
+    body: body,
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    tag: d.tag || ('ff-league-' + Date.now()),
     renotify: true,
     data: {
-      url
+      url: url
     }
   });
 });
@@ -38,9 +38,12 @@ messaging.onBackgroundMessage(function(payload) {
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
 
-  const url = event.notification.data && event.notification.data.url
-    ? event.notification.data.url
-    : './';
+  const url =
+    event.notification &&
+    event.notification.data &&
+    event.notification.data.url
+      ? event.notification.data.url
+      : './';
 
   event.waitUntil(
     clients.matchAll({
@@ -53,7 +56,6 @@ self.addEventListener('notificationclick', function(event) {
           if ('navigate' in client) {
             client.navigate(url);
           }
-
           return client.focus();
         }
       }
@@ -61,6 +63,8 @@ self.addEventListener('notificationclick', function(event) {
       if (clients.openWindow) {
         return clients.openWindow(url);
       }
+
+      return null;
     })
   );
 });
@@ -70,9 +74,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    self.clients.claim()
-  );
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', function(event) {
