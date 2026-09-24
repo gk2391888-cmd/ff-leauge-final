@@ -1176,7 +1176,16 @@ async function deleteAnnouncement(key){
 function startAnnouncementListener(){
   if(__announcementListenerAttached || !currentUser)return;
   __announcementListenerAttached=true;
-  db.ref('announcements').limitToLast(1).on('value',snap=>{
+
+  // Always keep the in-app ANNOUNCEMENTS section synced in real time.
+  // This is intentionally separate from browser/phone notification logic.
+  const announcementRef=db.ref('announcements');
+  announcementRef.on('value',()=>{
+    try{loadAnnouncements();}catch(e){console.warn('In-app announcements refresh failed:',e);}
+  });
+
+  // Show a browser notification only for genuinely new announcements.
+  announcementRef.limitToLast(1).on('value',snap=>{
     snap.forEach(c=>{
       const a={key:c.key,...(c.val()||{})};
       if(!a.key || a.key===__lastAnnouncementKey)return;
@@ -1185,8 +1194,6 @@ function startAnnouncementListener(){
       if(typeof Notification!=='undefined' && Notification.permission==='granted'){
         try{new Notification(a.title||'FF LEAGUE',{body:a.message||'',icon:'./icon-192.png'});}catch(e){}
       }
-      const el=document.getElementById('userAnnouncements');
-      if(el)loadAnnouncements();
     });
   });
 }
