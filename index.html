@@ -472,13 +472,21 @@ function getCalendarIndex(t){
   return null;
 }
 function getTournamentStartMs(t){
+  if(t){
+    const explicit=Number(t.startAt);
+    if(Number.isFinite(explicit) && explicit>0)return explicit;
+    const raw=t.matchTime||t.time;
+    if(raw){
+      const parsed=Date.parse(raw);
+      if(Number.isFinite(parsed))return parsed;
+    }
+  }
   const idx=getCalendarIndex(t);
   if(idx!==null && calendarSchedule.length){
     const ms=parseCalendarTimeMs(calendarSchedule[idx]&&calendarSchedule[idx].time,Date.now());
     if(ms!==null)return ms;
   }
-  const raw=t&&(t.matchTime||t.time); if(!raw)return null;
-  const ms=new Date(raw).getTime(); return Number.isFinite(ms)?ms:null;
+  return null;
 }
 function getJoinState(t){
   const start=getTournamentStartMs(t);
@@ -489,31 +497,81 @@ function getJoinState(t){
   if(now>=start)return {allowed:true,visible:true,label:t&&t.isCustom?'REGISTER NOW - ₹'+safeInt(t.entry):'JOIN NOW - ₹'+safeInt(t.entry),reason:'grace'};
   return {allowed:true,visible:true,label:t&&t.isCustom?'REGISTER - ₹'+safeInt(t.entry):'JOIN - ₹'+safeInt(t.entry),reason:''};
 }
-function renderDailyCalendar(){
-  const el=document.getElementById('dailyCalendar');
-  if(!el)return;
+function getDateKeyForDate(d){
+  const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
+}
+function getDateLabel(d){
+  return new Date(d).toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+function getDateTimeForCalendarSlot(dateObj,timeText){
+  const d=new Date(dateObj); const m=String(timeText||'').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if(!m)return null; let h=Number(m[1]), min=Number(m[2]); const ap=m[3].toUpperCase(); if(h===12)h=0; if(ap==='PM')h+=12;
+  d.setHours(h,min,0,0); return d.getTime();
+}
+function findCalendarTournament(index,dateKey){
+  return tours.find(t=>{
+    if(getCalendarIndex(t)!==index || (t.status||'active')==='completed')return false;
+    if(t.matchDate)return String(t.matchDate)===dateKey;
+    const st=Number(t.startAt); if(Number.isFinite(st)&&st>0)return getDateKeyForDate(st)===dateKey;
+    return false;
+  }) || null;
+}
+async function ensureDailyCalendarTournaments(){
   const schedule=normalizeCalendarSchedule(calendarSchedule.length?calendarSchedule:DEFAULT_CALENDAR_SCHEDULE);
-  const today=new Date();
-  const dateText=today.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const dates=[new Date(),new Date(Date.now()+24*60*60*1000)];
+  for(const date of dates){
+    const dateKey=getDateKeyForDate(date);
+    for(let i=0;i<8;i++){
+      if(findCalendarTournament(i,dateKey))continue;
+      const timeMs=getDateTimeForCalendarSlot(date,schedule[i].time);
+      if(!timeMs)continue;
+      const key=`calendar_${dateKey}_${i}`;
+      const ref=db.ref('tournaments/'+key);
+      const exists=await ref.once('value');
+      if(exists.exists())continue;
+      const template=tours.find(t=>getCalendarIndex(t)===i && !t.isDailyCalendarAuto) || {};
+      const entry=safeInt(template.entry,19), total=safeInt(template.total,50);
+      const first=safeInt(template.firstPrize,50), second=safeInt(template.secondPrize,0), third=safeInt(template.thirdPrize,0), kill=safeInt(template.killPrize,10);
+      const data={
+        title:schedule[i].title, sub:schedule[i].sub, entry, total, slots:0,
+        prizePool:safeInt(template.prizePool,Math.max(0,first+second+third+kill*total)),
+        firstPrize:first, secondPrize:second, thirdPrize:third, killPrize:kill,
+        roomId:template.roomId||'', roomPass:template.roomPass||'', type:template.type||'SOLO',
+        status:'active', time:new Date(timeMs).toISOString(), matchTime:new Date(timeMs).toISOString(),
+        startAt:timeMs, notification10At:timeMs-(10*60*1000), calendarIndex:i,
+        matchDate:dateKey, isCustom:false, isDailyCalendarAuto:true,
+        moderatorId:template.moderatorId||''
+      };
+      await ref.set(data).catch(e=>console.warn('Daily calendar setup skipped:',e));
+    }
+  }
+}
+function renderDailyDay(dateObj,heading){
+  const schedule=normalizeCalendarSchedule(calendarSchedule.length?calendarSchedule:DEFAULT_CALENDAR_SCHEDULE);
+  const dateKey=getDateKeyForDate(dateObj), now=Date.now();
   const rows=schedule.map((m,i)=>{
-    const start=parseCalendarTimeMs(m.time,today);
-    const now=Date.now();
-    const end=(start||0)+10*60*1000;
+    const start=getDateTimeForCalendarSlot(dateObj,m.time), end=(start||0)+10*60*1000;
+    const match=findCalendarTournament(i,dateKey);
     let status='UPCOMING', cls='';
-    if(start&&now>=end){status='ENTRY CLOSED';cls='closed';}
-    else if(start&&now>=start){status='JOIN OPEN • +10 MIN';cls='live';}
-    const match=tours.find(t=>{
-      const idx=getCalendarIndex(t);
-      return idx===i && (t.status||'active')!=='completed';
-    });
-    const action=match?`<button type="button" onclick="openPay('${match.key}')" style="border:0;cursor:pointer;font-size:8px;font-weight:900;padding:5px 7px;border-radius:8px;background:${status==='ENTRY CLOSED'?'#222;color:#777':'var(--red);color:#fff'}">${status==='ENTRY CLOSED'?'CLOSED':(match.isCustom?'REGISTER':'JOIN')}</button>`:`<span class="daily-match-status pending">SETUP PENDING</span>`;
-    return `<div class="daily-match"><div class="daily-match-time">${esc(m.time)}</div><div><div class="daily-match-name">${esc(m.title)}</div><div class="daily-match-sub">${esc(m.sub)} • ${dateText}</div></div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end"><span class="daily-match-status ${cls}">${status}</span>${action}</div></div>`;
+    if(start && now>end){status='ENTRY CLOSED';cls='closed';}
+    else if(start && now>=start){status='JOIN OPEN • +10 MIN';cls='live';}
+    const canJoin=!!match && !!start && now<=end;
+    const button=match
+      ? `<button type="button" onclick="openPay('${match.key}')" style="border:0;cursor:${canJoin?'pointer':'not-allowed'};font-size:8px;font-weight:900;padding:6px 8px;border-radius:8px;background:${canJoin?'var(--red)':'#222'};color:${canJoin?'#fff':'#777'}">${canJoin?(match.isCustom?'REGISTER':'JOIN'):'CLOSED'}</button>`
+      : `<span class="daily-match-status pending">PREPARING</span>`;
+    const room=match&&match.roomId?'ROOM READY':'ROOM ID PENDING';
+    return `<div class="daily-match"><div class="daily-match-time">${esc(m.time)}</div><div><div class="daily-match-name">${esc(m.title)}</div><div class="daily-match-sub">${esc(m.sub)} • ${esc(dateKey)}</div><div style="font-size:8px;color:#aaa;margin-top:3px">${room}</div></div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end"><span class="daily-match-status ${cls}">${status}</span>${button}</div></div>`;
   }).join('');
-  el.innerHTML=`<div class="daily-schedule-head"><div><div class="daily-schedule-title">TODAY'S 8 MATCHES</div><div style="font-size:8px;opacity:.5;margin-top:3px">Full-day schedule • Join allowed until 10 minutes after start</div></div><div class="daily-schedule-date">${dateText}</div></div>${rows}`;
+  return `<div style="margin-top:10px"><div class="daily-schedule-head"><div><div class="daily-schedule-title">${heading}</div><div style="font-size:8px;opacity:.5;margin-top:3px">${getDateLabel(dateObj)} • Join allowed until 10 minutes after start</div></div><div class="daily-schedule-date">${esc(dateKey)}</div></div>${rows}</div>`;
+}
+function renderDailyCalendar(){
+  const el=document.getElementById('dailyCalendar'); if(!el)return;
+  const today=new Date(), tomorrow=new Date(Date.now()+24*60*60*1000);
+  el.innerHTML=renderDailyDay(today,"TODAY'S 8 MATCHES")+renderDailyDay(tomorrow,"TOMORROW'S 8 MATCHES");
 }
 
 function render(){
-  let allActive=tours.filter(t=>(t.status||'active')!=='completed');
+  let allActive=tours.filter(t=>(t.status||'active')!=='completed' && !t.isDailyCalendarAuto);
   // All scheduled matches stay visible for the full day. Joining is allowed until 10 minutes after match start.
   let visibleActive=allActive.filter(t=>getJoinState(t).visible);
   let filtered=visibleActive.filter(t=>(t.type||'SOLO').toUpperCase()===currentMode);
@@ -1008,6 +1066,7 @@ function loadCalendarSchedule(){
       db.ref('calendarSchedule').set(calendarSchedule).catch(e=>console.error('Calendar schedule initialization failed',e));
     }
     renderCalendar();
+    ensureDailyCalendarTournaments().then(()=>{ render(); renderCalendar(); }).catch(e=>console.warn('Daily calendar generation skipped:',e));
     if(document.getElementById('calendarEditorSection'))loadCalendarEditor();
   });
 }
@@ -1052,7 +1111,7 @@ function renderCalendar(){
   if(!listEl)return;
   const schedule=normalizeCalendarSchedule(calendarSchedule.length?calendarSchedule:DEFAULT_CALENDAR_SCHEDULE);
   const today=new Date();
-  const dateText=today.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  const dateText=getDateLabel(today);
   const now=Date.now();
   listEl.innerHTML=schedule.map((m,i)=>{
     const start=parseCalendarTimeMs(m.time,today), cutoff=(start||0)+10*60*1000;
