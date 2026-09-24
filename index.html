@@ -560,7 +560,16 @@ function renderDailyDay(dateObj,heading){
       ? `<button type="button" onclick="openPay('${match.key}')" style="border:0;cursor:${canJoin?'pointer':'not-allowed'};font-size:8px;font-weight:900;padding:6px 8px;border-radius:8px;background:${canJoin?'var(--red)':'#222'};color:${canJoin?'#fff':'#777'}">${canJoin?(match.isCustom?'REGISTER':'JOIN'):'CLOSED'}</button>`
       : `<span class="daily-match-status pending">PREPARING</span>`;
     const room=match&&match.roomId?'ROOM READY':'ROOM ID PENDING';
-    return `<div class="daily-match"><div class="daily-match-time">${esc(m.time)}</div><div><div class="daily-match-name">${esc(m.title)}</div><div class="daily-match-sub">${esc(m.sub)} • ${esc(dateKey)}</div><div style="font-size:8px;color:#aaa;margin-top:3px">${room}</div></div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end"><span class="daily-match-status ${cls}">${status}</span>${button}</div></div>`;
+    const entry=match?safeInt(match.entry,19):19;
+    const first=match?safeInt(match.firstPrize,50):50;
+    const second=match?safeInt(match.secondPrize,0):0;
+    const third=match?safeInt(match.thirdPrize,0):0;
+    const kill=match?safeInt(match.killPrize,10):10;
+    const total=match?safeInt(match.total,50):50;
+    const slots=match?safeInt(match.slots,0):0;
+    const pool=match?safeInt(match.prizePool)||(first+second+third+kill*total):(first+second+third+kill*total);
+    const details=`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px"><span style="background:#E11D2D18;color:#fff;border:1px solid #E11D2D55;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">ENTRY ₹${entry}</span><span style="background:#00ff8812;color:var(--green);border:1px solid #00ff8840;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">1ST ₹${first}</span><span style="background:#ffcc0012;color:#ffcc00;border:1px solid #ffcc0040;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">KILL ₹${kill}</span><span style="background:#fff1;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900">POOL ₹${pool}</span></div><div style="font-size:8px;color:#aaa;margin-top:5px">2ND ₹${second} • 3RD ₹${third} • ${slots}/${total} JOINED • ${room}</div>`;
+    return `<div class="daily-match" style="align-items:flex-start"><div class="daily-match-time" style="min-width:62px">${esc(m.time)}</div><div style="min-width:0;flex:1"><div class="daily-match-name">${esc(m.title)}</div><div class="daily-match-sub">${esc(m.sub)} • ${esc(dateKey)}</div>${details}</div><div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;min-width:76px"><span class="daily-match-status ${cls}">${status}</span>${button}</div></div>`;
   }).join('');
   return `<div style="margin-top:10px"><div class="daily-schedule-head"><div><div class="daily-schedule-title">${heading}</div><div style="font-size:8px;opacity:.5;margin-top:3px">${getDateLabel(dateObj)} • Join allowed until 10 minutes after start</div></div><div class="daily-schedule-date">${esc(dateKey)}</div></div>${rows}</div>`;
 }
