@@ -83,21 +83,6 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 .calendar-edit-row input{margin:0;padding:9px 10px;font-size:12px}
 @media(max-width:600px){.calendar-edit-row{grid-template-columns:1fr 1fr}.calendar-edit-row input:first-child{grid-column:1/-1}.calendar-edit-row button{grid-column:1/-1}}
 
-/* Announcement bell */
-#ffAnnouncementBell{position:relative;width:42px;height:42px;border-radius:12px;background:#1a1a1e;color:#fff;border:1px solid #333;display:none;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
-#ffAnnouncementBell.show{display:flex}
-#ffAnnouncementBell .ff-bell-dot{position:absolute;top:5px;right:5px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#E11D2D;color:#fff;font:900 8px/16px Arial;text-align:center;border:2px solid #111114;display:none}
-#ffAnnouncementBell.has-unread .ff-bell-dot{display:block}
-#ffAnnouncementPanel{position:fixed;top:70px;right:14px;width:min(370px,calc(100vw - 28px));max-height:70vh;background:#0d0d10;border:2px solid #E11D2D;border-radius:16px;z-index:99990;display:none;overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.65)}
-#ffAnnouncementPanel.show{display:block}
-#ffAnnouncementPanelHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #29292e}
-#ffAnnouncementPanelList{padding:8px 12px;max-height:58vh;overflow:auto}
-.ff-panel-empty{padding:22px 10px;text-align:center;font-size:11px;opacity:.5}
-.ff-panel-item{background:#111114;border:1px solid #2b2b30;border-left:3px solid #E11D2D;border-radius:12px;padding:10px;margin-bottom:8px}
-.ff-panel-item.unread{background:#17171b;border-color:#3a3a42}
-.ff-panel-item b{font-size:11px}.ff-panel-item p{font-size:10px;line-height:1.45;opacity:.78;margin:5px 0}.ff-panel-item small{font-size:8px;opacity:.45}
-@media(max-width:600px){#ffAnnouncementPanel{top:64px;right:10px;width:calc(100vw - 20px)}}
-
 /* Notification permission popup */
 #ffNotifyModal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:99999;padding:18px}
 #ffNotifyModal.show{display:flex}
@@ -151,11 +136,7 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
 <body>
 <div id="installBanner" class="install-banner"><div><b style="font-family:Orbitron">Install FF LEAGUE App</b></div><button onclick="installPWA()" style="background:#fff;color:#000;border:none;padding:8px 14px;border-radius:10px;font-weight:900">INSTALL</button></div>
 <div id="loginScreen" class="login-screen" style="display:none"><div class="login-box"><div style="width:70px;height:70px;background:linear-gradient(135deg,#E11D2D,#ff6600);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:32px;font-family:Orbitron;font-weight:900">TH</div><h1 style="font-family:Orbitron;font-size:24px;margin-top:16px">FF <span style="color:#E11D2D">LEAGUE</span></h1><p style="font-size:9px;opacity:.5;margin-top:4px;letter-spacing:1px">THE TECH HUB</p><button class="g-btn" onclick="googleLogin()" id="gLoginBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google</button><p id="loginErr" style="font-size:11px;color:#ffcc00;margin-top:10px;white-space:pre-wrap"></p></div></div>
-<div class="header"><div class="logo"><b>TH</b> FF <span>LEAGUE</span></div><div style="display:flex;gap:6px;align-items:center"><div id="userInfo" style="display:none;text-align:right"><div id="userName" style="font-weight:800;font-size:11px"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div><button id="ffAnnouncementBell" aria-label="Announcements" title="Announcements" onclick="toggleAnnouncementPanel()"><i class="fa-solid fa-bell"></i><span class="ff-bell-dot" id="ffAnnouncementUnreadCount">0</span></button><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none;background:#1e1e22" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div></div>
-<div id="ffAnnouncementPanel" aria-hidden="true">
-  <div id="ffAnnouncementPanelHead"><b style="font-family:Orbitron;font-size:11px">🔔 ANNOUNCEMENTS</b><button type="button" onclick="closeAnnouncementPanel()" style="background:#1e1e22;color:#fff;border:1px solid #333;border-radius:8px;padding:5px 9px">✕</button></div>
-  <div id="ffAnnouncementPanelList"><div class="ff-panel-empty">No announcements yet</div></div>
-</div>
+<div class="header"><div class="logo"><b>TH</b> FF <span>LEAGUE</span></div><div style="display:flex;gap:6px;align-items:center"><div id="userInfo" style="display:none;text-align:right"><div id="userName" style="font-weight:800;font-size:11px"></div><div id="userEmail" style="opacity:.5;font-size:8px"></div></div><button id="adminHeaderBtn" class="admin-btn" onclick="openAdmin()">ADMIN</button><button id="logoutBtn" class="h-btn" style="display:none;background:#1e1e22" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div></div>
 <div id="homeTab" class="tab active"><div class="hero"><h1>TOURNAMENT <span>ARENA</span></h1><p>Join Tournaments • Win Cash • TH Pro</p><div id="myRoom" style="margin-top:12px;background:linear-gradient(90deg,#00ff88,#00cc66);color:#000;padding:14px;border-radius:16px;font-weight:800;display:none;flex-direction:column;gap:8px"></div></div><div class="mode-bar"><button class="mode-btn active" id="mode-SOLO" onclick="setMode('SOLO')">SOLO</button><button class="mode-btn" id="mode-DUO" onclick="setMode('DUO')">DUO</button><button class="mode-btn" id="mode-4v4" onclick="setMode('4v4')">4v4</button><button class="mode-btn" id="mode-SQUAD" onclick="setMode('SQUAD')">SQUAD</button></div><div id="list"></div></div>
 <div id="walletTab" class="tab"><div class="wallet-card"><div style="font-size:10px;letter-spacing:2px;opacity:.8">WALLET BALANCE</div><div style="font-size:36px;font-weight:900;font-family:Orbitron;margin-top:4px" id="walletBal">₹0.00</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button class="h-btn" style="background:#fff;color:#000;padding:12px;border-radius:12px;font-weight:900" onclick="openRecharge()">RECHARGE</button><button class="h-btn" style="background:#000;color:var(--green);border:1px solid var(--green);padding:12px;border-radius:12px;font-weight:900" onclick="openWithdraw()">WITHDRAW</button></div></div><div style="padding:0 16px 20px"><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><h4 style="font-family:Orbitron;font-size:12px">MONEY HISTORY</h4></div><div style="font-size:9px;opacity:.45;margin-top:4px">Tournament Join • Tournament Win • Recharge • Withdrawal • Refunds</div><div id="walletHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">RECHARGE HISTORY</h4></div><div id="rechargeHistory"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><h4 style="font-family:Orbitron;font-size:12px">WITHDRAW HISTORY</h4></div><div id="withdrawHistory" style="margin-bottom:20px"></div></div></div>
 <div id="supportTab" class="tab"><div style="padding:18px 16px 8px"><h1 style="font-family:Orbitron;font-size:24px">SUPPORT <span style="color:var(--green)">CENTER</span></h1></div><div style="background:#111114;border-left:4px solid var(--green);border-radius:16px;padding:16px;margin:12px 16px"><select id="ticketCat"><option>Wallet Issue</option><option>Tournament Issue</option><option>Withdraw Issue</option><option>Other</option></select><input id="ticketSubject" placeholder="Subject"><textarea id="ticketMsg" placeholder="Describe your issue..."></textarea><button class="btn-join" style="background:var(--green);color:#000" onclick="submitSupportTicket()">SUBMIT TICKET</button><p id="ticketStatus" style="font-size:11px;margin-top:8px;text-align:center"></p></div><div style="padding:10px 16px"><h4 style="font-family:Orbitron;font-size:13px">MY TICKETS</h4><div id="myTickets"></div></div></div>
@@ -201,12 +182,6 @@ input,select,textarea{width:100%;max-width:100%;padding:12px 14px;background:#05
   <p style="font-size:9px;opacity:.6;margin-top:4px">Admin announcement app me save hoga aur logged-in users ko immediately notice milega. Push notification tabhi dikhega jab browser notification permission enabled ho.</p>
   <input id="annTitle" placeholder="Announcement Title">
   <textarea id="annMessage" placeholder="Write announcement..." style="min-height:90px"></textarea>
-  <select id="annTarget" style="margin-top:6px;font-weight:800">
-    <option value="both">📢 APP + PHONE</option>
-    <option value="phone">📱 PHONE ONLY</option>
-    <option value="app">🔔 APP ONLY</option>
-  </select>
-  <div style="font-size:9px;opacity:.55;margin-top:4px">PHONE ONLY = app bell/announcement section me nahi dikhega.</div>
   <button onclick="sendAnnouncement()" style="width:100%;margin-top:7px;background:var(--red);color:#fff;border:none;padding:11px;border-radius:10px;font-weight:900">📢 PUBLISH ANNOUNCEMENT</button>
   <div id="annStatus" style="font-size:10px;text-align:center;margin-top:7px"></div>
   <div id="adminAnnouncements" style="margin-top:8px"></div>
@@ -627,20 +602,30 @@ function getCalendarIndex(t){
   return null;
 }
 function getTournamentStartMs(t){
-  const idx=getCalendarIndex(t);
-  if(idx!==null && calendarSchedule.length){
-    const ms=parseCalendarTimeMs(calendarSchedule[idx]&&calendarSchedule[idx].time,Date.now());
-    if(ms!==null)return ms;
+  if(!t)return null;
+  // EXPLICIT CALENDAR SLOT: use the selected slot, but keep the tournament's saved date.
+  const hasCalendar=t.calendarIndex!==undefined && t.calendarIndex!==null && t.calendarIndex!=='' && !t.isCustom;
+  if(hasCalendar && calendarSchedule.length){
+    const idx=parseInt(t.calendarIndex,10);
+    if(idx>=0 && idx<calendarSchedule.length){
+      const baseMs=Number(t.startAt)||Date.parse(t.matchTime||t.time||'');
+      const d=new Date(Number.isFinite(baseMs)?baseMs:Date.now());
+      const slotMs=parseCalendarTimeMs(calendarSchedule[idx]&&calendarSchedule[idx].time,d.getTime());
+      if(slotMs!==null)return slotMs;
+    }
   }
-  const raw=t&&(t.matchTime||t.time); if(!raw)return null;
-  const ms=new Date(raw).getTime(); return Number.isFinite(ms)?ms:null;
+  // MANUAL/CUSTOM TIME IS ALWAYS AUTHORITATIVE. Never infer a calendar slot from the title.
+  const raw=t.matchTime||t.time;
+  const parsed=Number(t.startAt)||Date.parse(raw||'');
+  return Number.isFinite(parsed)?parsed:null;
 }
 function getJoinState(t){
   const start=getTournamentStartMs(t);
   if(!start)return {allowed:true,visible:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
-  const openAt=start-60*60*1000, now=Date.now(), cutoff=start+10*60*1000;
+  // Join opens exactly 5 minutes before the scheduled match.
+  const openAt=start-5*60*1000, now=Date.now(), cutoff=start;
   if(now<openAt)return {allowed:false,visible:true,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
-  if(now>=cutoff && (t.status||'active')!=='completed')return {allowed:false,visible:true,label:'REGISTRATION CLOSED',reason:'late'};
+  if(now>=cutoff && (t.status||'active')!=='completed')return {allowed:false,visible:true,label:'MATCH STARTED',reason:'late'};
   return {allowed:true,visible:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
 }
 function render(){
@@ -671,10 +656,76 @@ function render(){
 function loadMyRoom(){if(!currentUser)return;db.ref('joins').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{const div=document.getElementById('myRoom');if(!snap.exists()){div.style.display='none';return;}let last=null;snap.forEach(c=>{last=c.val();});if(!last||!last.tournamentKey){div.style.display='none';return;}db.ref('tournaments/'+last.tournamentKey).once('value').then(tsnap=>{if(!tsnap.exists()){div.style.display='none';return;}let t=tsnap.val();if(!t.roomId||(t.status||'active')==='completed'){div.style.display='none';return;}div.style.display='flex';div.innerHTML=`<div>Joined: ${esc(t.title)}</div><div class="room-id-box" style="width:100%"><div>Room ID: <span style="color:var(--green)">${esc(t.roomId)}</span> | Password: <span style="color:#ffcc00">${esc(t.roomPass)}</span></div><button id="copyRoomBtn" style="background:var(--green);color:#000;border:none;padding:5px 8px;border-radius:6px;font-weight:800">COPY</button></div>`;document.getElementById('copyRoomBtn').onclick=()=>copyText(String(t.roomId)+' / '+String(t.roomPass));});});}
 function loadMods(){db.ref('moderators').on('value',s=>{allMods=[];s.forEach(c=>{let v=c.val();v.key=c.key;allMods.push(v);});document.getElementById('modList').innerHTML=allMods.map(m=>`<div style="background:#0f0f12;border:1px solid #222;padding:10px;border-radius:12px;margin-top:8px;display:flex;justify-content:space-between"><div><b style="color:#00ff88;font-size:11px">${esc(m.idCard)}</b> ${esc(m.name)} <small style="opacity:.6">${esc(m.email)}</small> | ${safeInt(m.commission,20)}%</div><button onclick="if(confirm('Remove moderator?')) db.ref('moderators/${esc(m.key)}').remove()" style="background:var(--red);border:0;padding:6px 10px;border-radius:8px;color:#fff">DELETE</button></div>`).join('') || 'No moderators found';let select=document.getElementById('aModAssign');if(select){let cur=select.value;select.innerHTML='<option value="">Assign Moderator</option>' + allMods.map(m=>`<option value="${esc(m.idCard)}">MOD ${esc(m.idCard)} - ${esc(m.name)} - ${safeInt(m.commission,20)}%</option>`).join('');select.value=cur;}autoPrize();});}
 function addModerator(){let id=document.getElementById('modId').value.trim().toUpperCase();let name=document.getElementById('modName').value.trim();let email=document.getElementById('modEmail').value.trim().toLowerCase();let perc=Math.min(100,Math.max(0,safeInt(document.getElementById('modPerc').value,20)));if(!id||!email)return alert('Please enter ID and Email');if(!isSuperAdmin)return alert('Only Super Admin can add moderators');db.ref('moderators').push({idCard:id,name:name||'Moderator',email:email,commission:perc,created:Date.now()}).then(()=>{alert('Moderator added successfully');});}
-function submitSupportTicket(){let cat=document.getElementById('ticketCat').value;let sub=document.getElementById('ticketSubject').value.trim();let msg=document.getElementById('ticketMsg').value.trim();if(!sub||!msg)return alert('Please enter subject and message');db.ref('supportTickets').push({uid:currentUser.uid,email:currentUser.email,category:cat,subject:sub,message:msg,status:'pending',time:Date.now(),reply:''}).then(()=>{document.getElementById('ticketStatus').textContent='Ticket submitted successfully';});}
-function loadMyTickets(){if(!currentUser)return;db.ref('supportTickets').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{let h='';snap.forEach(c=>{let t=c.val();h+=`<div class="admin-card"><b>${esc(t.subject)}</b> - ${esc(t.status)}<p>${esc(t.message)}</p>${t.reply?`<div style="background:#00ff8815;padding:8px;border-radius:10px;margin-top:6px"><b>Admin Reply:</b> ${esc(t.reply)}</div>`:''}</div>`;});document.getElementById('myTickets').innerHTML=h||'No tickets found';});}
-function loadAllSupportTickets(){if(!isAdmin)return;db.ref('supportTickets').orderByChild('time').limitToLast(20).on('value',snap=>{let h='';snap.forEach(c=>{let t=c.val()||{},st=String(t.status||'pending').toLowerCase();let badge=st==='resolved'?'RESOLVED':st==='replied'?'REPLIED':'PENDING';let badgeStyle=st==='resolved'?'background:#00ff8820;color:var(--green);border:1px solid #00ff8850':st==='replied'?'background:#00aaff20;color:#55cfff;border:1px solid #55cfff50':'background:#ffcc0015;color:#ffcc00;border:1px solid #ffcc0050';h+=`<div class="admin-card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><b>${esc(t.subject)}</b> - ${esc(t.email)}</div><span style="${badgeStyle};padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900">${badge}</span></div><p>${esc(t.message)}</p>${t.reply?`<div style="background:#00ff8810;border:1px solid #00ff8830;padding:7px;border-radius:8px;margin:6px 0;font-size:10px"><b>REPLY:</b> ${esc(t.reply)}</div>`:''}<input id="reply-${esc(c.key)}" placeholder="Write reply..." value=""><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-top:6px"><button onclick="replySupport('${esc(c.key)}')" style="background:var(--green);color:#000;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">SEND REPLY</button><button onclick="setSupportStatus('${esc(c.key)}','pending')" style="background:#ffcc00;color:#000;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">PENDING</button><button onclick="setSupportStatus('${esc(c.key)}','resolved')" style="background:#00ff88;color:#000;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">RESOLVE</button><button onclick="deleteSupportTicket('${esc(c.key)}')" style="background:var(--red);color:#fff;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">DELETE</button></div></div>`;});document.getElementById('supportTicketsList').innerHTML=h||'No tickets';});}
-function replySupport(id){let msg=document.getElementById('reply-'+id).value.trim();if(!msg)return alert('Please write a reply');db.ref('supportTickets/'+id).update({reply:msg,status:'replied',repliedAt:Date.now(),repliedBy:currentUser&&currentUser.email||''}).then(()=>{alert('Reply sent');});}
+function supportMessageList(t){
+  const out=[];
+  if(t&&t.messages){
+    const src=Array.isArray(t.messages)?t.messages:Object.keys(t.messages).sort((a,b)=>Number((t.messages[a]||{}).time||0)-Number((t.messages[b]||{}).time||0)).map(k=>t.messages[k]);
+    src.forEach(m=>{if(m&&m.message)out.push(m);});
+  }
+  // Backward compatibility for old tickets.
+  if(!out.length && t&&t.message)out.push({sender:'user',message:t.message,time:t.time||Date.now(),email:t.email||''});
+  if(t&&t.reply)out.push({sender:'admin',message:t.reply,time:t.repliedAt||t.time||Date.now(),email:t.repliedBy||''});
+  return out;
+}
+function submitSupportTicket(){
+  if(!currentUser)return alert('Please login first');
+  const cat=(document.getElementById('ticketCat')||{}).value||'Other';
+  const sub=(document.getElementById('ticketSubject')||{}).value.trim();
+  const msg=(document.getElementById('ticketMsg')||{}).value.trim();
+  if(!sub||!msg)return alert('Please enter subject and message');
+  const btn=document.querySelector('[onclick="submitSupportTicket()"]');
+  if(btn){btn.disabled=true;btn.dataset.oldText=btn.innerText;btn.innerText='SENDING...';}
+  const now=Date.now();
+  db.ref('supportTickets').orderByChild('uid').equalTo(currentUser.uid).once('value').then(snap=>{
+    let activeKey=null, active=null;
+    snap.forEach(c=>{const v=c.val()||{};const st=String(v.status||'pending').toLowerCase();if(st!=='resolved'&&st!=='closed'&&(!active||Number(v.time||0)>Number(active.time||0))){activeKey=c.key;active={key:c.key,...v};}});
+    const messageObj={sender:'user',senderUid:currentUser.uid,email:currentUser.email||'',message:msg,time:now};
+    if(activeKey){
+      const updates={};
+      const existing=active.messages&&typeof active.messages==='object'?active.messages:{};
+      const newKey=db.ref('supportTickets/'+activeKey+'/messages').push().key;
+      updates['supportTickets/'+activeKey+'/messages/'+newKey]=messageObj;
+      updates['supportTickets/'+activeKey+'/updatedAt']=now;
+      updates['supportTickets/'+activeKey+'/status']='pending';
+      updates['supportTickets/'+activeKey+'/lastMessage']=msg;
+      updates['supportTickets/'+activeKey+'/lastSender']='user';
+      updates['supportTickets/'+activeKey+'/subject']=active.subject||sub;
+      updates['supportTickets/'+activeKey+'/category']=active.category||cat;
+      return db.ref().update(updates).then(()=>{document.getElementById('ticketStatus').textContent='Message added to your existing support chat';});
+    }
+    const ref=db.ref('supportTickets').push();
+    return ref.set({uid:currentUser.uid,email:currentUser.email||'',category:cat,subject:sub,message:msg,status:'pending',time:now,updatedAt:now,lastMessage:msg,lastSender:'user',messages:{[ref.push().key]:messageObj}}).then(()=>{document.getElementById('ticketStatus').textContent='Support chat created successfully';});
+  }).catch(e=>{console.error(e);document.getElementById('ticketStatus').textContent='Unable to submit. Please try again.';}).finally(()=>{if(btn){btn.disabled=false;btn.innerText=btn.dataset.oldText||'SUBMIT TICKET';}});
+}
+function loadMyTickets(){
+  if(!currentUser)return;
+  db.ref('supportTickets').orderByChild('uid').equalTo(currentUser.uid).on('value',snap=>{
+    let h='';let count=0;
+    snap.forEach(c=>{const t=c.val()||{};count++;const msgs=supportMessageList(t).sort((a,b)=>Number(a.time||0)-Number(b.time||0));
+      h+=`<div class="admin-card"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(t.subject||'Support')}</b><span>${esc(t.status||'pending')}</span></div><div style="margin-top:8px">${msgs.map(m=>`<div style="background:${m.sender==='admin'?'#00ff8810':'#111114'};border:1px solid #ffffff12;padding:8px;border-radius:10px;margin-top:6px"><b>${m.sender==='admin'?'Support Team':'You'}:</b> ${esc(m.message||'')}</div>`).join('')}</div></div>`;
+    });
+    const el=document.getElementById('myTickets');if(el)el.innerHTML=h||'No tickets found';
+    const countEl=document.getElementById('myTicketCount');if(countEl)countEl.textContent=count;
+  });
+}
+function loadAllSupportTickets(){
+  if(!isAdmin)return;
+  db.ref('supportTickets').orderByChild('updatedAt').limitToLast(30).on('value',snap=>{
+    let h='';
+    snap.forEach(c=>{const t=c.val()||{},st=String(t.status||'pending').toLowerCase();const msgs=supportMessageList(t).sort((a,b)=>Number(a.time||0)-Number(b.time||0));
+      const badge=st==='resolved'?'RESOLVED':st==='replied'?'REPLIED':'PENDING';
+      const badgeStyle=st==='resolved'?'background:#00ff8820;color:var(--green);border:1px solid #00ff8850':st==='replied'?'background:#00aaff20;color:#55cfff;border:1px solid #55cfff50':'background:#ffcc0015;color:#ffcc00;border:1px solid #ffcc0050';
+      h+=`<div class="admin-card" style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><b>${esc(t.subject||'Support')}</b> - ${esc(t.email||'')}</div><span style="${badgeStyle};padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900">${badge}</span></div><div style="margin-top:8px">${msgs.map(m=>`<div style="background:${m.sender==='admin'?'#00ff8810':'#111114'};border:1px solid #ffffff12;padding:7px;border-radius:8px;margin-top:5px;font-size:10px"><b>${m.sender==='admin'?'SUPPORT':'USER'}:</b> ${esc(m.message||'')}</div>`).join('')}</div><input id="reply-${esc(c.key)}" placeholder="Write reply..." value=""><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-top:6px"><button onclick="replySupport('${esc(c.key)}')" style="background:var(--green);color:#000;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">SEND REPLY</button><button onclick="setSupportStatus('${esc(c.key)}','pending')" style="background:#ffcc00;color:#000;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">PENDING</button><button onclick="setSupportStatus('${esc(c.key)}','resolved')" style="background:#00ff88;color:#000;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">RESOLVE</button><button onclick="deleteSupportTicket('${esc(c.key)}')" style="background:var(--red);color:#fff;border:none;padding:7px 5px;border-radius:6px;font-weight:800;font-size:9px">DELETE</button></div></div>`;
+    });
+    const el=document.getElementById('supportTicketsList');if(el)el.innerHTML=h||'No tickets';
+  });
+}
+function replySupport(id){
+  if(!isAdmin)return alert('Access denied');
+  const input=document.getElementById('reply-'+id);const msg=input&&input.value.trim();if(!msg)return alert('Please write a reply');
+  const ref=db.ref('supportTickets/'+id+'/messages').push();
+  return ref.set({sender:'admin',senderUid:currentUser&&currentUser.uid||'',email:currentUser&&currentUser.email||'',message:msg,time:Date.now()}).then(()=>db.ref('supportTickets/'+id).update({status:'replied',updatedAt:Date.now(),repliedAt:Date.now(),repliedBy:currentUser&&currentUser.email||'',lastMessage:msg,lastSender:'admin'})).then(()=>{if(input)input.value='';alert('Reply sent');});
+}
 function setSupportStatus(id,status){if(!isAdmin)return alert('Access denied');db.ref('supportTickets/'+id).update({status:status,updatedAt:Date.now(),updatedBy:currentUser&&currentUser.email||''}).then(()=>{alert(status==='resolved'?'Ticket resolved':'Ticket moved to pending');});}
 function deleteSupportTicket(id){if(!isAdmin)return alert('Access denied');if(!confirm('Delete this support ticket permanently?'))return;db.ref('supportTickets/'+id).remove().then(()=>{alert('Ticket deleted');});}
 function autoCompletePrize(){let p1=safeInt(document.getElementById('win1_prize').value),p2=safeInt(document.getElementById('win2_prize').value),p3=safeInt(document.getElementById('win3_prize').value);document.getElementById('completeProfitPreview').innerHTML=`Total Prize Distribution: <b style="color:var(--green)">₹${p1+p2+p3}</b> | 1st: ₹${p1} | 2nd: ₹${p2} | 3rd: ₹${p3}`;}
@@ -1163,54 +1214,14 @@ async function processReferralReward(referredUid){
     console.log('Referral reward paid:',refUid,referredUid);
   }catch(e){console.warn('Referral reward failed:',e);}
 }
-function announcementTarget(a){
-  const t=String((a&&a.target)||'both').toLowerCase();
-  return t==='phone'||t==='app'||t==='both'?t:'both';
-}
-function isAppAnnouncement(a){return announcementTarget(a)!=='phone';}
-function isPhoneAnnouncement(a){const t=announcementTarget(a);return t==='phone'||t==='both';}
 function announcementHtml(a){
-  const t=announcementTarget(a);
-  const badge=t==='phone'?'📱 PHONE ONLY':(t==='app'?'🔔 APP ONLY':'📢 APP + PHONE');
-  return `<div class="announcement-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(a.title||'FF LEAGUE Announcement')}</b><small style="opacity:.45">${formatDate(a.time)}</small></div><div style="font-size:8px;color:var(--yellow);margin-top:4px">${badge}</div><p>${esc(a.message||'')}</p></div>`;
+  return `<div class="announcement-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(a.title||'FF LEAGUE Announcement')}</b><small style="opacity:.45">${formatDate(a.time)}</small></div><p>${esc(a.message||'')}</p></div>`;
 }
-function announcementPanelHtml(a,unread){
-  return `<div class="ff-panel-item ${unread?'unread':''}" data-announcement-key="${esc(a.key||'')}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(a.title||'FF LEAGUE Announcement')}</b><small>${formatDate(a.time)}</small></div><p>${esc(a.message||'')}</p><button type="button" onclick="markAnnouncementRead('${esc(a.key||'')}')" style="background:#1e1e22;color:#fff;border:1px solid #333;border-radius:8px;padding:5px 8px;font-size:9px">${unread?'MARK READ':'READ'}</button></div>`;
-}
-function getAnnouncementReadKey(){return currentUser?'ffAnnRead_'+currentUser.uid:'ffAnnRead_guest';}
-function getAnnouncementReadSet(){try{return new Set(JSON.parse(localStorage.getItem(getAnnouncementReadKey())||'[]'));}catch(e){return new Set();}}
-function saveAnnouncementReadSet(set){try{localStorage.setItem(getAnnouncementReadKey(),JSON.stringify(Array.from(set).slice(-200)));}catch(e){}}
-function markAnnouncementRead(key){if(!key)return;const set=getAnnouncementReadSet();set.add(key);saveAnnouncementReadSet(set);renderAnnouncementBell();}
-function renderAnnouncementBell(){
-  const bell=document.getElementById('ffAnnouncementBell');
-  if(!bell)return;
-  if(!currentUser){bell.classList.remove('show');closeAnnouncementPanel();return;}
-  bell.classList.add('show');
-  db.ref('announcements').limitToLast(50).once('value').then(s=>{
-    const arr=[];s.forEach(c=>{const a={key:c.key,...(c.val()||{})};if(isAppAnnouncement(a))arr.push(a);});
-    arr.reverse();
-    const read=getAnnouncementReadSet();
-    const unread=arr.filter(a=>!read.has(a.key));
-    const count=document.getElementById('ffAnnouncementUnreadCount');
-    if(count){count.innerText=unread.length>99?'99+':String(unread.length);}
-    bell.classList.toggle('has-unread',unread.length>0);
-    const list=document.getElementById('ffAnnouncementPanelList');
-    if(list)list.innerHTML=arr.length?arr.map(a=>announcementPanelHtml(a,!read.has(a.key))).join(''):'<div class="ff-panel-empty">No announcements yet</div>';
-  }).catch(e=>console.warn('Announcement bell load failed:',e));
-}
-function toggleAnnouncementPanel(){
-  const p=document.getElementById('ffAnnouncementPanel');if(!p)return;
-  const show=!p.classList.contains('show');
-  p.classList.toggle('show',show);p.setAttribute('aria-hidden',show?'false':'true');
-  if(show)renderAnnouncementBell();
-}
-function closeAnnouncementPanel(){const p=document.getElementById('ffAnnouncementPanel');if(p){p.classList.remove('show');p.setAttribute('aria-hidden','true');}}
 function loadAnnouncements(){
   const el=document.getElementById('userAnnouncements'); if(!el)return;
   db.ref('announcements').limitToLast(20).once('value').then(s=>{
-    let arr=[];s.forEach(c=>{const a={key:c.key,...(c.val()||{})};if(isAppAnnouncement(a))arr.push(a);});arr.reverse();
+    let arr=[];s.forEach(c=>arr.push({key:c.key,...(c.val()||{})}));arr.reverse();
     el.innerHTML=arr.length?arr.map(announcementHtml).join(''):'<div style="font-size:10px;opacity:.45;padding:14px;text-align:center">No announcements yet</div>';
-    renderAnnouncementBell();
   }).catch(e=>console.warn('Announcements load failed:',e));
 }
 function loadAdminAnnouncements(){
@@ -1224,16 +1235,13 @@ async function sendAnnouncement(){
   if(!isAdmin)return alert('Access denied: Admin only');
   const title=(document.getElementById('annTitle')?.value||'').trim();
   const message=(document.getElementById('annMessage')?.value||'').trim();
-  const target=announcementTarget({target:document.getElementById('annTarget')?.value||'both'});
   if(!title||!message)return alert('Please enter title and message');
   const ref=db.ref('announcements').push();
-  await ref.set({title,message,target,time:Date.now(),createdBy:currentUser.uid,createdByEmail:currentUser.email||''});
+  await ref.set({title,message,time:Date.now(),createdBy:currentUser.uid,createdByEmail:currentUser.email||''});
   document.getElementById('annTitle').value='';
   document.getElementById('annMessage').value='';
-  const sel=document.getElementById('annTarget');if(sel)sel.value='both';
-  const st=document.getElementById('annStatus');if(st)st.innerText=`Published: ${target==='phone'?'PHONE ONLY':target==='app'?'APP ONLY':'APP + PHONE'}`;
-  loadAdminAnnouncements();
-  if(target!=='phone')loadAnnouncements();
+  const st=document.getElementById('annStatus');if(st)st.innerText='Announcement published successfully.';
+  loadAdminAnnouncements();loadAnnouncements();
 }
 async function deleteAnnouncement(key){
   if(!isAdmin||!key)return;
@@ -1244,12 +1252,20 @@ async function deleteAnnouncement(key){
 function startAnnouncementListener(){
   if(__announcementListenerAttached || !currentUser)return;
   __announcementListenerAttached=true;
-  const announcementRef=db.ref('announcements');
-  announcementRef.on('value',()=>{
-    try{loadAnnouncements();}catch(e){console.warn('In-app announcements refresh failed:',e);}
+  db.ref('announcements').limitToLast(1).on('value',snap=>{
+    snap.forEach(c=>{
+      const a={key:c.key,...(c.val()||{})};
+      if(!a.key || a.key===__lastAnnouncementKey)return;
+      __lastAnnouncementKey=a.key;
+      if(a.createdBy===currentUser.uid)return;
+      if(typeof Notification!=='undefined' && Notification.permission==='granted'){
+        try{new Notification(a.title||'FF LEAGUE',{body:a.message||'',icon:'./icon-192.png'});}catch(e){}
+      }
+      const el=document.getElementById('userAnnouncements');
+      if(el)loadAnnouncements();
+    });
   });
 }
-
 function saveTournament(){
   let t=document.getElementById('aTitle').value.trim();if(!t) return alert('Please enter tournament title');
   let entryVal=parseInt(document.getElementById('aEntry').value)||0;
@@ -1261,17 +1277,20 @@ function saveTournament(){
   let poolInput=parseInt(document.getElementById('aPrizePool').value)||0;
   let poolVal = poolInput || (firstVal+secondVal+thirdVal+killVal*totalVal) || Math.floor(entryVal*totalVal*0.8);
   let calendarIndex=document.getElementById('aCalendarIndex').value;
-  let timeVal=document.getElementById('aTime').value; if(!timeVal){let now=new Date(); now.setMinutes(now.getMinutes()+10); timeVal=now.toISOString().slice(0,16);}
+  let timeVal=document.getElementById('aTime').value;
+  if(!timeVal){let now=new Date(); now.setMinutes(now.getMinutes()+10); timeVal=now.toISOString().slice(0,16);}
+  const isCustom=calendarIndex==='';
+  const startAt=Date.parse(timeVal)||null;
   let data={
     title:t,entry:entryVal,total:totalVal,prizePool:poolVal,
     firstPrize:firstVal,secondPrize:secondVal,thirdPrize:thirdVal,killPrize:killVal,
     slots:0,roomId:document.getElementById('aRoomId').value,roomPass:document.getElementById('aRoomPass').value,
     type:document.getElementById('aType').value||'4v4',status:'active',time:timeVal,matchTime:timeVal,
     moderatorId:document.getElementById('aModAssign').value||'',
-    calendarIndex:calendarIndex===''?null:parseInt(calendarIndex,10),
-    isCustom:calendarIndex==='',
-    startAt:Date.parse(timeVal) || null,
-    notification10At:(Date.parse(timeVal) || 0) - (10*60*1000)
+    calendarIndex:isCustom?null:parseInt(calendarIndex,10),
+    isCustom:isCustom,
+    startAt:startAt,
+    notification10At:startAt ? startAt-(10*60*1000) : 0
   };
   let k=document.getElementById('aKey').value;
   if(k){
