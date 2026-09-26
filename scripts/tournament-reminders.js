@@ -1,4 +1,4 @@
-```js
+
 const admin = require("firebase-admin");
 
 const serviceAccount = JSON.parse(
@@ -67,6 +67,7 @@ function getStartMs(t, schedule, now) {
         slot.time,
         indiaDate(now)
       );
+
       if (start !== null) return start;
     }
   }
@@ -76,6 +77,7 @@ function getStartMs(t, schedule, now) {
 
   const raw = t.matchTime || t.time;
   const parsed = Date.parse(raw || "");
+
   return Number.isFinite(parsed) ? parsed : null;
 }
 
@@ -85,16 +87,21 @@ async function getTokens() {
 
   snap.forEach((user) => {
     const tokens = user.child("fcmTokens");
+
     tokens.forEach((item) => {
       const value = item.val() || {};
-      const token = typeof value === "string"
-        ? value
-        : value.token;
+
+      const token =
+        typeof value === "string"
+          ? value
+          : value.token;
 
       if (typeof token === "string" && token.trim()) {
-        if (!map.has(token)) {
+        const cleanToken = token.trim();
+
+        if (!map.has(cleanToken)) {
           map.set(
-            token,
+            cleanToken,
             `users/${user.key}/fcmTokens/${item.key}`
           );
         }
@@ -126,12 +133,16 @@ async function sendToAll(title, body, tag, data) {
           title: String(title).slice(0, 120),
           body: String(body).slice(0, 1000),
           url: "./",
-          tag,
+          tag: String(tag),
           ...data,
         },
         webpush: {
-          headers: { Urgency: "high" },
-          fcmOptions: { link: "./" },
+          headers: {
+            Urgency: "high",
+          },
+          fcmOptions: {
+            link: "./",
+          },
         },
       });
 
@@ -139,9 +150,11 @@ async function sendToAll(title, body, tag, data) {
     failure += response.failureCount;
 
     const updates = {};
+
     response.responses.forEach((result, index) => {
       if (!result.success) {
         const code = result.error && result.error.code;
+
         if (
           code === "messaging/registration-token-not-registered" ||
           code === "messaging/invalid-registration-token"
@@ -166,6 +179,14 @@ async function sendToAll(title, body, tag, data) {
 }
 
 async function main() {
+  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    throw new Error("Missing FIREBASE_SERVICE_ACCOUNT secret");
+  }
+
+  if (!process.env.DATABASE_URL) {
+    throw new Error("Missing DATABASE_URL secret");
+  }
+
   const now = Date.now();
 
   const [tournamentsSnap, scheduleSnap] = await Promise.all([
@@ -186,15 +207,20 @@ async function main() {
     if (!t || typeof t !== "object") continue;
 
     const status = String(t.status || "").toLowerCase();
+
     if (
       status &&
       !["active", "upcoming", "open"].includes(status)
-    ) continue;
+    ) {
+      continue;
+    }
 
     const start = getStartMs(t, schedule, now);
+
     if (!Number.isFinite(start)) continue;
 
     const firstReminder = start - TWO_HOURS;
+
     if (now < firstReminder || now >= start) continue;
 
     const slotIndex = Math.floor(
@@ -204,17 +230,21 @@ async function main() {
     if (slotIndex < 0 || slotIndex >= 8) continue;
 
     const slotAt = firstReminder + slotIndex * INTERVAL;
+
     const logRef = db.ref(
       `tournamentReminderLogs/${id}/${slotAt}`
     );
 
     const claim = await logRef.transaction((old) => {
       if (old && old.status === "sent") return;
+
       if (
         old &&
         old.status === "sending" &&
         now - Number(old.claimedAt || 0) < 10 * 60 * 1000
-      ) return;
+      ) {
+        return;
+      }
 
       return {
         status: "sending",
@@ -253,7 +283,12 @@ async function main() {
         removedInvalidTokens: result.removed,
       });
 
-      console.log("Reminder sent:", id, slotIndex + 1, result);
+      console.log(
+        "Reminder sent:",
+        id,
+        slotIndex + 1,
+        result
+      );
     } catch (error) {
       await logRef.update({
         status: "failed",
@@ -270,4 +305,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-```
