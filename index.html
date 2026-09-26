@@ -623,7 +623,7 @@ function getJoinState(t){
   const start=getTournamentStartMs(t);
   if(!start)return {allowed:true,visible:true,label:'JOIN - ₹'+safeInt(t.entry),reason:''};
   // Join opens exactly 5 minutes before the scheduled match.
-  const openAt=start-5*60*1000, now=Date.now(), cutoff=start;
+  const openAt=start-2*60*60*1000, now=Date.now(), cutoff=start+10*60*1000;
   if(now<openAt)return {allowed:false,visible:true,label:'JOIN OPENS AT '+new Date(openAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),reason:'early'};
   if(now>=cutoff && (t.status||'active')!=='completed')return {allowed:false,visible:true,label:'MATCH STARTED',reason:'late'};
   return {allowed:true,visible:true,label:'JOIN NOW - ₹'+safeInt(t.entry),reason:''};
