@@ -299,9 +299,23 @@ async function main() {
       console.error("Reminder failed:", id, error);
     }
   }
+
+  console.log("All tournament reminders checked.");
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(async () => {
+    await admin.app().delete();
+    console.log("Firebase connection closed. Done.");
+  })
+  .catch(async (error) => {
+    console.error("Reminder checker error:", error);
+
+    try {
+      await admin.app().delete();
+    } catch (closeError) {
+      console.error("Firebase close error:", closeError.message);
+    }
+
+    process.exitCode = 1;
+  });
